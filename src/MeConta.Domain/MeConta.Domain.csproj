@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Camada de domínio: não depende de nenhum outro projeto nem de pacote externo. -->
+  <PropertyGroup>
+    <RootNamespace>MeConta.Domain</RootNamespace>
+  </PropertyGroup>
+
+</Project>

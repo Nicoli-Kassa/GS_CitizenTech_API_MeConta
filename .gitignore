@@ -1,0 +1,18 @@
+## .NET
+bin/
+obj/
+*.user
+*.suo
+.vs/
+.vscode/
+.idea/
+TestResults/
+*.trx
+coverage*.xml
+
+## Arquivos enviados pela API (áudios e fotos)
+storage/
+
+## Configurações locais com segredos
+appsettings.*.local.json
+.env

@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/MeConta.Domain/MeConta.Domain.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/MeConta.UnitTests/MeConta.UnitTests.csproj" />
+  </Folder>
+</Solution>
