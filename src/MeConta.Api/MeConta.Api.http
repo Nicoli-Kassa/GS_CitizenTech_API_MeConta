@@ -1,0 +1,104 @@
+# Roteiro de chamadas da Me Conta API (dados de demonstração, todos fictícios).
+# No Visual Studio, clique em "Send Request" acima de cada chamada, na ordem.
+
+@api = http://localhost:5080
+@token = cole-aqui-o-accessToken-do-login
+
+### 1. Login da Bia (neta) — copie o accessToken da resposta para a variável @token acima
+POST {{api}}/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "bia@example.com",
+  "password": "MeConta@2026"
+}
+
+### 2. Perfil de quem está logado
+GET {{api}}/api/v1/membros/eu
+Authorization: Bearer {{token}}
+
+### 3. Famílias da Bia
+GET {{api}}/api/v1/familias
+Authorization: Bearer {{token}}
+
+### 4. Detalhe da Família Souza (membros e idosos)
+GET {{api}}/api/v1/familias/1
+Authorization: Bearer {{token}}
+
+### 5. Categorias (não exige login)
+GET {{api}}/api/v1/categorias
+
+### 6. Perguntas de receitas para a Vó Lourdes (idoso 1)
+GET {{api}}/api/v1/idosos/1/perguntas?categoria=receitas
+Authorization: Bearer {{token}}
+
+### 7. Pergunta da semana da Vó Lourdes
+GET {{api}}/api/v1/idosos/1/pergunta-da-semana
+Authorization: Bearer {{token}}
+
+### 8. Enviar uma pergunta pelo WhatsApp (devolve o link wa.me)
+POST {{api}}/api/v1/idosos/1/envios
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "perguntaId": 16
+}
+
+### 9. Erro esperado: enviar para o Vô Antônio, que não tem WhatsApp (409)
+POST {{api}}/api/v1/idosos/2/envios
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "perguntaId": 16
+}
+
+### 10. Erro esperado: pergunta com pedido de PIX (400)
+POST {{api}}/api/v1/familias/1/perguntas
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "texto": "Vó, me manda um PIX de 50 reais?",
+  "categoriaId": 5
+}
+
+### 11. Pergunta própria da família (201)
+POST {{api}}/api/v1/familias/1/perguntas
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "texto": "Vó, como foi o dia em que a senhora chegou em Pirituba?",
+  "categoriaId": 4
+}
+
+### 12. Cadastrar idoso com número repetido (409)
+POST {{api}}/api/v1/familias/1/idosos
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "nome": "Teste Repetido",
+  "apelido": "Vó Teste",
+  "whatsApp": "(11) 90000-0001"
+}
+
+### 13. Gerar convite para outro parente
+POST {{api}}/api/v1/familias/1/convites
+Authorization: Bearer {{token}}
+
+### 14. Caderno da família (US09)
+GET {{api}}/api/v1/familias/1/caderno?pagina=1&tamanho=20
+Authorization: Bearer {{token}}
+
+### 15. Indicador "Conversas de verdade" da semana atual
+GET {{api}}/api/v1/indicadores/conversas-de-verdade
+Authorization: Bearer {{token}}
+
+### 16. Saúde da API e do banco (usado no monitoramento da VM)
+GET {{api}}/health
+
+# Para guardar uma resposta em áudio (multipart), use o Swagger:
+# POST /api/v1/envios/{envioId}/pagina com o campo Audio (arquivo .mp3, .m4a, .ogg ou .opus).

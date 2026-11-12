@@ -1,6 +1,9 @@
 <Solution>
   <Folder Name="/src/">
     <Project Path="src/MeConta.Domain/MeConta.Domain.csproj" />
+    <Project Path="src/MeConta.Application/MeConta.Application.csproj" />
+    <Project Path="src/MeConta.Infrastructure/MeConta.Infrastructure.csproj" />
+    <Project Path="src/MeConta.Api/MeConta.Api.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/MeConta.UnitTests/MeConta.UnitTests.csproj" />

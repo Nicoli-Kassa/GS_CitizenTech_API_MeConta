@@ -23,6 +23,12 @@ public sealed class ArquivoDeAudio : ArquivoDeMidia
 
     public override string Pasta => "audios";
 
+    /// <summary>
+    /// Tipo MIME de um áudio já salvo, a partir da extensão do caminho.
+    /// </summary>
+    public static string ObterContentType(string caminho) =>
+        Formatos.GetValueOrDefault(Path.GetExtension(caminho).ToLowerInvariant(), "application/octet-stream");
+
     protected override IReadOnlyDictionary<string, string> FormatosAceitos => Formatos;
 
     protected override long TamanhoMaximoBytes => LimiteBytes;
