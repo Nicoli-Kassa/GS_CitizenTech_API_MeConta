@@ -167,7 +167,8 @@ flowchart LR
 
 ```
 GS-CitizenTech_CSharpSOA_MeConta/
-├── README.md 
+├── README.md
+├── prompts.md
 ├── MeConta.slnx
 ├── Directory.Build.props        ← net10.0, nullable, implicit usings
 ├── docs/evidencias/             ← prints usados neste README
