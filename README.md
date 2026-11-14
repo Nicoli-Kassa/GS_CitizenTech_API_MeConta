@@ -168,8 +168,7 @@ flowchart LR
 
 ```
 me-conta-api/
-├── README.md
-├── prompts.md
+├── README.md 
 ├── MeConta.slnx
 ├── Directory.Build.props        ← net10.0, nullable, implicit usings
 ├── docs/evidencias/             ← prints usados neste README
