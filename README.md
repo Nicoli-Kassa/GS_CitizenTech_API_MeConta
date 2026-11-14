@@ -31,7 +31,7 @@ Backend do **Me Conta**, desenvolvido para a Global Solution FIAP 2026 (CitizenT
 | **Problema em uma frase** | Os avós guardam receitas, histórias da família e memórias do bairro que ninguém mais tem, mas, quando mandam um "bom dia" no grupo da família, recebem de volta um 👍 e nenhuma pergunta. |
 | **A solução** | O Me Conta é um aplicativo que troca o 👍 da família por uma pergunta que só os avós sabem responder. |
 | **Como funciona** | O neto escolhe uma pergunta no app (receitas, história da família, ofícios, o bairro, conselhos). O app abre o WhatsApp com a mensagem pronta. O avô responde por áudio, do jeito que já sabe. A resposta vira uma memória, e vai para a página do caderno da família, com áudio, foto e título. O idoso volta a ser quem ensina e lembra. |
-| **Link do repositório** | [Me Conta API - GitHub](https://github.com/Nicoli-Kassa/GS-CitizenTech_CSharpSOA_MeConta) |
+| **Link do repositório** | [Me Conta API - GitHub](https://github.com/Nicoli-Kassa/GS_CitizenTech_CSharpSOA_MeConta) |
 | **Indicador de impacto** | Conversas de verdade por semana: % de idosos que respondem pelo menos uma pergunta da família por semana. Indicadores de apoio: minutos de áudio guardados no caderno de cada família e % de idosos que passam a responder sem ajuda depois do modo "Ensine sua avó". |
 | **ODS conectados** | **ODS 10**, meta 10.2 (inclusão social de todos, independentemente da idade) · **ODS 11**, meta 11.4 (proteger o patrimônio cultural, aqui a memória do bairro) · **ODS 3**, meta 3.4 (bem-estar mental, pelo vínculo e não por cuidado de saúde) |
 
@@ -371,7 +371,7 @@ Todas as rotas ficam em `/api/v1` e, exceto login, cadastro e categorias, exigem
 
 ```powershell
 # 1. Clonar
-git clone https://github.com/Nicoli-Kassa/GS-CitizenTech_CSharpSOA_MeConta.git
+git clone https://github.com/Nicoli-Kassa/GS_CitizenTech_CSharpSOA_MeConta.git
 cd GS-CitizenTech_CSharpSOA_MeConta
 
 # 2. Compilar e rodar os testes
