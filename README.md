@@ -54,7 +54,6 @@ Backend do **Me Conta**, desenvolvido para a Global Solution FIAP 2026 (CitizenT
 13. [Privacidade e segurança](#privacidade-e-segurança)
 14. [Tecnologias](#tecnologias)
 15. [Próximos passos](#próximos-passos)
-16. [Uso de IA](#uso-de-ia)
 
 ---
 
