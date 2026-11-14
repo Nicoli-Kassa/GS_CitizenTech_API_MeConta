@@ -166,7 +166,7 @@ flowchart LR
 | `MeConta.Api` | Controllers REST, autenticação, tratamento de erros, documentação OpenAPI, health check e composição da injeção de dependência. | Application, Infrastructure |
 
 ```
-me-conta-api/
+GS-CitizenTech_CSharpSOA_MeConta/
 ├── README.md 
 ├── MeConta.slnx
 ├── Directory.Build.props        ← net10.0, nullable, implicit usings
@@ -370,8 +370,8 @@ Todas as rotas ficam em `/api/v1` e, exceto login, cadastro e categorias, exigem
 
 ```powershell
 # 1. Clonar
-git clone https://github.com/INSERIR-USUARIO/me-conta-api.git
-cd me-conta-api
+git clone https://github.com/Nicoli-Kassa/GS-CitizenTech_CSharpSOA_MeConta.git
+cd GS-CitizenTech_CSharpSOA_MeConta
 
 # 2. Compilar e rodar os testes
 dotnet build
