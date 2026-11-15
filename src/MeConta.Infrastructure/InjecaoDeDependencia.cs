@@ -56,9 +56,12 @@ public static class InjecaoDeDependencia
         services.AddScoped<IEnvioRepository, EnvioRepository>();
         services.AddScoped<IPaginaRepository, PaginaRepository>();
         services.AddScoped<IIndicadorConsulta, IndicadorConsulta>();
+        services.AddScoped<IPortaRetratoRepository, PortaRetratoRepository>();
+        services.AddScoped<IAvisoRepository, AvisoRepository>();
 
         services.AddSingleton<IArmazenamentoDeArquivos>(new ArmazenamentoEmDiscoAdapter(pastaDeArquivos));
         services.AddSingleton<IGeradorDeCodigoConvite, GeradorDeCodigoConvite>();
+        services.AddSingleton<IGeradorDeCredenciais, GeradorDeCredenciais>();
 
         return services;
     }

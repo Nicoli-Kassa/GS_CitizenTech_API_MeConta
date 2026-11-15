@@ -2,38 +2,39 @@
 
 ### Integrantes
 
-| Nome | RM | Turma |
-|---|---|---|
+| Nome             | RM        | Turma |
+| ---------------- | --------- | ----- |
 | Nicoli Amy Kassa | RM 559104 | 3ESPW |
 
 ---
+
 <br>
 
 > O app que troca o 👍 da família por uma pergunta que só os avós sabem responder.
 
 Backend do **Me Conta**, desenvolvido para a Global Solution FIAP 2026 (CitizenTech). Uma única Web API em **C# / .NET 10** atende **C# Software Development** e **SOA e Web Services**. Ela guarda famílias, idosos, perguntas e o caderno de memórias da família, e é consumida pelo app mobile (Expo).
 
-| | |
-|---|---|
-| 🎬 **Pitch** | [**Assistir no YouTube**](https://youtu.be/INSERIR-LINK-DO-PITCH) |
-| 📄 **Documentação da API** | `/swagger` e `/scalar` (com a API rodando) |
-| 🧪 **Testes** | `dotnet test` (103 testes) | 
+|                            |                                                                   |
+| -------------------------- | ----------------------------------------------------------------- |
+| 🎬 **Pitch**               | [**Assistir no YouTube**](https://youtu.be/INSERIR-LINK-DO-PITCH) |
+| 📄 **Documentação da API** | `/swagger` e `/scalar` (com a API rodando)                        |
+| 🧪 **Testes**              | `dotnet test` (151 testes)                                        |
 
 ---
 
 ## Ficha da CitizenTech
 
-| Campo | Resposta |
-|---|---|
-| **Nome da CitizenTech** | Me Conta |
-| **Cidade e bairro** | São Paulo (SP). Bairro piloto: Pirituba, zona norte |
-| **Cidadão beneficiado** | Pessoas idosas, com mais de 60 anos, especialmente as que moram sozinhas, e seus netos e filhos. Pelo modo "Ensine sua avó", também os idosos que ainda não usam o celular. |
-| **Problema em uma frase** | Os avós guardam receitas, histórias da família e memórias do bairro que ninguém mais tem, mas, quando mandam um "bom dia" no grupo da família, recebem de volta um 👍 e nenhuma pergunta. |
-| **A solução** | O Me Conta é um aplicativo que troca o 👍 da família por uma pergunta que só os avós sabem responder. |
-| **Como funciona** | O neto escolhe uma pergunta no app (receitas, história da família, ofícios, o bairro, conselhos). O app abre o WhatsApp com a mensagem pronta. O avô responde por áudio, do jeito que já sabe. A resposta vira uma memória, e vai para a página do caderno da família, com áudio, foto e título. O idoso volta a ser quem ensina e lembra. |
-| **Link do repositório** | [Me Conta API - GitHub](https://github.com/Nicoli-Kassa/GS_CitizenTech_CSharpSOA_MeConta) |
-| **Indicador de impacto** | Conversas de verdade por semana: % de idosos que respondem pelo menos uma pergunta da família por semana. Indicadores de apoio: minutos de áudio guardados no caderno de cada família e % de idosos que passam a responder sem ajuda depois do modo "Ensine sua avó". |
-| **ODS conectados** | **ODS 10**, meta 10.2 (inclusão social de todos, independentemente da idade) · **ODS 11**, meta 11.4 (proteger o patrimônio cultural, aqui a memória do bairro) · **ODS 3**, meta 3.4 (bem-estar mental, pelo vínculo e não por cuidado de saúde) |
+| Campo                     | Resposta                                                                                                                                                                                                                                                                                                                                   |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Nome da CitizenTech**   | Me Conta                                                                                                                                                                                                                                                                                                                                   |
+| **Cidade e bairro**       | São Paulo (SP). Bairro piloto: Pirituba, zona norte                                                                                                                                                                                                                                                                                        |
+| **Cidadão beneficiado**   | Pessoas idosas, com mais de 60 anos, especialmente as que moram sozinhas, e seus netos e filhos. Pelo modo "Ensine sua avó", também os idosos que ainda não usam o celular.                                                                                                                                                                |
+| **Problema em uma frase** | Os avós guardam receitas, histórias da família e memórias do bairro que ninguém mais tem, mas, quando mandam um "bom dia" no grupo da família, recebem de volta um 👍 e nenhuma pergunta.                                                                                                                                                  |
+| **A solução**             | O Me Conta é um aplicativo que troca o 👍 da família por uma pergunta que só os avós sabem responder.                                                                                                                                                                                                                                      |
+| **Como funciona**         | O neto escolhe uma pergunta no app (receitas, história da família, ofícios, o bairro, conselhos). O app abre o WhatsApp com a mensagem pronta. O avô responde por áudio, do jeito que já sabe. A resposta vira uma memória, e vai para a página do caderno da família, com áudio, foto e título. O idoso volta a ser quem ensina e lembra. |
+| **Link do repositório**   | [Me Conta API - GitHub](https://github.com/Nicoli-Kassa/GS_CitizenTech_API_MeConta)                                                                                                                                                                                                                                                        |
+| **Indicador de impacto**  | Conversas de verdade por semana: % de idosos que respondem pelo menos uma pergunta da família por semana. Indicadores de apoio: minutos de áudio guardados no caderno de cada família e % de idosos que passam a responder sem ajuda depois do modo "Ensine sua avó".                                                                      |
+| **ODS conectados**        | **ODS 10**, meta 10.2 (inclusão social de todos, independentemente da idade) · **ODS 11**, meta 11.4 (proteger o patrimônio cultural, aqui a memória do bairro) · **ODS 3**, meta 3.4 (bem-estar mental, pelo vínculo e não por cuidado de saúde)                                                                                          |
 
 ---
 
@@ -65,14 +66,14 @@ Antes, falar com quem morava longe custava caro. Cada minuto de ligação pesava
 
 **Não é falta de amor. É falta de assunto.** A família quer estar perto, mas não sabe o que dizer além de um 👍. Do outro lado, fica alguém com uma vida inteira para contar, esperando uma pergunta que não chega.
 
-| Dado | Fonte |
-|---|---|
-| **32,1 milhões** de pessoas com 60 anos ou mais no Brasil | IBGE, Censo 2022 |
-| **5,7 milhões** de idosos moram sozinhos | IBGE, Censo 2022 |
-| A solidão está associada a cerca de **871 mil mortes por ano**, perto de **100 por hora**, e afeta **1 em cada 6 pessoas** | OMS, Comissão de Conexão Social (jun/2025) |
-| **9,1 milhões** de idosos brasileiros não usam a internet; **66,5%** deles porque não sabem usar | IBGE, PNAD Contínua TIC 2025 (9,1 mi = cálculo próprio sobre os microdados) |
-| **4,9 milhões** desses idosos desconectados moram com alguém que usa a internet | Cálculo próprio sobre os microdados da PNAD TIC 2025 |
-| O contato digital **complementa**, mas não substitui, o contato presencial | Fu et al., 2023 |
+| Dado                                                                                                                       | Fonte                                                                       |
+| -------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| **32,1 milhões** de pessoas com 60 anos ou mais no Brasil                                                                  | IBGE, Censo 2022                                                            |
+| **5,7 milhões** de idosos moram sozinhos                                                                                   | IBGE, Censo 2022                                                            |
+| A solidão está associada a cerca de **871 mil mortes por ano**, perto de **100 por hora**, e afeta **1 em cada 6 pessoas** | OMS, Comissão de Conexão Social (jun/2025)                                  |
+| **9,1 milhões** de idosos brasileiros não usam a internet; **66,5%** deles porque não sabem usar                           | IBGE, PNAD Contínua TIC 2025 (9,1 mi = cálculo próprio sobre os microdados) |
+| **4,9 milhões** desses idosos desconectados moram com alguém que usa a internet                                            | Cálculo próprio sobre os microdados da PNAD TIC 2025                        |
+| O contato digital **complementa**, mas não substitui, o contato presencial                                                 | Fu et al., 2023                                                             |
 
 Existe ainda uma perda silenciosa. Cada história que ninguém pergunta é uma história que um dia vai embora com quem a viveu: a receita que nunca foi anotada, o nome antigo da rua, o jeito como a família começou. Quando alguém finalmente pensar em perguntar, pode ser tarde demais.
 
@@ -80,7 +81,7 @@ Existe ainda uma perda silenciosa. Cada história que ninguém pergunta é uma h
 
 **Se falta assunto, o Me Conta tem de monte.**
 
-O Me Conta troca o 👍 por uma pergunta que só a avó sabe responder: *"Vó, qual era o segredo do seu bolo de domingo?"*, *"Como era o bairro quando a senhora chegou?"*, *"Qual foi o melhor conselho que a senhora já recebeu?"*
+O Me Conta troca o 👍 por uma pergunta que só a avó sabe responder: _"Vó, qual era o segredo do seu bolo de domingo?"_, _"Como era o bairro quando a senhora chegou?"_, _"Qual foi o melhor conselho que a senhora já recebeu?"_
 
 A Bia, de 19 anos, abre o app e escolhe uma pergunta. Com um toque, a pergunta abre no WhatsApp da Dona Lourdes, pronta para enviar. A Dona Lourdes não precisa baixar nada nem aprender nada novo: responde com um áudio, como sempre fez. Esse áudio vira uma página do caderno da família, com título, foto e a voz dela, guardada para os netos, os bisnetos e quem vier depois.
 
@@ -107,21 +108,21 @@ sequenceDiagram
 
 O Me Conta cresce em três degraus:
 
-| Degrau | O que faz | Situação no protótipo |
-|---|---|---|
-| **1. Conectar** | O modo "Ensine sua avó" transforma o neto em professor, passo a passo, até o primeiro áudio enviado. | API registra quem concluiu o roteiro (`RespondeSozinho`) |
-| **2. Aprofundar** | O coração do app: a pergunta, a resposta e o caderno da família. | **Funciona de ponta a ponta** |
-| **3. Expandir** | Com permissão e após um filtro de dados pessoais, memórias vão para o mapa do bairro. | Visão de futuro |
+| Degrau            | O que faz                                                                                            | Situação no protótipo                                    |
+| ----------------- | ---------------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| **1. Conectar**   | O modo "Ensine sua avó" transforma o neto em professor, passo a passo, até o primeiro áudio enviado. | API registra quem concluiu o roteiro (`RespondeSozinho`) |
+| **2. Aprofundar** | O coração do app: a pergunta, a resposta e o caderno da família.                                     | **Funciona de ponta a ponta**                            |
+| **3. Expandir**   | Com permissão e após um filtro de dados pessoais, memórias vão para o mapa do bairro.                | Visão de futuro                                          |
 
 O Me Conta não substitui a visita de domingo. O objetivo é que, na próxima visita, a família tenha muito mais assunto.
 
 ## Contribuição para os ODS
 
-| ODS | Meta | Como o Me Conta contribui |
-|---|---|---|
-| **10. Redução das desigualdades** | 10.2 · Promover a inclusão social de todos, independentemente da idade | Coloca o idoso no centro da conversa da família como quem ensina, e o modo "Conectar" ajuda quem ainda está fora da internet. |
-| **11. Cidades e comunidades sustentáveis** | 11.4 · Proteger o patrimônio cultural | Guarda receitas, ofícios e memórias do bairro que hoje se perdem por falta de registro. |
-| **3. Saúde e bem-estar** | 3.4 · Promover a saúde mental e o bem-estar | Atua pelo vínculo: mais conversa de verdade e menos isolamento, sem ser um app de saúde. |
+| ODS                                        | Meta                                                                   | Como o Me Conta contribui                                                                                                     |
+| ------------------------------------------ | ---------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| **10. Redução das desigualdades**          | 10.2 · Promover a inclusão social de todos, independentemente da idade | Coloca o idoso no centro da conversa da família como quem ensina, e o modo "Conectar" ajuda quem ainda está fora da internet. |
+| **11. Cidades e comunidades sustentáveis** | 11.4 · Proteger o patrimônio cultural                                  | Guarda receitas, ofícios e memórias do bairro que hoje se perdem por falta de registro.                                       |
+| **3. Saúde e bem-estar**                   | 3.4 · Promover a saúde mental e o bem-estar                            | Atua pelo vínculo: mais conversa de verdade e menos isolamento, sem ser um app de saúde.                                      |
 
 ---
 
@@ -133,6 +134,7 @@ O Me Conta não substitui a visita de domingo. O objetivo é que, na próxima vi
 - **Caderno da família**: upload do áudio da resposta (e foto opcional), listagem paginada com filtros, áudio para ouvir no app e exclusão pela pessoa que criou a página.
 - **Modo offline**: o app manda uma chave de idempotência; se reenviar a mesma página, a API devolve a que já existe e não duplica.
 - **Indicador de impacto** "Conversas de verdade" da semana.
+- **Porta-retrato Me Conta (IoT)**: pareamento de uma caixinha com ESP32 ao idoso; a caixinha (pela ponte Node-RED) consulta se há pergunta esperando, avisa "quero contar" e informa se está conectada, usando uma chave própria no lugar do login. A família vê os avisos no app.
 - **Login** com ASP.NET Identity (token Bearer) e regra de acesso: só a família vê os dados da família.
 
 ## Arquitetura
@@ -158,15 +160,15 @@ flowchart LR
     infra --> disco[("storage/<br/>áudios e fotos")]
 ```
 
-| Projeto | Responsabilidade | Depende de |
-|---|---|---|
-| `MeConta.Domain` | Entidades, value objects, exceções e regras de negócio puras. Nenhum pacote externo. | — |
-| `MeConta.Application` | Casos de uso (serviços), DTOs e as interfaces que a infraestrutura implementa (`IRepository<T,TId>`, `IUnidadeDeTrabalho`, `IArmazenamentoDeArquivos`, `IUsuarioAtual`...). | Domain |
-| `MeConta.Infrastructure` | `AppDbContext` (EF Core + Identity), configurações Fluent API, migrações, repositórios, consultas LINQ e adapters de disco e de código de convite. | Application |
-| `MeConta.Api` | Controllers REST, autenticação, tratamento de erros, documentação OpenAPI, health check e composição da injeção de dependência. | Application, Infrastructure |
+| Projeto                  | Responsabilidade                                                                                                                                                            | Depende de                  |
+| ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------- |
+| `MeConta.Domain`         | Entidades, value objects, exceções e regras de negócio puras. Nenhum pacote externo.                                                                                        | —                           |
+| `MeConta.Application`    | Casos de uso (serviços), DTOs e as interfaces que a infraestrutura implementa (`IRepository<T,TId>`, `IUnidadeDeTrabalho`, `IArmazenamentoDeArquivos`, `IUsuarioAtual`...). | Domain                      |
+| `MeConta.Infrastructure` | `AppDbContext` (EF Core + Identity), configurações Fluent API, migrações, repositórios, consultas LINQ e adapters de disco e de código de convite.                          | Application                 |
+| `MeConta.Api`            | Controllers REST, autenticação, tratamento de erros, documentação OpenAPI, health check e composição da injeção de dependência.                                             | Application, Infrastructure |
 
 ```
-GS-CitizenTech_CSharpSOA_MeConta/
+GS-CitizenTech_API_MeConta/
 ├── README.md
 ├── prompts.md
 ├── MeConta.slnx
@@ -240,14 +242,14 @@ classDiagram
     EnvioPergunta "1" -- "0..1" PaginaCaderno
 ```
 
-| Pilar | Onde aparece |
-|---|---|
-| **Abstração** | `IPergunta`, `Pergunta` e `ArquivoDeMidia` são abstratas; serviços dependem de interfaces (`IFamiliaService`, `IPaginaRepository`...). |
-| **Herança** | `Entidade` → todas as entidades; `Pergunta` → `PerguntaCatalogo` / `PerguntaDaFamilia`; `ArquivoDeMidia` → `ArquivoDeAudio` / `ArquivoDeFoto`; `RegraDeNegocioException` → `ConflitoException` / `ArquivoMuitoGrandeException`. |
-| **Polimorfismo** | `VisivelPara(familiaId)`: o catálogo é visível para todos, a pergunta da família só para ela. Cada tipo de arquivo define formatos, limite e mensagens (template method no construtor da classe base). |
-| **Encapsulamento** | Setters privados, construtores que validam, coleções expostas como `IReadOnlyCollection`. Só a `Familia` cadastra idosos (garante o WhatsApp único) e só o `EnvioPergunta` cria páginas (garante uma resposta por pergunta). |
-| **Value objects** | `Telefone` (normaliza para 55 + DDD + número), `Semana` (segunda a domingo, no fuso de Brasília). |
-| **Interfaces e injeção de dependência** | Repositórios, serviços, `IFiltroAntiGolpe`, `ISugestaoSemanal`, `IArmazenamentoDeArquivos`, `IGeradorDeCodigoConvite`, `IUsuarioAtual` e `TimeProvider` (relógio injetável), todos registrados no contêiner do ASP.NET Core. |
+| Pilar                                   | Onde aparece                                                                                                                                                                                                                    |
+| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Abstração**                           | `IPergunta`, `Pergunta` e `ArquivoDeMidia` são abstratas; serviços dependem de interfaces (`IFamiliaService`, `IPaginaRepository`...).                                                                                          |
+| **Herança**                             | `Entidade` → todas as entidades; `Pergunta` → `PerguntaCatalogo` / `PerguntaDaFamilia`; `ArquivoDeMidia` → `ArquivoDeAudio` / `ArquivoDeFoto`; `RegraDeNegocioException` → `ConflitoException` / `ArquivoMuitoGrandeException`. |
+| **Polimorfismo**                        | `VisivelPara(familiaId)`: o catálogo é visível para todos, a pergunta da família só para ela. Cada tipo de arquivo define formatos, limite e mensagens (template method no construtor da classe base).                          |
+| **Encapsulamento**                      | Setters privados, construtores que validam, coleções expostas como `IReadOnlyCollection`. Só a `Familia` cadastra idosos (garante o WhatsApp único) e só o `EnvioPergunta` cria páginas (garante uma resposta por pergunta).    |
+| **Value objects**                       | `Telefone` (normaliza para 55 + DDD + número), `Semana` (segunda a domingo, no fuso de Brasília).                                                                                                                               |
+| **Interfaces e injeção de dependência** | Repositórios, serviços, `IFiltroAntiGolpe`, `ISugestaoSemanal`, `IArmazenamentoDeArquivos`, `IGeradorDeCodigoConvite`, `IUsuarioAtual` e `TimeProvider` (relógio injetável), todos registrados no contêiner do ASP.NET Core.    |
 
 ## Banco de dados e migrações
 
@@ -272,6 +274,9 @@ erDiagram
     Idosos ||--o{ Envios : "recebe"
     Perguntas ||--o{ Envios : "é enviada em"
     Envios ||--o| Paginas : "vira"
+    Idosos ||--o| PortaRetratos : "tem"
+    Idosos ||--o{ AvisosQueroContar : "avisa"
+    Envios ||--o| AvisosQueroContar : "atendida por"
 
     Familias {
         int Id PK
@@ -312,52 +317,73 @@ erDiagram
         int DuracaoSegundos
         uniqueidentifier ChaveIdempotencia "unica"
     }
+    PortaRetratos {
+        int Id PK
+        int IdosoId FK "unico"
+        nchar Codigo "unico, vai no topico MQTT"
+        nchar ChaveHash "SHA-256 da chave, unico"
+        bit Online
+        datetime2 UltimoContatoEm
+    }
+    AvisosQueroContar {
+        int Id PK
+        int IdosoId FK
+        int EnvioId FK "opcional, unico"
+        datetime2 CriadoEm
+        datetime2 VistoEm
+    }
 ```
 
 ## Endpoints
 
-Todas as rotas ficam em `/api/v1` e, exceto login, cadastro e categorias, exigem o token Bearer. Os erros seguem o padrão **ProblemDetails** (RFC 9457), com a mensagem pronta para o app mostrar no campo `detail`.
+Todas as rotas ficam em `/api/v1` e, exceto login, cadastro, categorias e as rotas do aparelho (porta-retrato), exigem o token Bearer. As rotas do aparelho usam a chave do porta-retrato no cabeçalho `X-Chave-PortaRetrato`. Os erros seguem o padrão **ProblemDetails** (RFC 9457), com a mensagem pronta para o app mostrar no campo `detail`.
 
-| Método | Rota | User story | Respostas |
-|---|---|---|---|
-| POST | `/auth/register` · `/auth/login` | Login | 200 · 400 · 401 |
-| POST | `/membros` | Perfil | 201 · 400 · 409 |
-| GET | `/membros/eu` | Perfil | 200 · 403 |
-| POST | `/familias` | US01 | 201 · 400 |
-| GET | `/familias` · `/familias/{familiaId}` | US01 | 200 · 403 · 404 |
-| POST | `/familias/{familiaId}/convites` | US03 | 201 · 403 |
-| POST | `/convites/{codigo}/aceitar` | US03 | 200 · 400 |
-| POST · GET | `/familias/{familiaId}/idosos` | US02 | 201 · 200 · 400 · 409 |
-| GET · PUT | `/idosos/{idosoId}` | US02 | 200 · 400 · 403 · 404 · 409 |
-| POST | `/idosos/{idosoId}/roteiro-concluido` | US14 | 200 |
-| GET | `/categorias` | US04 | 200 |
-| GET | `/idosos/{idosoId}/perguntas?categoria=` | US04 | 200 · 404 |
-| GET | `/idosos/{idosoId}/pergunta-da-semana` | US05 | 200 · 204 |
-| POST | `/familias/{familiaId}/perguntas` | US06 | 201 · 400 |
-| POST · GET | `/idosos/{idosoId}/envios` | US07 | 201 · 200 · 404 · 409 |
-| POST | `/envios/{envioId}/pagina` (multipart) | US08 · US10 | 201 · 200 · 400 · 409 · 413 |
-| GET | `/familias/{familiaId}/caderno?idosoId=&categoria=&pagina=&tamanho=` | US09 | 200 · 403 |
-| GET | `/paginas/{paginaId}` · `/audio` · `/foto` | US09 | 200 · 403 · 404 |
-| DELETE | `/paginas/{paginaId}` | US11 | 204 · 403 |
-| GET | `/indicadores/conversas-de-verdade?data=` | US12 | 200 |
-| GET | `/health` | Monitoramento | 200 · 503 |
+| Método              | Rota                                                                 | User story    | Respostas                   |
+| ------------------- | -------------------------------------------------------------------- | ------------- | --------------------------- |
+| POST                | `/auth/register` · `/auth/login`                                     | Login         | 200 · 400 · 401             |
+| POST                | `/membros`                                                           | Perfil        | 201 · 400 · 409             |
+| GET                 | `/membros/eu`                                                        | Perfil        | 200 · 403                   |
+| POST                | `/familias`                                                          | US01          | 201 · 400                   |
+| GET                 | `/familias` · `/familias/{familiaId}`                                | US01          | 200 · 403 · 404             |
+| POST                | `/familias/{familiaId}/convites`                                     | US03          | 201 · 403                   |
+| POST                | `/convites/{codigo}/aceitar`                                         | US03          | 200 · 400                   |
+| POST · GET          | `/familias/{familiaId}/idosos`                                       | US02          | 201 · 200 · 400 · 409       |
+| GET · PUT           | `/idosos/{idosoId}`                                                  | US02          | 200 · 400 · 403 · 404 · 409 |
+| POST                | `/idosos/{idosoId}/roteiro-concluido`                                | US14          | 200                         |
+| GET                 | `/categorias`                                                        | US04          | 200                         |
+| GET                 | `/idosos/{idosoId}/perguntas?categoria=`                             | US04          | 200 · 404                   |
+| GET                 | `/idosos/{idosoId}/pergunta-da-semana`                               | US05          | 200 · 204                   |
+| POST                | `/familias/{familiaId}/perguntas`                                    | US06          | 201 · 400                   |
+| POST · GET          | `/idosos/{idosoId}/envios`                                           | US07          | 201 · 200 · 404 · 409       |
+| POST                | `/envios/{envioId}/pagina` (multipart)                               | US08 · US10   | 201 · 200 · 400 · 409 · 413 |
+| GET                 | `/familias/{familiaId}/caderno?idosoId=&categoria=&pagina=&tamanho=` | US09          | 200 · 403                   |
+| GET                 | `/paginas/{paginaId}` · `/audio` · `/foto`                           | US09          | 200 · 403 · 404             |
+| DELETE              | `/paginas/{paginaId}`                                                | US11          | 204 · 403                   |
+| GET                 | `/indicadores/conversas-de-verdade?data=`                            | US12          | 200                         |
+| POST · GET · DELETE | `/idosos/{idosoId}/porta-retrato`                                    | US15          | 201 · 200 · 204 · 403 · 404 |
+| GET                 | `/porta-retrato/estado` (chave do aparelho)                          | US15          | 200 · 401                   |
+| POST                | `/porta-retrato/quero-contar` (chave do aparelho)                    | US15          | 201 · 200 · 400 · 401       |
+| PUT                 | `/porta-retrato/conexao` (chave do aparelho)                         | US15          | 204 · 401                   |
+| GET                 | `/familias/{familiaId}/avisos?somenteNaoVistos=`                     | US15          | 200 · 403                   |
+| POST                | `/avisos/{avisoId}/visto`                                            | US15          | 200 · 403 · 404             |
+| GET                 | `/health`                                                            | Monitoramento | 200 · 503                   |
 
 ## Regras de negócio
 
-| Regra | Onde fica | Resposta |
-|---|---|---|
-| Nome da família obrigatório, até 60 caracteres | `Familia` | 400 "Dê um nome para a família" |
-| WhatsApp com DDD, salvo como 55 + DDD + número | `Telefone` | 400 "Confira o número do WhatsApp" |
-| O mesmo WhatsApp não se repete na família | `Familia` + índice único | 409 "Esse número já está na família" |
-| Convite com 6 caracteres, válido por 48 horas | `Convite` | 400 "Código inválido ou expirado. Peça um novo." |
+| Regra                                                                                     | Onde fica                               | Resposta                                                 |
+| ----------------------------------------------------------------------------------------- | --------------------------------------- | -------------------------------------------------------- |
+| Nome da família obrigatório, até 60 caracteres                                            | `Familia`                               | 400 "Dê um nome para a família"                          |
+| WhatsApp com DDD, salvo como 55 + DDD + número                                            | `Telefone`                              | 400 "Confira o número do WhatsApp"                       |
+| O mesmo WhatsApp não se repete na família                                                 | `Familia` + índice único                | 409 "Esse número já está na família"                     |
+| Convite com 6 caracteres, válido por 48 horas                                             | `Convite`                               | 400 "Código inválido ou expirado. Peça um novo."         |
 | Pergunta da família com 10 a 200 caracteres, sem pedido de PIX, dinheiro, senha ou código | `PerguntaDaFamilia` + `FiltroAntiGolpe` | 400 "O Me Conta não envia pedidos de dinheiro ou senhas" |
-| Pergunta da semana muda toda segunda e nunca repete uma já enviada | `SugestaoSemanal` + `Semana` | 204 quando o catálogo acabou |
-| Sem WhatsApp cadastrado, não há envio | `EnvioPergunta` | 409 "Cadastre o WhatsApp" |
-| Áudio mp3, m4a, ogg ou opus, até 20 MB; foto até 10 MB | `ArquivoDeAudio` · `ArquivoDeFoto` | 400 · 413 |
-| Uma resposta por pergunta enviada | `EnvioPergunta.Responder` | 409 "Essa pergunta já foi respondida" |
-| Mesma chave de idempotência não duplica a página | `CadernoService` + índice único | 200 com a página existente |
-| Só a família vê o caderno; só quem criou apaga a página | `ControleDeAcesso` · `PaginaCaderno` | 403 |
-| Indicador sem idosos cadastrados não divide por zero | `IndicadorService` | 200 "Ainda não há dados" |
+| Pergunta da semana muda toda segunda e nunca repete uma já enviada                        | `SugestaoSemanal` + `Semana`            | 204 quando o catálogo acabou                             |
+| Sem WhatsApp cadastrado, não há envio                                                     | `EnvioPergunta`                         | 409 "Cadastre o WhatsApp"                                |
+| Áudio mp3, m4a, ogg ou opus, até 20 MB; foto até 10 MB                                    | `ArquivoDeAudio` · `ArquivoDeFoto`      | 400 · 413                                                |
+| Uma resposta por pergunta enviada                                                         | `EnvioPergunta.Responder`               | 409 "Essa pergunta já foi respondida"                    |
+| Mesma chave de idempotência não duplica a página                                          | `CadernoService` + índice único         | 200 com a página existente                               |
+| Só a família vê o caderno; só quem criou apaga a página                                   | `ControleDeAcesso` · `PaginaCaderno`    | 403                                                      |
+| Indicador sem idosos cadastrados não divide por zero                                      | `IndicadorService`                      | 200 "Ainda não há dados"                                 |
 
 ## Como executar
 
@@ -371,8 +397,8 @@ Todas as rotas ficam em `/api/v1` e, exceto login, cadastro e categorias, exigem
 
 ```powershell
 # 1. Clonar
-git clone https://github.com/Nicoli-Kassa/GS_CitizenTech_CSharpSOA_MeConta.git
-cd GS-CitizenTech_CSharpSOA_MeConta
+git clone https://github.com/Nicoli-Kassa/GS_CitizenTech_API_MeConta.git
+cd GS-CitizenTech_API_MeConta
 
 # 2. Compilar e rodar os testes
 dotnet build
@@ -384,12 +410,12 @@ dotnet run --project src/MeConta.Api --launch-profile http
 
 Com a API no ar:
 
-| Endereço | O que é |
-|---|---|
-| http://localhost:5080/swagger | Swagger UI |
-| http://localhost:5080/scalar | Scalar |
-| http://localhost:5080/openapi/v1.json | Documento OpenAPI |
-| http://localhost:5080/health | Saúde da API e do banco |
+| Endereço                              | O que é                 |
+| ------------------------------------- | ----------------------- |
+| http://localhost:5080/swagger         | Swagger UI              |
+| http://localhost:5080/scalar          | Scalar                  |
+| http://localhost:5080/openapi/v1.json | Documento OpenAPI       |
+| http://localhost:5080/health          | Saúde da API e do banco |
 
 Para usar outro SQL Server, troque `ConnectionStrings:DefaultConnection` em `src/MeConta.Api/appsettings.json` ou use a variável de ambiente `ConnectionStrings__DefaultConnection`. Para o app no celular acessar a API pela rede local, use `--launch-profile rede-local` (escuta em `0.0.0.0:5080`).
 
@@ -397,18 +423,20 @@ Para usar outro SQL Server, troque `ConnectionStrings:DefaultConnection` em `src
 
 No ambiente de desenvolvimento, a API cria dados **fictícios** baseados nas personas do projeto:
 
-| Quem | Login | Papel |
-|---|---|---|
-| Bia (19, neta) | `bia@example.com` / `MeConta@2026` | Criou a Família Souza |
-| Cláudia (45, filha) | `claudia@example.com` / `MeConta@2026` | Entrou pelo convite `CASA26` |
-| Vó Lourdes (71) | — | Idosa com WhatsApp fictício, já com uma pergunta enviada |
-| Vô Antônio (78) | — | Idoso sem WhatsApp (degrau "Conectar") |
+| Quem                | Login                                  | Papel                                                    |
+| ------------------- | -------------------------------------- | -------------------------------------------------------- |
+| Bia (19, neta)      | `bia@example.com` / `MeConta@2026`     | Criou a Família Souza                                    |
+| Cláudia (45, filha) | `claudia@example.com` / `MeConta@2026` | Entrou pelo convite `CASA26`                             |
+| Vó Lourdes (71)     | —                                      | Idosa com WhatsApp fictício, já com uma pergunta enviada |
+| Vô Antônio (78)     | —                                      | Idoso sem WhatsApp (degrau "Conectar")                   |
 
 ### Testando pelo Swagger
 
 1. Em `POST /api/v1/auth/login`, envie `{"email": "bia@example.com", "password": "MeConta@2026"}`.
 2. Copie o `accessToken`, clique em **Authorize** e cole o token.
-3. Chame os endpoints. O arquivo [`src/MeConta.Api/MeConta.Api.http`](src/MeConta.Api/MeConta.Api.http) tem um roteiro com 16 chamadas, incluindo os erros esperados.
+3. Chame os endpoints.
+
+O **[roteiro de testes](docs/ROTEIRO_DE_TESTES.md)** traz 88 passos, cobrindo todas as requisições, inclusive as do porta-retrato, com o resultado esperado de cada uma (casos de sucesso e de erro). As mesmas chamadas estão prontas para rodar no Visual Studio em [`src/MeConta.Api/MeConta.Api.http`](src/MeConta.Api/MeConta.Api.http); o envio de áudio é feito pelo Swagger.
 
 ### Recriar a migração (se mudar o modelo)
 
@@ -422,18 +450,22 @@ dotnet ef migrations add NomeDaMudanca -p src/MeConta.Infrastructure -s src/MeCo
 dotnet test
 ```
 
-**103 testes unitários** em xUnit (`tests/MeConta.UnitTests`), sem banco e sem rede, com dublês escritos à mão (`PerguntaFake`, `FiltroFake`). Os nomes seguem o padrão `Metodo_Cenario_ResultadoEsperado`.
+**151 testes unitários** em xUnit (`tests/MeConta.UnitTests`), sem banco e sem rede, com dublês escritos à mão (`PerguntaFake`, `FiltroFake` e, para os serviços, repositórios em memória, `RelogioFake` e `ControleDeAcessoFake`). Os nomes seguem o padrão `Metodo_Cenario_ResultadoEsperado`.
 
-| Arquivo | O que testa |
-|---|---|
-| `FamiliaTests` | Nome da família (vazio, 60 e 61 caracteres), convite de 48 horas (no prazo, vencido exatamente na hora, inexistente), WhatsApp repetido |
-| `TelefoneTests` | Formatos aceitos ("(11) 98765-4321", "+55 11..."), DDD inválido, poucos dígitos |
-| `PerguntaTests` | Polimorfismo de `VisivelPara`, limites de 10 e 200 caracteres, bloqueio anti-golpe |
-| `EnvioPerguntaTests` | Mensagem com apelido, link wa.me com acentos e emoji, sem WhatsApp, pergunta de outra família, resposta duplicada |
-| `ArquivoDeMidiaTests` | Formatos de áudio e foto, limite exato de 20 MB, arquivo vazio |
-| `SemanaTests` | Segunda a domingo, virada do ano, fuso de Brasília |
-| `FiltroAntiGolpeTests` | Pedidos de PIX, senha e código bloqueados; perguntas de memória liberadas |
-| `SugestaoSemanalTests` | Mesma semana dá a mesma pergunta, semana seguinte muda, nunca repete enviada |
+| Arquivo                            | O que testa                                                                                                                                                                   |
+| ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `FamiliaTests`                     | Nome da família (vazio, 60 e 61 caracteres), convite de 48 horas (no prazo, vencido exatamente na hora, inexistente), WhatsApp repetido                                       |
+| `TelefoneTests`                    | Formatos aceitos ("(11) 98765-4321", "+55 11..."), DDD inválido, poucos dígitos                                                                                               |
+| `PerguntaTests`                    | Polimorfismo de `VisivelPara`, limites de 10 e 200 caracteres, bloqueio anti-golpe                                                                                            |
+| `EnvioPerguntaTests`               | Mensagem com apelido, link wa.me com acentos e emoji, sem WhatsApp, pergunta de outra família, resposta duplicada                                                             |
+| `ArquivoDeMidiaTests`              | Formatos de áudio e foto, limite exato de 20 MB, arquivo vazio                                                                                                                |
+| `SemanaTests`                      | Segunda a domingo, virada do ano, fuso de Brasília                                                                                                                            |
+| `FiltroAntiGolpeTests`             | Pedidos de PIX, senha e código bloqueados; perguntas de memória liberadas                                                                                                     |
+| `SugestaoSemanalTests`             | Mesma semana dá a mesma pergunta, semana seguinte muda, nunca repete enviada                                                                                                  |
+| `PortaRetratoTests`                | Código e chave válidos, só o hash guardado, chave antiga recusada depois de parear de novo, conectado só com sinal de vida recente, aviso de outro idoso, aviso visto uma vez |
+| `FilaDoPortaRetratoTests`          | Perguntas que esperam o idoso (sem respondidas nem com aviso), da mais recente para a mais antiga; só o primeiro nome vai para o aparelho                                     |
+| `AparelhoPortaRetratoServiceTests` | Chave ausente ou errada (401), moldura acesa e apagada, "quero contar" sem duplicar, pergunta de outro idoso, botão apertado várias vezes                                     |
+| `PortaRetratoServiceTests`         | Pareamento, novo pareamento invalida a chave antiga, código repetido, idoso de outra família, conectado e desconectado                                                        |
 
 ## Evidências
 
@@ -465,13 +497,25 @@ dotnet test
 
 ![Indicador Conversas de verdade da semana](docs/evidencias/09-indicador.png)
 
+### Porta-retrato Me Conta (IoT)
+
+![Estado do aparelho: pergunta da Bia esperando a Vó Lourdes, moldura acesa](docs/evidencias/13-porta-retrato-estado.png)
+
+![Botão "quero contar" enviado pelo aparelho: aviso criado para a família (201)](docs/evidencias/14-porta-retrato-quero-contar.png)
+
+![Depois do "quero contar", nenhuma pergunta esperando: moldura apagada](docs/evidencias/17-porta-retrato-moldura-apagada.png)
+
+![Chave do porta-retrato inválida recusada (401)](docs/evidencias/15-porta-retrato-chave-invalida.png)
+
+![Avisos "quero contar" que a família ainda não viu](docs/evidencias/16-avisos-quero-contar.png)
+
 ### Banco de dados, migrações e testes
 
 ![Tabelas criadas no SQL Server](docs/evidencias/10-banco.png)
 
 ![Migrações aplicadas](docs/evidencias/11-migracoes.png)
 
-![Testes automatizados aprovados](docs/evidencias/12-testes.png)
+![151 testes automatizados aprovados](docs/evidencias/12-testes.png)
 
 ## Privacidade e segurança
 
@@ -480,19 +524,20 @@ dotnet test
 - **Proteção contra golpes:** o Me Conta não envolve dinheiro e bloqueia perguntas que pedem PIX, senha ou código de verificação.
 - **Arquivos seguros:** o nome do arquivo enviado nunca vira caminho no servidor (Guid gerado pela API) e caminhos fora da pasta de armazenamento são recusados.
 - **Erros sem vazamento:** erros inesperados devolvem uma mensagem genérica; o detalhe fica só no log.
+- **Porta-retrato com chave própria:** o aparelho não usa o login da família. A chave é sorteada com gerador criptográfico, aparece uma vez só e o banco guarda apenas o hash (SHA-256). Ela só dá acesso ao estado do próprio idoso e ao botão "quero contar". O que vai para o aparelho é o mínimo: apelido, primeiro nome de quem perguntou e o texto da pergunta, nada de telefone, nome completo ou áudio.
 - **Somente dados fictícios:** os dados de demonstração usam o domínio reservado `example.com` e um telefone inventado.
 
 ## Tecnologias
 
-| Uso | Tecnologia |
-|---|---|
-| Linguagem e plataforma | C# 14, .NET 10 |
-| Web API | ASP.NET Core (Controllers) |
-| Banco de dados | SQL Server, Entity Framework Core 10 (migrações, Fluent API, LINQ) |
-| Login | ASP.NET Core Identity (API endpoints, token Bearer) |
-| Documentação | Microsoft.AspNetCore.OpenApi, Swagger UI, Scalar |
-| Testes | xUnit |
-| Monitoramento | Health checks (`/health`) |
+| Uso                    | Tecnologia                                                         |
+| ---------------------- | ------------------------------------------------------------------ |
+| Linguagem e plataforma | C# 14, .NET 10                                                     |
+| Web API                | ASP.NET Core (Controllers)                                         |
+| Banco de dados         | SQL Server, Entity Framework Core 10 (migrações, Fluent API, LINQ) |
+| Login                  | ASP.NET Core Identity (API endpoints, token Bearer)                |
+| Documentação           | Microsoft.AspNetCore.OpenApi, Swagger UI, Scalar                   |
+| Testes                 | xUnit                                                              |
+| Monitoramento          | Health checks (`/health`)                                          |
 
 ## Próximos passos
 

@@ -1,6 +1,6 @@
 # Roteiro de testes da Me Conta API
 
-Passo a passo para testar **todas as requisições** da API, com o resultado esperado de cada uma. As marcas 📸 indicam onde tirar as fotos usadas no [README](../README.md) (salve em `docs/evidencias/` com o nome indicado).
+Passo a passo para testar **todas as requisições** da API, inclusive as do porta-retrato Me Conta (IoT), com o resultado esperado de cada uma. As marcas 📸 indicam onde tirar as fotos usadas no [README](../README.md) (salve em `docs/evidencias/` com o nome indicado).
 
 Todos os dados usados aqui são **fictícios**.
 
@@ -12,7 +12,7 @@ Todos os dados usados aqui são **fictícios**.
 
 | Ferramenta | Para quê |
 |---|---|
-| **Visual Studio 2022 (17.12 ou mais novo)** | Rodar o arquivo [`src/MeConta.Api/MeConta.Api.http`](../src/MeConta.Api/MeConta.Api.http): 66 chamadas numeradas, na mesma ordem deste roteiro. O token e os IDs passam sozinhos de uma chamada para a outra. |
+| **Visual Studio 2022 (17.12 ou mais novo)** | Rodar o arquivo [`src/MeConta.Api/MeConta.Api.http`](../src/MeConta.Api/MeConta.Api.http): 88 chamadas numeradas, na mesma ordem deste roteiro (menos as de envio de áudio, 49 a 53). O token, o convite, o envio e o aviso passam sozinhos de uma chamada para a outra. |
 | **Swagger UI** (`http://localhost:5080/swagger`) | Envio de áudio (multipart, passos 49 a 53) e as fotos. |
 | **Terminal** | Subir a API e rodar os testes automatizados. |
 
@@ -23,7 +23,7 @@ cd me-conta-api
 dotnet run --project src/MeConta.Api --launch-profile http
 ```
 
-Na primeira vez, a API cria o banco `MeConta`, aplica as migrações, grava as 5 categorias e as 25 perguntas e cria os dados de demonstração.
+Na primeira vez, a API cria o banco `MeConta`, aplica as migrações (`InitialCreate` e `PortaRetrato`), grava as 5 categorias e as 25 perguntas e cria os dados de demonstração, inclusive o porta-retrato da Vó Lourdes.
 
 ### Começar do zero
 
@@ -43,6 +43,7 @@ dotnet run --project src/MeConta.Api --launch-profile http
 | Marcos (24, morador do bairro) | criado no passo 16 | Ainda não é da família |
 | Vó Lourdes (71) | — | Idosa **id 1**, WhatsApp `5511900000001`, já tem uma pergunta enviada (envio **id 1**) |
 | Vô Antônio (78) | — | Idoso **id 2**, sem WhatsApp |
+| Porta-retrato da Vó Lourdes | chave `demo-porta-retrato-vo-lourdes-2026` | Código `k7m2q9xd` (tópicos MQTT `meconta/k7m2q9xd/...`), pareado pela Bia |
 
 Confira os IDs no passo 10. Se forem diferentes, ajuste as variáveis `@familiaSouza`, `@voLourdes` e `@voAntonio` no topo do arquivo `.http`.
 
@@ -50,6 +51,10 @@ Confira os IDs no passo 10. Se forem diferentes, ajuste as variáveis `@familiaS
 
 1. Faça o login (passo 4) e copie o `accessToken`.
 2. Clique em **Authorize**, cole **só o token** (sem a palavra "Bearer") e confirme.
+
+### Como testar as rotas do aparelho no Swagger
+
+As rotas do grupo **Porta-retrato (aparelho)** não usam login. Em cada uma, preencha o campo `X-Chave-PortaRetrato` com `demo-porta-retrato-vo-lourdes-2026`. As do grupo **Porta-retrato** (pareamento e avisos) usam o token da Bia, como as demais.
 
 ### Como ler os erros
 
@@ -65,7 +70,7 @@ Todo erro volta no formato ProblemDetails. A mensagem para o app fica em `detail
 
 | Foto | O que fazer |
 |---|---|
-| 📸 `01-swagger.png` | Abra `http://localhost:5080/swagger`: título "Me Conta API", botão **Authorize** e os grupos de endpoints. |
+| 📸 `01-swagger.png` | Abra `http://localhost:5080/swagger`: título "Me Conta API", botão **Authorize** e os grupos de endpoints, inclusive "Porta-retrato (aparelho)" e "Porta-retrato". |
 | 📸 `02-scalar.png` | Abra `http://localhost:5080/scalar` com um endpoint aberto (ex.: `POST /api/v1/idosos/{idosoId}/envios`). |
 
 ---
@@ -204,6 +209,39 @@ Se o `id` da página do passo 49 não for 1, ajuste `@paginaId` no arquivo `.htt
 
 O valor do passo 60 considera os 4 idosos da Família Souza depois do bloco F e um áudio de 45 segundos. Com outra duração, `minutosDeAudio` muda.
 
+### Bloco K · Porta-retrato Me Conta, IoT (US15)
+
+O porta-retrato é a caixinha com ESP32 que acende quando chega pergunta e tem o botão "quero contar". No Wokwi, quem chama estas rotas é a ponte Node-RED; aqui elas são chamadas direto. Use o token da **Bia** nas rotas da família e a chave `demo-porta-retrato-vo-lourdes-2026` no campo `X-Chave-PortaRetrato` nas rotas do aparelho.
+
+Neste ponto, a Vó Lourdes tem **duas perguntas esperando**: a do envio 1 (dos dados de demonstração) e a do passo 45, que voltou para `Enviada` no passo 64.
+
+| Nº | Requisição | O que enviar | Esperado | ✓ |
+|---|---|---|---|---|
+| 67 | `GET /api/v1/idosos/1/porta-retrato` | token da Bia | **200** com `codigo` = `k7m2q9xd`, `topicoBase` = `meconta/k7m2q9xd` e `conectado` = `false` (a chave nunca aparece aqui) | ☐ |
+| 68 | `GET /api/v1/idosos/2/porta-retrato` | token da Bia | **404** "Este idoso ainda não tem porta-retrato." | ☐ |
+| 69 📸 `13-porta-retrato-estado.png` | `GET /api/v1/porta-retrato/estado` | chave do aparelho | **200** com `temPerguntaNova` = `true`, `perguntasEsperando` = 2 e a `pergunta` mais recente: a do passo 45 ("Como era o bairro quando você chegou?"), com `quemPerguntou` = `Bia`. **Anote o `envioId`.** | ☐ |
+| 70 | `GET /api/v1/porta-retrato/estado` | campo da chave em branco | **401** "Chave do porta-retrato ausente ou inválida." | ☐ |
+| 71 📸 `15-porta-retrato-chave-invalida.png` | `GET /api/v1/porta-retrato/estado` | chave `chave-que-nao-existe` | **401** (mesma mensagem) | ☐ |
+| 72 📸 `14-porta-retrato-quero-contar.png` | `POST /api/v1/porta-retrato/quero-contar` | chave do aparelho · `{ "envioId": <do passo 69> }` | **201** com `apelido` = `Vó Lourdes`, a `pergunta`, `visto` = `false`. **Anote o `id` do aviso.** | ☐ |
+| 73 | `POST /api/v1/porta-retrato/quero-contar` | o mesmo do passo 72 | **200** com o **mesmo** aviso (apertar de novo não duplica) | ☐ |
+| 74 | `GET /api/v1/porta-retrato/estado` | chave do aparelho | **200** com `temPerguntaNova` = `true`, `perguntasEsperando` = 1: agora a tela mostra a pergunta do envio 1 ("Qual é o segredo do seu prato mais famoso?"), que ainda espera. **Anote o `envioId`.** | ☐ |
+| 75 | `POST /api/v1/porta-retrato/quero-contar` | chave do aparelho · `{ "envioId": <do passo 74> }` | **201** | ☐ |
+| 76 📸 `17-porta-retrato-moldura-apagada.png` | `GET /api/v1/porta-retrato/estado` | chave do aparelho | **200** com `temPerguntaNova` = `false`, `perguntasEsperando` = 0 e `pergunta` = `null`: a moldura apaga | ☐ |
+| 77 | `POST /api/v1/porta-retrato/quero-contar` | chave do aparelho · `{ "envioId": 999 }` | **400** "Essa pergunta não é deste porta-retrato" | ☐ |
+| 78 | `POST /api/v1/porta-retrato/quero-contar` | chave do aparelho · `{}` | **201** com `envioId` = `null` e `pergunta` = `null` ("quero contar uma coisa") | ☐ |
+| 79 | `POST /api/v1/porta-retrato/quero-contar` | `{}` de novo, em menos de 2 minutos | **200** com o **mesmo** aviso do passo 78 | ☐ |
+| 80 | `PUT /api/v1/porta-retrato/conexao` | chave do aparelho · `{ "online": true }` | **204** sem corpo | ☐ |
+| 81 | `GET /api/v1/idosos/1/porta-retrato` | token da Bia | **200** com `conectado` = `true` e `ultimoContatoEm` preenchido. Repetindo depois de 90 segundos sem o passo 80, volta a `false`. | ☐ |
+| 82 📸 `16-avisos-quero-contar.png` | `GET /api/v1/familias/1/avisos?somenteNaoVistos=true` | token da Bia | **200** com 3 avisos (passos 78, 75 e 72), do mais recente para o mais antigo | ☐ |
+| 83 | `POST /api/v1/avisos/{avisoId}/visto` | `avisoId` do passo 72 | **200** com `visto` = `true` e `vistoEm` preenchido | ☐ |
+| 84 | `GET /api/v1/familias/1/avisos?somenteNaoVistos=true` | token da Bia | **200** com 2 avisos (o do passo 72 saiu da lista) | ☐ |
+| 85 | `GET /api/v1/familias/1/avisos?somenteNaoVistos=false` | token da Bia | **200** com os 3 avisos, o do passo 72 como visto | ☐ |
+| 86 | `POST /api/v1/avisos/999/visto` | token da Bia | **404** "Aviso não encontrado." | ☐ |
+| 87 | `POST /api/v1/idosos/1/envios` | `{ "perguntaId": 6 }` | **201** (a família manda uma pergunta nova) | ☐ |
+| 88 | `GET /api/v1/porta-retrato/estado` | chave do aparelho | **200** com `temPerguntaNova` = `true` e a pergunta do passo 87: a moldura acende de novo | ☐ |
+
+**Não use** `POST /api/v1/idosos/{idosoId}/porta-retrato` (parear de novo) nem `DELETE /api/v1/idosos/{idosoId}/porta-retrato` durante o roteiro. O primeiro gera uma chave nova, e a chave de demonstração para de funcionar; o segundo remove o porta-retrato. Para voltar ao porta-retrato de demonstração, comece do zero (seção 1).
+
 ---
 
 ## 4. Banco de dados e migrações
@@ -211,9 +249,9 @@ O valor do passo 60 considera os 4 idosos da Família Souza depois do bloco F e 
 | Foto | O que fazer | ✓ |
 |---|---|---|
 | 📸 `10-banco.png` | No Visual Studio: **Exibir → Pesquisador de Objetos do SQL Server** → `(localdb)\MSSQLLocalDB` → **Bancos de Dados** → `MeConta` → **Tabelas**. Clique com o botão direito em `dbo.Perguntas` → **Exibir Dados** (aparecem as 25 do catálogo e a da família, com a coluna `Origem`). | ☐ |
-| 📸 `11-migracoes.png` | Clique com o botão direito em `dbo.__EFMigrationsHistory` → **Exibir Dados** (linha `..._InitialCreate`) e mostre a pasta `src/MeConta.Infrastructure/Persistencia/Migrations` no Gerenciador de Soluções. | ☐ |
+| 📸 `11-migracoes.png` | Clique com o botão direito em `dbo.__EFMigrationsHistory` → **Exibir Dados** (linhas `..._InitialCreate` e `..._PortaRetrato`) e mostre a pasta `src/MeConta.Infrastructure/Persistencia/Migrations` no Gerenciador de Soluções. | ☐ |
 
-Confira também que existem as tabelas `Familias`, `Participacoes`, `Convites`, `Idosos`, `Categorias`, `Perguntas`, `Envios`, `Paginas`, `Membros` e `AspNetUsers`, e que os áudios enviados foram para `src/MeConta.Api/storage/audios/`.
+Confira também que existem as tabelas `Familias`, `Participacoes`, `Convites`, `Idosos`, `Categorias`, `Perguntas`, `Envios`, `Paginas`, `PortaRetratos`, `AvisosQueroContar`, `Membros` e `AspNetUsers`, e que os áudios enviados foram para `src/MeConta.Api/storage/audios/`.
 
 ---
 
@@ -221,7 +259,7 @@ Confira também que existem as tabelas `Familias`, `Participacoes`, `Convites`, 
 
 | Foto | O que fazer | Esperado | ✓ |
 |---|---|---|---|
-| 📸 `12-testes.png` | Pare a API (`Ctrl+C`) e rode `dotnet test` na pasta do projeto | `falhou: 0`, todos aprovados | ☐ |
+| 📸 `12-testes.png` | Pare a API (`Ctrl+C`) e rode `dotnet test` na pasta do projeto | `total: 151; falhou: 0` e nenhum aviso amarelo no build | ☐ |
 
 ---
 
@@ -242,5 +280,6 @@ Confira também que existem as tabelas `Familias`, `Participacoes`, `Convites`, 
 | US11 · Apagar uma página | 63 a 66 |
 | US12 · Indicador "Conversas de verdade" | 60, 61 |
 | US14 · Roteiro "Ensine sua avó" | 35 |
-| Login, perfil e acesso | 3 a 8, 16 a 21 |
+| US15 · Porta-retrato (aviso de pergunta nova e botão "quero contar") | 67 a 88 |
+| Login, perfil e acesso | 3 a 8, 16 a 21, 70, 71 |
 | Monitoramento | 1 |

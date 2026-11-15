@@ -22,6 +22,7 @@ public sealed class TratadorDeExcecoes(ILogger<TratadorDeExcecoes> logger) : IEx
             ArquivoMuitoGrandeException => (StatusCodes.Status413PayloadTooLarge, "Arquivo muito grande"),
             ConflitoException => (StatusCodes.Status409Conflict, "Conflito"),
             RegraDeNegocioException => (StatusCodes.Status400BadRequest, "Regra de negócio"),
+            CredencialInvalidaException => (StatusCodes.Status401Unauthorized, "Não autorizado"),
             AcessoNegadoException => (StatusCodes.Status403Forbidden, "Acesso negado"),
             RecursoNaoEncontradoException => (StatusCodes.Status404NotFound, "Não encontrado"),
             _ => (StatusCodes.Status500InternalServerError, "Erro inesperado"),

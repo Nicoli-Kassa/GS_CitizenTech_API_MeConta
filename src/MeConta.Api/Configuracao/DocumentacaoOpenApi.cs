@@ -23,7 +23,10 @@ internal sealed class DocumentacaoOpenApi : IOpenApiDocumentTransformer
             Description =
                 "Backend do Me Conta: o app que troca o 👍 da família por uma pergunta que só os avós sabem responder. " +
                 "Para testar: faça login em POST /api/v1/auth/login (bia@example.com / MeConta@2026), " +
-                "copie o accessToken e cole em Authorize. Todos os dados de demonstração são fictícios.",
+                "copie o accessToken e cole em Authorize. " +
+                "As rotas do grupo \"Porta-retrato (aparelho)\" não usam login: o aparelho manda a chave no cabeçalho " +
+                "X-Chave-PortaRetrato (demonstração: demo-porta-retrato-vo-lourdes-2026). " +
+                "Todos os dados de demonstração são fictícios.",
         };
 
         document.Components ??= new OpenApiComponents();

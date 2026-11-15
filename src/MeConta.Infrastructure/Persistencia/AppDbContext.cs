@@ -31,6 +31,10 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
 
     public DbSet<PaginaCaderno> Paginas => Set<PaginaCaderno>();
 
+    public DbSet<PortaRetrato> PortaRetratos => Set<PortaRetrato>();
+
+    public DbSet<AvisoQueroContar> Avisos => Set<AvisoQueroContar>();
+
     public Task<int> SalvarAlteracoesAsync(CancellationToken cancellationToken = default) =>
         SaveChangesAsync(cancellationToken);
 

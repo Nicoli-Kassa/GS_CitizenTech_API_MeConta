@@ -5,7 +5,7 @@ Este arquivo registra como usei inteligência artificial como ferramenta de apoi
 Defini o escopo, a arquitetura, as tecnologias e as regras de negócio a partir do backlog do projeto. Usei a IA como apoio para tirar dúvidas, acelerar a escrita de código e documentação e resolver problemas. Todo o conteúdo gerado com apoio da IA foi revisado, ajustado, compilado e testado por mim.
 
 **Ferramenta:** Claude (Anthropic)
-**Período:** 10 a 14/11/2026
+**Período:** 10 a 15/11/2026
 
 ---
 
@@ -18,6 +18,8 @@ Defini o escopo, a arquitetura, as tecnologias e as regras de negócio a partir 
 | 3. Banco, serviços e API | 12/11         | Gerei a migração, subi a API, testei os endpoints e conferi o banco          | Geração da primeira versão das camadas Application, Infrastructure e Api |
 | 4. Documentação          | 12/11 e 14/11 | Revisei os textos, preenchi os dados, segui o roteiro e tirei os prints      | Estrutura do README e do roteiro de testes                               |
 | 5. Problemas             | 14/11         | Investiguei os erros e apliquei as correções                                 | Explicação das causas                                                    |
+| 6. Porta-retrato (IoT)   | 15/11         | Defini o papel do aparelho, gerei a migração, testei as rotas e tirei os prints | Primeira versão das entidades, serviços, rotas, testes e roteiro         |
+| 7. Dependência vulnerável | 15/11        | Atualizei o pacote e confirmei o build sem avisos                            | Explicação do aviso e da versão corrigida                                |
 
 ---
 
@@ -101,6 +103,40 @@ Defini o escopo, a arquitetura, as tecnologias e as regras de negócio a partir 
 | Ver o banco e as migrações sem o Visual Studio      | Indicou a extensão MSSQL do VS Code e os comandos `dotnet ef migrations list` e `script` | Instalei a extensão e conectei ao banco                                        |
 | Erro de conexão no VS Code ("server was not found") | Apontou que o nome do servidor estava no campo errado                                    | Corrigi para `(localdb)\MSSQLLocalDB` e conectei ao banco `MeConta`            |
 | Revisão final da entrega                            | Sugeriu uma lista de checagem dos critérios de C# e SOA                                  | Usei a lista para revisar a entrega antes de enviar                            |
+
+---
+
+## 6. Porta-retrato Me Conta (IoT) · 15/11/2026
+
+**O que eu precisava:** ligar à API o porta-retrato da solução (US15), uma caixinha com ESP32 que acende quando chega pergunta e tem um botão "quero contar", conversando com a API por meio de uma ponte Node-RED.
+
+**Como usei a IA:** expliquei como o aparelho funciona e pedi apoio para gerar a primeira versão das entidades, dos serviços, das rotas, dos testes e da atualização do roteiro de testes.
+
+**Minhas decisões:**
+
+- O aparelho não usa o login da família: ele se identifica por uma chave própria, enviada no cabeçalho `X-Chave-PortaRetrato`, e a API guarda só o hash dela.
+- A chave só dá acesso ao estado do próprio idoso e ao botão "quero contar". Para o aparelho vai só o apelido, o primeiro nome de quem perguntou e o texto da pergunta.
+- O aviso "quero contar" fica ligado ao idoso, e a família vê os avisos no app.
+
+**Resultado:**
+
+- Entidades `PortaRetrato` e `AvisoQueroContar`, a regra `FilaDoPortaRetrato` e os serviços `PortaRetratoService`, `AparelhoPortaRetratoService` e `AvisoService`.
+- Rotas `/api/v1/porta-retrato/estado`, `/quero-contar` e `/conexao` para o aparelho, e as rotas de pareamento e de avisos para a família.
+- Testes unitários dos serviços com repositórios em memória: o total passou de 103 para 151.
+- Bloco K do roteiro de testes (passos 67 a 88) e o arquivo `.http` com todas as chamadas.
+
+**Meu trabalho de validação:**
+
+- Gerei a migração com `dotnet ef migrations add PortaRetrato` e rodei `dotnet build` e `dotnet test`: 151 testes aprovados.
+- Testei as rotas pelo Swagger: moldura acesa, "quero contar", moldura apagada, chave inválida (401) e avisos para a família, e tirei os prints de `docs/evidencias/`.
+
+---
+
+## 7. Dependência vulnerável · 15/11/2026
+
+| Problema | Como a IA ajudou | O que eu fiz |
+| --- | --- | --- |
+| O build mostrava os avisos NU1902 e NU1903 no pacote `System.Security.Cryptography.Pkcs` 9.0.11, usado indiretamente pelo projeto | Explicou que a versão tinha falhas de negação de serviço publicadas e qual versão já trazia a correção | Adicionei `System.Security.Cryptography.Pkcs` 10.0.13 na Infrastructure e confirmei o build sem avisos |
 
 ---
 

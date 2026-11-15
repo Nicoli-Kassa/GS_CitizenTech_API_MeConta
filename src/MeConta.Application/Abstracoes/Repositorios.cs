@@ -75,6 +75,36 @@ public interface IPaginaRepository : IRepository<PaginaCaderno, int>
         CancellationToken cancellationToken = default);
 }
 
+public interface IPortaRetratoRepository : IRepository<PortaRetrato, int>
+{
+    /// <summary>Aparelho dono da chave (busca pelo hash), com o idoso carregado.</summary>
+    Task<PortaRetrato?> ObterPorChaveHashAsync(string chaveHash, CancellationToken cancellationToken = default);
+
+    Task<PortaRetrato?> ObterDoIdosoAsync(int idosoId, CancellationToken cancellationToken = default);
+
+    Task<bool> CodigoEmUsoAsync(string codigo, CancellationToken cancellationToken = default);
+}
+
+public interface IAvisoRepository : IRepository<AvisoQueroContar, int>
+{
+    /// <summary>Ids dos envios deste idoso que já receberam "quero contar".</summary>
+    Task<IReadOnlySet<int>> ObterIdsEnviosComAvisoAsync(int idosoId, CancellationToken cancellationToken = default);
+
+    Task<AvisoQueroContar?> ObterDoEnvioAsync(int envioId, CancellationToken cancellationToken = default);
+
+    /// <summary>Aviso mais recente sem pergunta ligada, criado a partir de <paramref name="desdeUtc"/>.</summary>
+    Task<AvisoQueroContar?> ObterUltimoSemEnvioAsync(
+        int idosoId,
+        DateTime desdeUtc,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>Avisos dos idosos da família, do mais recente para o mais antigo, já com apelido e pergunta.</summary>
+    Task<IReadOnlyList<AvisoResponse>> ListarDaFamiliaAsync(
+        int familiaId,
+        bool somenteNaoVistos,
+        CancellationToken cancellationToken = default);
+}
+
 /// <summary>
 /// Consulta agregada do indicador "Conversas de verdade" (US12).
 /// </summary>

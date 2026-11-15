@@ -22,6 +22,42 @@ namespace MeConta.Infrastructure.Persistencia.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("MeConta.Domain.Entidades.AvisoQueroContar", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CriadoEm")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("EnvioId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IdosoId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("VistoEm")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("VistoPorMembroId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EnvioId")
+                        .IsUnique()
+                        .HasFilter("[EnvioId] IS NOT NULL");
+
+                    b.HasIndex("VistoPorMembroId");
+
+                    b.HasIndex("IdosoId", "CriadoEm");
+
+                    b.ToTable("AvisosQueroContar", (string)null);
+                });
+
             modelBuilder.Entity("MeConta.Domain.Entidades.Categoria", b =>
                 {
                     b.Property<int>("Id")
@@ -372,6 +408,57 @@ namespace MeConta.Infrastructure.Persistencia.Migrations
                     b.HasDiscriminator<string>("Origem").HasValue("Pergunta");
 
                     b.UseTphMappingStrategy();
+                });
+
+            modelBuilder.Entity("MeConta.Domain.Entidades.PortaRetrato", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ChaveHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nchar(64)")
+                        .IsFixedLength();
+
+                    b.Property<string>("Codigo")
+                        .IsRequired()
+                        .HasMaxLength(8)
+                        .HasColumnType("nchar(8)")
+                        .IsFixedLength();
+
+                    b.Property<DateTime>("CriadoEm")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("CriadoPorMembroId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IdosoId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Online")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("UltimoContatoEm")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ChaveHash")
+                        .IsUnique();
+
+                    b.HasIndex("Codigo")
+                        .IsUnique();
+
+                    b.HasIndex("CriadoPorMembroId");
+
+                    b.HasIndex("IdosoId")
+                        .IsUnique();
+
+                    b.ToTable("PortaRetratos", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -751,6 +838,25 @@ namespace MeConta.Infrastructure.Persistencia.Migrations
                     b.HasDiscriminator().HasValue("Familia");
                 });
 
+            modelBuilder.Entity("MeConta.Domain.Entidades.AvisoQueroContar", b =>
+                {
+                    b.HasOne("MeConta.Domain.Entidades.EnvioPergunta", null)
+                        .WithMany()
+                        .HasForeignKey("EnvioId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("MeConta.Domain.Entidades.Idoso", null)
+                        .WithMany()
+                        .HasForeignKey("IdosoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MeConta.Domain.Entidades.Membro", null)
+                        .WithMany()
+                        .HasForeignKey("VistoPorMembroId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
             modelBuilder.Entity("MeConta.Domain.Entidades.Convite", b =>
                 {
                     b.HasOne("MeConta.Domain.Entidades.Membro", null)
@@ -856,6 +962,23 @@ namespace MeConta.Infrastructure.Persistencia.Migrations
                         .IsRequired();
 
                     b.Navigation("Categoria");
+                });
+
+            modelBuilder.Entity("MeConta.Domain.Entidades.PortaRetrato", b =>
+                {
+                    b.HasOne("MeConta.Domain.Entidades.Membro", null)
+                        .WithMany()
+                        .HasForeignKey("CriadoPorMembroId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("MeConta.Domain.Entidades.Idoso", "Idoso")
+                        .WithMany()
+                        .HasForeignKey("IdosoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Idoso");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

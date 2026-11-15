@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\MeConta.Domain\MeConta.Domain.csproj" />
+    <ProjectReference Include="..\..\src\MeConta.Application\MeConta.Application.csproj" />
   </ItemGroup>
 
 </Project>

@@ -26,6 +26,9 @@ public static class RegistroDaAplicacao
         services.AddScoped<IEnvioService, EnvioService>();
         services.AddScoped<ICadernoService, CadernoService>();
         services.AddScoped<IIndicadorService, IndicadorService>();
+        services.AddScoped<IPortaRetratoService, PortaRetratoService>();
+        services.AddScoped<IAparelhoPortaRetratoService, AparelhoPortaRetratoService>();
+        services.AddScoped<IAvisoService, AvisoService>();
 
         return services;
     }

@@ -204,6 +204,71 @@ public sealed class PaginaRepository(AppDbContext db) : RepositorioEf<PaginaCade
                 .ThenInclude(envio => envio!.Idoso);
 }
 
+public sealed class PortaRetratoRepository(AppDbContext db) : RepositorioEf<PortaRetrato>(db), IPortaRetratoRepository
+{
+    public Task<PortaRetrato?> ObterPorChaveHashAsync(string chaveHash, CancellationToken cancellationToken = default) =>
+        Db.PortaRetratos
+            .Include(portaRetrato => portaRetrato.Idoso)
+            .FirstOrDefaultAsync(portaRetrato => portaRetrato.ChaveHash == chaveHash, cancellationToken);
+
+    public Task<PortaRetrato?> ObterDoIdosoAsync(int idosoId, CancellationToken cancellationToken = default) =>
+        Db.PortaRetratos.FirstOrDefaultAsync(portaRetrato => portaRetrato.IdosoId == idosoId, cancellationToken);
+
+    public Task<bool> CodigoEmUsoAsync(string codigo, CancellationToken cancellationToken = default) =>
+        Db.PortaRetratos.AnyAsync(portaRetrato => portaRetrato.Codigo == codigo, cancellationToken);
+}
+
+public sealed class AvisoRepository(AppDbContext db) : RepositorioEf<AvisoQueroContar>(db), IAvisoRepository
+{
+    public async Task<IReadOnlySet<int>> ObterIdsEnviosComAvisoAsync(int idosoId, CancellationToken cancellationToken = default)
+    {
+        List<int> ids = await Db.Avisos
+            .Where(aviso => aviso.IdosoId == idosoId && aviso.EnvioId != null)
+            .Select(aviso => aviso.EnvioId!.Value)
+            .ToListAsync(cancellationToken);
+
+        return ids.ToHashSet();
+    }
+
+    public Task<AvisoQueroContar?> ObterDoEnvioAsync(int envioId, CancellationToken cancellationToken = default) =>
+        Db.Avisos.FirstOrDefaultAsync(aviso => aviso.EnvioId == envioId, cancellationToken);
+
+    public Task<AvisoQueroContar?> ObterUltimoSemEnvioAsync(
+        int idosoId,
+        DateTime desdeUtc,
+        CancellationToken cancellationToken = default) =>
+        Db.Avisos
+            .Where(aviso => aviso.IdosoId == idosoId && aviso.EnvioId == null && aviso.CriadoEm >= desdeUtc)
+            .OrderByDescending(aviso => aviso.CriadoEm)
+            .FirstOrDefaultAsync(cancellationToken);
+
+    public async Task<IReadOnlyList<AvisoResponse>> ListarDaFamiliaAsync(
+        int familiaId,
+        bool somenteNaoVistos,
+        CancellationToken cancellationToken = default)
+    {
+        // LINQ em sintaxe de consulta: aviso + idoso, com a pergunta (left join, porque ela é opcional).
+        IQueryable<AvisoResponse> consulta =
+            from aviso in Db.Avisos.AsNoTracking()
+            join idoso in Db.Idosos on aviso.IdosoId equals idoso.Id
+            join envio in Db.Envios on aviso.EnvioId equals (int?)envio.Id into enviosDoAviso
+            from envio in enviosDoAviso.DefaultIfEmpty()
+            where idoso.FamiliaId == familiaId && (!somenteNaoVistos || aviso.VistoEm == null)
+            orderby aviso.CriadoEm descending, aviso.Id descending
+            select new AvisoResponse(
+                aviso.Id,
+                aviso.IdosoId,
+                idoso.Apelido,
+                aviso.EnvioId,
+                envio == null ? null : envio.TextoPergunta,
+                aviso.CriadoEm,
+                aviso.VistoEm != null,
+                aviso.VistoEm);
+
+        return await consulta.ToListAsync(cancellationToken);
+    }
+}
+
 /// <summary>
 /// Consultas agregadas do indicador "Conversas de verdade" (US12).
 /// </summary>

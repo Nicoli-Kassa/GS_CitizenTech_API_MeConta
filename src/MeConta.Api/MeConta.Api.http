@@ -1,10 +1,35 @@
-# Roteiro de chamadas da Me Conta API (dados de demonstração, todos fictícios).
-# No Visual Studio, clique em "Send Request" acima de cada chamada, na ordem.
+# Chamadas da Me Conta API, na mesma ordem do roteiro docs/ROTEIRO_DE_TESTES.md.
+# No Visual Studio 2022 (17.12 ou mais novo), clique em "Send Request" acima de cada chamada, na ordem.
+# O token, o código do convite, o envio e o aviso passam sozinhos de uma chamada para a outra
+# ({{nome.response.body.$.campo}}). Os passos 49 a 53 (envio de áudio) são feitos pelo Swagger.
+# Todos os dados são fictícios.
 
 @api = http://localhost:5080
-@token = cole-aqui-o-accessToken-do-login
+@familiaSouza = 1
+@voLourdes = 1
+@voAntonio = 2
+@paginaId = 1
+@chavePortaRetrato = demo-porta-retrato-vo-lourdes-2026
 
-### 1. Login da Bia (neta) — copie o accessToken da resposta para a variável @token acima
+###############################################################################
+# Bloco A · Rotas públicas
+###############################################################################
+
+### 1. Saúde da API e do banco (200 Healthy)
+GET {{api}}/health
+
+### 2. Categorias, sem token (200 com 5 categorias)
+GET {{api}}/api/v1/categorias
+
+### 3. Famílias sem token (401)
+GET {{api}}/api/v1/familias
+
+###############################################################################
+# Bloco B · Login
+###############################################################################
+
+### 4. Login da Bia (200 com accessToken)
+# @name loginBia
 POST {{api}}/api/v1/auth/login
 Content-Type: application/json
 
@@ -13,60 +38,262 @@ Content-Type: application/json
   "password": "MeConta@2026"
 }
 
-### 2. Perfil de quem está logado
+### 5. Renovar o token (200 com token novo)
+POST {{api}}/api/v1/auth/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "{{loginBia.response.body.$.refreshToken}}"
+}
+
+### 6. Login com senha errada (401)
+POST {{api}}/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "bia@example.com",
+  "password": "SenhaErrada@1"
+}
+
+###############################################################################
+# Bloco C · Perfil
+###############################################################################
+
+### 7. Perfil da Bia (200)
 GET {{api}}/api/v1/membros/eu
-Authorization: Bearer {{token}}
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
 
-### 3. Famílias da Bia
+### 8. Criar o perfil de novo (409 "O seu perfil já foi criado.")
+POST {{api}}/api/v1/membros
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
+Content-Type: application/json
+
+{
+  "nome": "Bia"
+}
+
+###############################################################################
+# Bloco D · Famílias (US01) e convite (US03)
+###############################################################################
+
+### 9. Famílias da Bia (200, Família Souza com 2 idosos)
 GET {{api}}/api/v1/familias
-Authorization: Bearer {{token}}
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
 
-### 4. Detalhe da Família Souza (membros e idosos)
-GET {{api}}/api/v1/familias/1
-Authorization: Bearer {{token}}
+### 10. Detalhe da Família Souza (200; confira os IDs aqui)
+GET {{api}}/api/v1/familias/{{familiaSouza}}
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
 
-### 5. Categorias (não exige login)
-GET {{api}}/api/v1/categorias
-
-### 6. Perguntas de receitas para a Vó Lourdes (idoso 1)
-GET {{api}}/api/v1/idosos/1/perguntas?categoria=receitas
-Authorization: Bearer {{token}}
-
-### 7. Pergunta da semana da Vó Lourdes
-GET {{api}}/api/v1/idosos/1/pergunta-da-semana
-Authorization: Bearer {{token}}
-
-### 8. Enviar uma pergunta pelo WhatsApp (devolve o link wa.me)
-POST {{api}}/api/v1/idosos/1/envios
-Authorization: Bearer {{token}}
+### 11. Criar outra família (201)
+POST {{api}}/api/v1/familias
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
 Content-Type: application/json
 
 {
-  "perguntaId": 16
+  "nome": "Família Oliveira"
 }
 
-### 9. Erro esperado: enviar para o Vô Antônio, que não tem WhatsApp (409)
-POST {{api}}/api/v1/idosos/2/envios
-Authorization: Bearer {{token}}
+### 12. Família com nome em branco (400 "Dê um nome para a família")
+POST {{api}}/api/v1/familias
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
 Content-Type: application/json
 
 {
-  "perguntaId": 16
+  "nome": "   "
 }
 
-### 10. Erro esperado: pergunta com pedido de PIX (400)
-POST {{api}}/api/v1/familias/1/perguntas
-Authorization: Bearer {{token}}
+### 13. Família com 61 caracteres (400 "Use até 60 caracteres")
+POST {{api}}/api/v1/familias
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
 Content-Type: application/json
 
 {
-  "texto": "Vó, me manda um PIX de 50 reais?",
-  "categoriaId": 5
+  "nome": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
 }
 
-### 11. Pergunta própria da família (201)
-POST {{api}}/api/v1/familias/1/perguntas
-Authorization: Bearer {{token}}
+### 14. Família que não existe (404 "Família não encontrada.")
+GET {{api}}/api/v1/familias/999
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
+
+### 15. Gerar convite (201 com o código, válido por 48 horas)
+# @name convite
+POST {{api}}/api/v1/familias/{{familiaSouza}}/convites
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
+
+###############################################################################
+# Bloco E · Um parente de fora entra na família
+###############################################################################
+
+### 16. Cadastrar o Marcos (200; só funciona uma vez por banco)
+POST {{api}}/api/v1/auth/register
+Content-Type: application/json
+
+{
+  "email": "marcos@example.com",
+  "password": "MeConta@2026"
+}
+
+### 17. Cadastro com senha fraca (400)
+POST {{api}}/api/v1/auth/register
+Content-Type: application/json
+
+{
+  "email": "fraca@example.com",
+  "password": "123"
+}
+
+### 18. Login do Marcos (200)
+# @name loginMarcos
+POST {{api}}/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "marcos@example.com",
+  "password": "MeConta@2026"
+}
+
+### 19. Perfil do Marcos ainda não criado (403)
+GET {{api}}/api/v1/membros/eu
+Authorization: Bearer {{loginMarcos.response.body.$.accessToken}}
+
+### 20. Criar o perfil do Marcos (201)
+POST {{api}}/api/v1/membros
+Authorization: Bearer {{loginMarcos.response.body.$.accessToken}}
+Content-Type: application/json
+
+{
+  "nome": "Marcos"
+}
+
+### 21. Marcos tenta ver a Família Souza (403)
+GET {{api}}/api/v1/familias/{{familiaSouza}}
+Authorization: Bearer {{loginMarcos.response.body.$.accessToken}}
+
+### 22. Marcos tenta ver o caderno (403)
+GET {{api}}/api/v1/familias/{{familiaSouza}}/caderno
+Authorization: Bearer {{loginMarcos.response.body.$.accessToken}}
+
+### 23. Convite que não existe (400 "Código inválido ou expirado. Peça um novo.")
+POST {{api}}/api/v1/convites/ZZZZZZ/aceitar
+Authorization: Bearer {{loginMarcos.response.body.$.accessToken}}
+
+### 24. Aceitar o convite do passo 15 (200, Marcos entra como Membro)
+POST {{api}}/api/v1/convites/{{convite.response.body.$.codigo}}/aceitar
+Authorization: Bearer {{loginMarcos.response.body.$.accessToken}}
+
+### 25. Agora o Marcos vê a família (200)
+GET {{api}}/api/v1/familias/{{familiaSouza}}
+Authorization: Bearer {{loginMarcos.response.body.$.accessToken}}
+
+###############################################################################
+# Bloco F · Idosos (US02) e "Ensine sua avó" (US14)
+###############################################################################
+
+### 26. Cadastrar a Vó Maria (201, whatsApp = 5511900000002)
+POST {{api}}/api/v1/familias/{{familiaSouza}}/idosos
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
+Content-Type: application/json
+
+{
+  "nome": "Maria Souza",
+  "apelido": "Vó Maria",
+  "whatsApp": "(11) 90000-0002"
+}
+
+### 27. Telefone sem DDD (400 "Confira o número do WhatsApp")
+POST {{api}}/api/v1/familias/{{familiaSouza}}/idosos
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
+Content-Type: application/json
+
+{
+  "nome": "Maria Souza",
+  "apelido": "Vó Maria",
+  "whatsApp": "98765-4321"
+}
+
+### 28. Número da Vó Lourdes repetido (409 "Esse número já está na família")
+POST {{api}}/api/v1/familias/{{familiaSouza}}/idosos
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
+Content-Type: application/json
+
+{
+  "nome": "Lourdes Souza",
+  "apelido": "Vó Lu",
+  "whatsApp": "(11) 90000-0001"
+}
+
+### 29. Apelido vazio (400)
+POST {{api}}/api/v1/familias/{{familiaSouza}}/idosos
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
+Content-Type: application/json
+
+{
+  "nome": "Maria Souza",
+  "apelido": "",
+  "whatsApp": "(11) 90000-0003"
+}
+
+### 30. Idoso sem WhatsApp (201, whatsApp = null)
+POST {{api}}/api/v1/familias/{{familiaSouza}}/idosos
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
+Content-Type: application/json
+
+{
+  "nome": "Benedito Souza",
+  "apelido": "Vô Benedito",
+  "whatsApp": null
+}
+
+### 31. Idosos da família (200 com 4 idosos)
+GET {{api}}/api/v1/familias/{{familiaSouza}}/idosos
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
+
+### 32. Dados da Vó Lourdes (200)
+GET {{api}}/api/v1/idosos/{{voLourdes}}
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
+
+### 33. Atualizar o nome da Vó Lourdes (200; o próprio número não conta como repetido)
+PUT {{api}}/api/v1/idosos/{{voLourdes}}
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
+Content-Type: application/json
+
+{
+  "nome": "Lourdes Aparecida Souza",
+  "apelido": "Vó Lourdes",
+  "whatsApp": "(11) 90000-0001"
+}
+
+### 34. Idoso que não existe (404 "Idoso não encontrado.")
+GET {{api}}/api/v1/idosos/999
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
+
+### 35. Vô Antônio concluiu o roteiro (200, respondeSozinho = true)
+POST {{api}}/api/v1/idosos/{{voAntonio}}/roteiro-concluido
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
+
+###############################################################################
+# Bloco G · Perguntas (US04, US05, US06)
+###############################################################################
+
+### 36. Perguntas de receitas para a Vó Lourdes (200 com 5; a de id 1 já perguntada)
+GET {{api}}/api/v1/idosos/{{voLourdes}}/perguntas?categoria=receitas
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
+
+### 37. Todas as perguntas (200 com 25)
+GET {{api}}/api/v1/idosos/{{voLourdes}}/perguntas
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
+
+### 38. Categoria que não existe (404 "Categoria não encontrada.")
+GET {{api}}/api/v1/idosos/{{voLourdes}}/perguntas?categoria=xyz
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
+
+### 39. Pergunta da semana (200)
+GET {{api}}/api/v1/idosos/{{voLourdes}}/pergunta-da-semana
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
+
+### 40. Pergunta própria da família (201, tipo = DaFamilia)
+POST {{api}}/api/v1/familias/{{familiaSouza}}/perguntas
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
 Content-Type: application/json
 
 {
@@ -74,31 +301,279 @@ Content-Type: application/json
   "categoriaId": 4
 }
 
-### 12. Cadastrar idoso com número repetido (409)
-POST {{api}}/api/v1/familias/1/idosos
-Authorization: Bearer {{token}}
+### 41. Pedido de PIX (400 "O Me Conta não envia pedidos de dinheiro ou senhas")
+POST {{api}}/api/v1/familias/{{familiaSouza}}/perguntas
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
 Content-Type: application/json
 
 {
-  "nome": "Teste Repetido",
-  "apelido": "Vó Teste",
-  "whatsApp": "(11) 90000-0001"
+  "texto": "Vó, me manda um PIX de 50 reais?",
+  "categoriaId": 5
 }
 
-### 13. Gerar convite para outro parente
-POST {{api}}/api/v1/familias/1/convites
-Authorization: Bearer {{token}}
+### 42. Pedido de senha (400, mesma mensagem)
+POST {{api}}/api/v1/familias/{{familiaSouza}}/perguntas
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
+Content-Type: application/json
 
-### 14. Caderno da família (US09)
-GET {{api}}/api/v1/familias/1/caderno?pagina=1&tamanho=20
-Authorization: Bearer {{token}}
+{
+  "texto": "Vó, qual é a senha do seu banco?",
+  "categoriaId": 5
+}
 
-### 15. Indicador "Conversas de verdade" da semana atual
+### 43. Pergunta curta demais (400 "Escreva uma pergunta um pouco maior")
+POST {{api}}/api/v1/familias/{{familiaSouza}}/perguntas
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
+Content-Type: application/json
+
+{
+  "texto": "Receita?",
+  "categoriaId": 1
+}
+
+### 44. Categoria que não existe (400 "Escolha uma categoria para a pergunta")
+POST {{api}}/api/v1/familias/{{familiaSouza}}/perguntas
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
+Content-Type: application/json
+
+{
+  "texto": "Vó, qual era a sua música preferida?",
+  "categoriaId": 9
+}
+
+###############################################################################
+# Bloco H · Envio pelo WhatsApp (US07)
+###############################################################################
+
+### 45. Enviar pergunta para a Vó Lourdes (201 com mensagem e link wa.me)
+# @name envio
+POST {{api}}/api/v1/idosos/{{voLourdes}}/envios
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
+Content-Type: application/json
+
+{
+  "perguntaId": 16
+}
+
+### 46. Enviar para o Vô Antônio, sem WhatsApp (409 "Cadastre o WhatsApp")
+POST {{api}}/api/v1/idosos/{{voAntonio}}/envios
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
+Content-Type: application/json
+
+{
+  "perguntaId": 16
+}
+
+### 47. Pergunta que não existe (404 "Pergunta não encontrada.")
+POST {{api}}/api/v1/idosos/{{voLourdes}}/envios
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
+Content-Type: application/json
+
+{
+  "perguntaId": 999
+}
+
+### 48. Envios da Vó Lourdes ainda sem resposta (200 com 2)
+GET {{api}}/api/v1/idosos/{{voLourdes}}/envios?status=Enviada
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
+
+###############################################################################
+# Bloco I · Passos 49 a 53: envio de áudio (multipart), feito pelo Swagger.
+# POST /api/v1/envios/{envioId}/pagina com Audio, Foto, Titulo, DuracaoSegundos e ChaveIdempotencia.
+###############################################################################
+
+###############################################################################
+# Bloco J · Caderno (US09, US11) e indicador (US12)
+###############################################################################
+
+### 54. Caderno da família (200 com a página do passo 49)
+GET {{api}}/api/v1/familias/{{familiaSouza}}/caderno?pagina=1&tamanho=20
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
+
+### 55. Caderno filtrado por idoso e categoria (200)
+GET {{api}}/api/v1/familias/{{familiaSouza}}/caderno?idosoId={{voLourdes}}&categoria=o-bairro
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
+
+### 56. Tamanho de página acima do limite (400)
+GET {{api}}/api/v1/familias/{{familiaSouza}}/caderno?tamanho=100
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
+
+### 57. Uma página do caderno (200)
+GET {{api}}/api/v1/paginas/{{paginaId}}
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
+
+### 58. Áudio da página (200)
+GET {{api}}/api/v1/paginas/{{paginaId}}/audio
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
+
+### 59. Foto da página (200)
+GET {{api}}/api/v1/paginas/{{paginaId}}/foto
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
+
+### 60. Indicador da semana atual (200)
 GET {{api}}/api/v1/indicadores/conversas-de-verdade
-Authorization: Bearer {{token}}
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
 
-### 16. Saúde da API e do banco (usado no monitoramento da VM)
-GET {{api}}/health
+### 61. Indicador de uma semana sem dados (200 "Ainda não há dados")
+GET {{api}}/api/v1/indicadores/conversas-de-verdade?data=2026-01-05
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
 
-# Para guardar uma resposta em áudio (multipart), use o Swagger:
-# POST /api/v1/envios/{envioId}/pagina com o campo Audio (arquivo .mp3, .m4a, .ogg ou .opus).
+### 62. Login da Cláudia (200)
+# @name loginClaudia
+POST {{api}}/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "claudia@example.com",
+  "password": "MeConta@2026"
+}
+
+### 63. Cláudia tenta apagar a página da Bia (403)
+DELETE {{api}}/api/v1/paginas/{{paginaId}}
+Authorization: Bearer {{loginClaudia.response.body.$.accessToken}}
+
+### 64. Bia apaga a própria página (204)
+DELETE {{api}}/api/v1/paginas/{{paginaId}}
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
+
+### 65. O envio voltou para "Enviada" (200)
+GET {{api}}/api/v1/idosos/{{voLourdes}}/envios
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
+
+### 66. Página apagada não existe mais (404)
+GET {{api}}/api/v1/paginas/{{paginaId}}
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
+
+###############################################################################
+# Bloco K · Porta-retrato Me Conta, IoT (US15)
+# As rotas do aparelho não usam login: a ponte Node-RED manda a chave no cabeçalho X-Chave-PortaRetrato.
+###############################################################################
+
+### 67. Porta-retrato da Vó Lourdes (200, código k7m2q9xd, conectado = false)
+GET {{api}}/api/v1/idosos/{{voLourdes}}/porta-retrato
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
+
+### 68. Vô Antônio não tem porta-retrato (404)
+GET {{api}}/api/v1/idosos/{{voAntonio}}/porta-retrato
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
+
+### 69. Aparelho: moldura acesa com a pergunta mais recente (200, perguntasEsperando = 2)
+# @name estado
+GET {{api}}/api/v1/porta-retrato/estado
+X-Chave-PortaRetrato: {{chavePortaRetrato}}
+
+### 70. Aparelho sem chave (401)
+GET {{api}}/api/v1/porta-retrato/estado
+
+### 71. Aparelho com chave errada (401)
+GET {{api}}/api/v1/porta-retrato/estado
+X-Chave-PortaRetrato: chave-que-nao-existe
+
+### 72. Vó Lourdes aperta "quero contar" na pergunta da tela (201)
+# @name queroContar
+POST {{api}}/api/v1/porta-retrato/quero-contar
+X-Chave-PortaRetrato: {{chavePortaRetrato}}
+Content-Type: application/json
+
+{
+  "envioId": {{estado.response.body.$.pergunta.envioId}}
+}
+
+### 73. Apertou de novo na mesma pergunta (200, mesmo aviso)
+POST {{api}}/api/v1/porta-retrato/quero-contar
+X-Chave-PortaRetrato: {{chavePortaRetrato}}
+Content-Type: application/json
+
+{
+  "envioId": {{estado.response.body.$.pergunta.envioId}}
+}
+
+### 74. A tela passa para a pergunta mais antiga que ainda espera (200, perguntasEsperando = 1)
+# @name estado2
+GET {{api}}/api/v1/porta-retrato/estado
+X-Chave-PortaRetrato: {{chavePortaRetrato}}
+
+### 75. "Quero contar" também nessa pergunta (201)
+POST {{api}}/api/v1/porta-retrato/quero-contar
+X-Chave-PortaRetrato: {{chavePortaRetrato}}
+Content-Type: application/json
+
+{
+  "envioId": {{estado2.response.body.$.pergunta.envioId}}
+}
+
+### 76. Moldura apagada (200, temPerguntaNova = false)
+GET {{api}}/api/v1/porta-retrato/estado
+X-Chave-PortaRetrato: {{chavePortaRetrato}}
+
+### 77. Pergunta que não é deste porta-retrato (400)
+POST {{api}}/api/v1/porta-retrato/quero-contar
+X-Chave-PortaRetrato: {{chavePortaRetrato}}
+Content-Type: application/json
+
+{
+  "envioId": 999
+}
+
+### 78. "Quero contar" sem pergunta na tela (201, envioId = null)
+POST {{api}}/api/v1/porta-retrato/quero-contar
+X-Chave-PortaRetrato: {{chavePortaRetrato}}
+Content-Type: application/json
+
+{}
+
+### 79. Apertou de novo em menos de 2 minutos (200, mesmo aviso)
+POST {{api}}/api/v1/porta-retrato/quero-contar
+X-Chave-PortaRetrato: {{chavePortaRetrato}}
+Content-Type: application/json
+
+{}
+
+### 80. A ponte avisa que o aparelho está online (204)
+PUT {{api}}/api/v1/porta-retrato/conexao
+X-Chave-PortaRetrato: {{chavePortaRetrato}}
+Content-Type: application/json
+
+{
+  "online": true
+}
+
+### 81. Agora o porta-retrato aparece conectado (200, conectado = true)
+GET {{api}}/api/v1/idosos/{{voLourdes}}/porta-retrato
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
+
+### 82. Avisos que a família ainda não viu (200 com 3)
+GET {{api}}/api/v1/familias/{{familiaSouza}}/avisos?somenteNaoVistos=true
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
+
+### 83. Marcar como visto o aviso do passo 72 (200, visto = true)
+POST {{api}}/api/v1/avisos/{{queroContar.response.body.$.id}}/visto
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
+
+### 84. Avisos não vistos de novo (200 com 2)
+GET {{api}}/api/v1/familias/{{familiaSouza}}/avisos?somenteNaoVistos=true
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
+
+### 85. Todos os avisos, inclusive os vistos (200 com 3)
+GET {{api}}/api/v1/familias/{{familiaSouza}}/avisos?somenteNaoVistos=false
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
+
+### 86. Aviso que não existe (404 "Aviso não encontrado.")
+POST {{api}}/api/v1/avisos/999/visto
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
+
+### 87. Nova pergunta para a Vó Lourdes (201)
+POST {{api}}/api/v1/idosos/{{voLourdes}}/envios
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
+Content-Type: application/json
+
+{
+  "perguntaId": 6
+}
+
+### 88. A moldura acende de novo com a pergunta nova (200, temPerguntaNova = true)
+GET {{api}}/api/v1/porta-retrato/estado
+X-Chave-PortaRetrato: {{chavePortaRetrato}}
+
+# Não incluído de propósito: POST /api/v1/idosos/{idosoId}/porta-retrato (parear de novo).
+# Ele gera uma chave nova e a chave de demonstração, usada pelo Node-RED, para de funcionar.

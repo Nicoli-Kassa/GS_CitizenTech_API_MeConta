@@ -104,6 +104,51 @@ public interface ICadernoService
     Task ApagarAsync(int paginaId, CancellationToken cancellationToken = default);
 }
 
+/// <summary>
+/// Pareamento do porta-retrato pela família (US15).
+/// </summary>
+public interface IPortaRetratoService
+{
+    /// <summary>Gera código e chave novos. Se o idoso já tinha porta-retrato, a chave antiga para de funcionar.</summary>
+    Task<PortaRetratoPareadoResponse> ParearAsync(int idosoId, CancellationToken cancellationToken = default);
+
+    Task<PortaRetratoResponse> ObterAsync(int idosoId, CancellationToken cancellationToken = default);
+
+    /// <summary>Desliga o porta-retrato do idoso. Os avisos já recebidos continuam no histórico.</summary>
+    Task DesparearAsync(int idosoId, CancellationToken cancellationToken = default);
+}
+
+/// <summary>
+/// O que o próprio aparelho (pela ponte Node-RED) pode fazer, autenticado pela chave do porta-retrato.
+/// </summary>
+public interface IAparelhoPortaRetratoService
+{
+    Task<EstadoPortaRetratoResponse> ObterEstadoAsync(string? chave, CancellationToken cancellationToken = default);
+
+    Task<ResultadoQueroContar> QueroContarAsync(
+        string? chave,
+        QueroContarRequest request,
+        CancellationToken cancellationToken = default);
+
+    Task RegistrarConexaoAsync(
+        string? chave,
+        ConexaoPortaRetratoRequest request,
+        CancellationToken cancellationToken = default);
+}
+
+/// <summary>
+/// Avisos "quero contar" vistos pela família no app.
+/// </summary>
+public interface IAvisoService
+{
+    Task<IReadOnlyList<AvisoResponse>> ListarAsync(
+        int familiaId,
+        bool somenteNaoVistos,
+        CancellationToken cancellationToken = default);
+
+    Task<AvisoResponse> MarcarVistoAsync(int avisoId, CancellationToken cancellationToken = default);
+}
+
 public interface IIndicadorService
 {
     /// <summary>Indicador da semana que contém a data (ou da semana atual, se a data não vier).</summary>
