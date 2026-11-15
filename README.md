@@ -12,13 +12,14 @@
 
 > O app que troca o 👍 da família por uma pergunta que só os avós sabem responder.
 
-Backend do **Me Conta**, desenvolvido para a Global Solution FIAP 2026 (CitizenTech). Uma única Web API em **C# / .NET 10** atende **C# Software Development** e **SOA e Web Services**. Ela guarda famílias, idosos, perguntas e o caderno de memórias da família, e é consumida pelo app mobile (Expo).
+Backend do **Me Conta**, desenvolvido para a Global Solution FIAP 2026 (CitizenTech). Uma única Web API em **C# / .NET 10** é o centro da solução: atende **C# Software Development** e **SOA e Web Services**, recebe o porta-retrato de **Physical Computing (IoT)** e o módulo de privacidade de **Cybersecurity**, e é a aplicação que roda no servidor de **Operating Systems**. Ela guarda famílias, idosos, perguntas e o caderno de memórias da família, e é consumida pelo app mobile (Expo).
 
 |                            |                                                                   |
 | -------------------------- | ----------------------------------------------------------------- |
 | 🎬 **Pitch**               | [**Assistir no YouTube**](https://youtu.be/INSERIR-LINK-DO-PITCH) |
 | 📄 **Documentação da API** | `/swagger` e `/scalar` (com a API rodando)                        |
 | 🧪 **Testes**              | `dotnet test` (151 testes)                                        |
+| 🗂️ **Matérias**            | [O que cada matéria faz e onde cada entrega está](docs/MATERIAS.md) |
 
 ---
 
@@ -43,18 +44,19 @@ Backend do **Me Conta**, desenvolvido para a Global Solution FIAP 2026 (CitizenT
 1. [O problema](#o-problema)
 2. [A solução](#a-solução)
 3. [Contribuição para os ODS](#contribuição-para-os-ods)
-4. [O que esta API faz](#o-que-esta-api-faz)
-5. [Arquitetura](#arquitetura)
-6. [Modelo de domínio e POO](#modelo-de-domínio-e-poo)
-7. [Banco de dados e migrações](#banco-de-dados-e-migrações)
-8. [Endpoints](#endpoints)
-9. [Regras de negócio](#regras-de-negócio)
-10. [Como executar](#como-executar)
-11. [Testes automatizados](#testes-automatizados)
-12. [Evidências](#evidências)
-13. [Privacidade e segurança](#privacidade-e-segurança)
-14. [Tecnologias](#tecnologias)
-15. [Próximos passos](#próximos-passos)
+4. [Matérias atendidas por esta API](#matérias-atendidas-por-esta-api)
+5. [O que esta API faz](#o-que-esta-api-faz)
+6. [Arquitetura](#arquitetura)
+7. [Modelo de domínio e POO](#modelo-de-domínio-e-poo)
+8. [Banco de dados e migrações](#banco-de-dados-e-migrações)
+9. [Endpoints](#endpoints)
+10. [Regras de negócio](#regras-de-negócio)
+11. [Como executar](#como-executar)
+12. [Testes automatizados](#testes-automatizados)
+13. [Evidências](#evidências)
+14. [Privacidade e segurança](#privacidade-e-segurança)
+15. [Tecnologias](#tecnologias)
+16. [Próximos passos](#próximos-passos)
 
 ---
 
@@ -126,6 +128,21 @@ O Me Conta não substitui a visita de domingo. O objetivo é que, na próxima vi
 
 ---
 
+## Matérias atendidas por esta API
+
+Cada matéria cuida de uma parte do Me Conta. O mapa completo, com cada critério de entrega ligado ao arquivo que o atende, está em **[docs/MATERIAS.md](docs/MATERIAS.md)**.
+
+| Matéria | A parte dela no Me Conta | Onde está nesta API |
+| --- | --- | --- |
+| **C# Software Development** | A Web API inteira, com domínio orientado a objetos, EF Core, LINQ e async/await | `src/` (4 projetos) e `tests/` · [detalhes](docs/MATERIAS.md#c-software-development) |
+| **SOA e Web Services** | Os serviços REST que o app e o porta-retrato consomem, com banco, migrações, documentação automática e testes | `src/`, `Migrations/`, `/swagger`, `/scalar`, `tests/` · [detalhes](docs/MATERIAS.md#soa-e-web-services) |
+| **Physical Computing (IoT)** | Porta-retrato com ESP32 que acende com pergunta nova e tem o botão "quero contar" | Rotas `/porta-retrato/*` e `/avisos`, migração `PortaRetrato` · [detalhes](docs/MATERIAS.md#physical-computing-iot) |
+| **Cybersecurity** | Filtro de dados pessoais, taint analysis e painel "Risco Cidadão" antes de publicar no mapa do bairro | Proteções em [Privacidade e segurança](#privacidade-e-segurança); módulo `MeConta.Privacidade` em integração · [detalhes](docs/MATERIAS.md#cybersecurity) |
+| **Operating Systems** | Servidor Linux que roda esta API, com monitoramento e logs | `/health`, perfil `rede-local`, banco por variável de ambiente · [detalhes](docs/MATERIAS.md#operating-systems) |
+| **Testing, Compliance & QA** | Backlog e casos de teste no Azure DevOps | Coluna "User story" dos [Endpoints](#endpoints) e [roteiro de testes](docs/ROTEIRO_DE_TESTES.md) · [detalhes](docs/MATERIAS.md#testing-compliance--qa) |
+| **Mobile** | App Expo da neta: perguntar, enviar e montar o caderno | Consome esta API; idempotência para o modo offline · [detalhes](docs/MATERIAS.md#mobile) |
+| **IA & ML** | Modelo com dados reais da PNAD TIC sobre idosos desconectados | Fora desta API: [repositório próprio](https://github.com/Nicoli-Kassa/GS_CitizenTech_IA-ML_MeConta) |
+
 ## O que esta API faz
 
 - Cadastro de **famílias**, **membros** (neta, filha) e **idosos**, com entrada de parentes por **código de convite** de 48 horas.
@@ -168,19 +185,22 @@ flowchart LR
 | `MeConta.Api`            | Controllers REST, autenticação, tratamento de erros, documentação OpenAPI, health check e composição da injeção de dependência.                                             | Application, Infrastructure |
 
 ```
-GS-CitizenTech_API_MeConta/
+GS_CitizenTech_API_MeConta/
 ├── README.md
 ├── prompts.md
 ├── MeConta.slnx
 ├── Directory.Build.props        ← net10.0, nullable, implicit usings
-├── docs/evidencias/             ← prints usados neste README
+├── docs/
+│   ├── MATERIAS.md              ← o que cada matéria faz e onde cada entrega está
+│   ├── ROTEIRO_DE_TESTES.md     ← 88 chamadas com o resultado esperado
+│   └── evidencias/              ← prints usados neste README
 ├── src/
 │   ├── MeConta.Domain/          Comum · Entidades · Enums · Excecoes · Regras · ValueObjects
 │   ├── MeConta.Application/     Abstracoes · Adapters · Dtos · Excecoes · Servicos
 │   ├── MeConta.Infrastructure/  Adapters · Persistencia (Configuracoes, Migrations) · Repositorios
 │   └── MeConta.Api/             Adapters · Configuracao · Controllers · Program.cs · MeConta.Api.http
 └── tests/
-    └── MeConta.UnitTests/       Domain · Regras
+    └── MeConta.UnitTests/       Domain · Regras · Servicos
 ```
 
 ## Modelo de domínio e POO
@@ -398,7 +418,7 @@ Todas as rotas ficam em `/api/v1` e, exceto login, cadastro, categorias e as rot
 ```powershell
 # 1. Clonar
 git clone https://github.com/Nicoli-Kassa/GS_CitizenTech_API_MeConta.git
-cd GS-CitizenTech_API_MeConta
+cd GS_CitizenTech_API_MeConta
 
 # 2. Compilar e rodar os testes
 dotnet build
