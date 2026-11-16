@@ -19,6 +19,12 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\MeConta.Domain\MeConta.Domain.csproj" />
     <ProjectReference Include="..\..\src\MeConta.Application\MeConta.Application.csproj" />
+    <ProjectReference Include="..\..\src\MeConta.Privacidade\MeConta.Privacidade.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Corpus de memórias simuladas usado para medir o motor de PII. -->
+    <None Update="Privacidade\*.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

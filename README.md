@@ -18,7 +18,7 @@ Backend do **Me Conta**, desenvolvido para a Global Solution FIAP 2026 (CitizenT
 | -------------------------- | ----------------------------------------------------------------- |
 | 🎬 **Pitch**               | [**Assistir no YouTube**](https://youtu.be/INSERIR-LINK-DO-PITCH) |
 | 📄 **Documentação da API** | `/swagger` e `/scalar` (com a API rodando)                        |
-| 🧪 **Testes**              | `dotnet test` (151 testes)                                        |
+| 🧪 **Testes**              | `dotnet test` (268 testes)                                        |
 | 🗂️ **Matérias**            | [O que cada matéria faz e onde cada entrega está](docs/MATERIAS.md) |
 
 ---
@@ -137,7 +137,7 @@ Cada matéria cuida de uma parte do Me Conta. O mapa completo, com cada critéri
 | **C# Software Development** | A Web API inteira, com domínio orientado a objetos, EF Core, LINQ e async/await | `src/` (4 projetos) e `tests/` · [detalhes](docs/MATERIAS.md#c-software-development) |
 | **SOA e Web Services** | Os serviços REST que o app e o porta-retrato consomem, com banco, migrações, documentação automática e testes | `src/`, `Migrations/`, `/swagger`, `/scalar`, `tests/` · [detalhes](docs/MATERIAS.md#soa-e-web-services) |
 | **Physical Computing (IoT)** | Porta-retrato com ESP32 que acende com pergunta nova e tem o botão "quero contar" | Rotas `/porta-retrato/*` e `/avisos`, migração `PortaRetrato` · [detalhes](docs/MATERIAS.md#physical-computing-iot) |
-| **Cybersecurity** | Filtro de dados pessoais, taint analysis e painel "Risco Cidadão" antes de publicar no mapa do bairro | Proteções em [Privacidade e segurança](#privacidade-e-segurança); módulo `MeConta.Privacidade` em integração · [detalhes](docs/MATERIAS.md#cybersecurity) |
+| **Cybersecurity** | Filtro de dados pessoais, taint analysis e painel "Risco Cidadão" antes de publicar no mapa do bairro | Proteções em [Privacidade e segurança](#privacidade-e-segurança); motor de PII `MeConta.Privacidade` ([como funciona](docs/cyber/motor-pii.md)), integração em andamento · [detalhes](docs/MATERIAS.md#cybersecurity) |
 | **Operating Systems** | Servidor Linux que roda esta API, com monitoramento e logs | `/health`, perfil `rede-local`, banco por variável de ambiente · [detalhes](docs/MATERIAS.md#operating-systems) |
 | **Testing, Compliance & QA** | Backlog e casos de teste no Azure DevOps | Coluna "User story" dos [Endpoints](#endpoints) e [roteiro de testes](docs/ROTEIRO_DE_TESTES.md) · [detalhes](docs/MATERIAS.md#testing-compliance--qa) |
 | **Mobile** | App Expo da neta: perguntar, enviar e montar o caderno | Consome esta API; idempotência para o modo offline · [detalhes](docs/MATERIAS.md#mobile) |
@@ -183,6 +183,7 @@ flowchart LR
 | `MeConta.Application`    | Casos de uso (serviços), DTOs e as interfaces que a infraestrutura implementa (`IRepository<T,TId>`, `IUnidadeDeTrabalho`, `IArmazenamentoDeArquivos`, `IUsuarioAtual`...). | Domain                      |
 | `MeConta.Infrastructure` | `AppDbContext` (EF Core + Identity), configurações Fluent API, migrações, repositórios, consultas LINQ e adapters de disco e de código de convite.                          | Application                 |
 | `MeConta.Api`            | Controllers REST, autenticação, tratamento de erros, documentação OpenAPI, health check e composição da injeção de dependência.                                             | Application, Infrastructure |
+| `MeConta.Privacidade`    | Motor de dados pessoais (PII): regras em JSON, validadores, índice Risco Cidadão e os tipos que separam texto não verificado de texto verificado ([como funciona](docs/cyber/motor-pii.md)). Nenhum pacote externo. | —                           |
 
 ```
 GS_CitizenTech_API_MeConta/
@@ -193,14 +194,18 @@ GS_CitizenTech_API_MeConta/
 ├── docs/
 │   ├── MATERIAS.md              ← o que cada matéria faz e onde cada entrega está
 │   ├── ROTEIRO_DE_TESTES.md     ← 88 chamadas com o resultado esperado
+│   ├── cyber/                   ← motor de PII: regras, índice e avaliação
 │   └── evidencias/              ← prints usados neste README
 ├── src/
 │   ├── MeConta.Domain/          Comum · Entidades · Enums · Excecoes · Regras · ValueObjects
 │   ├── MeConta.Application/     Abstracoes · Adapters · Dtos · Excecoes · Servicos
 │   ├── MeConta.Infrastructure/  Adapters · Persistencia (Configuracoes, Migrations) · Repositorios
-│   └── MeConta.Api/             Adapters · Configuracao · Controllers · Program.cs · MeConta.Api.http
+│   ├── MeConta.Api/             Adapters · Configuracao · Controllers · Program.cs · MeConta.Api.http
+│   └── MeConta.Privacidade/     Motor · Normalizacao · Regras (regras-pii.json) · Resultados · Taint · Validadores
+├── tools/
+│   └── MeConta.Privacidade.Avaliacao/  ← tabela de precisão e recall do motor de PII
 └── tests/
-    └── MeConta.UnitTests/       Domain · Regras · Servicos
+    └── MeConta.UnitTests/       Domain · Privacidade · Regras · Servicos
 ```
 
 ## Modelo de domínio e POO
@@ -470,7 +475,7 @@ dotnet ef migrations add NomeDaMudanca -p src/MeConta.Infrastructure -s src/MeCo
 dotnet test
 ```
 
-**151 testes unitários** em xUnit (`tests/MeConta.UnitTests`), sem banco e sem rede, com dublês escritos à mão (`PerguntaFake`, `FiltroFake` e, para os serviços, repositórios em memória, `RelogioFake` e `ControleDeAcessoFake`). Os nomes seguem o padrão `Metodo_Cenario_ResultadoEsperado`.
+**268 testes unitários** em xUnit (`tests/MeConta.UnitTests`), sem banco e sem rede, com dublês escritos à mão (`PerguntaFake`, `FiltroFake` e, para os serviços, repositórios em memória, `RelogioFake` e `ControleDeAcessoFake`). Os nomes seguem o padrão `Metodo_Cenario_ResultadoEsperado`.
 
 | Arquivo                            | O que testa                                                                                                                                                                   |
 | ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -486,6 +491,13 @@ dotnet test
 | `FilaDoPortaRetratoTests`          | Perguntas que esperam o idoso (sem respondidas nem com aviso), da mais recente para a mais antiga; só o primeiro nome vai para o aparelho                                     |
 | `AparelhoPortaRetratoServiceTests` | Chave ausente ou errada (401), moldura acesa e apagada, "quero contar" sem duplicar, pergunta de outro idoso, botão apertado várias vezes                                     |
 | `PortaRetratoServiceTests`         | Pareamento, novo pareamento invalida a chave antiga, código repetido, idoso de outra família, conectado e desconectado                                                        |
+| `MotorPiiTests`                    | CPF com e sem pontuação, falado ou escondido com caractere invisível; dados de risco alto e médio; frases que não podem gerar alerta ("panela de pressão", "me conta 1950"); falha fechada |
+| `NormalizadorDeTextoTests`         | Acentos, caracteres invisíveis, números falados em dígitos e posição certa no texto original                                                                                  |
+| `ValidadoresTests`                 | Dígito verificador do CPF, algoritmo de Luhn do cartão, DDD e tipo de telefone                                                                                                |
+| `CatalogoDeRegrasTests`            | Regra nova no JSON passa a valer sem mudar código; regra com erro é recusada dizendo o campo                                                                                  |
+| `CalculadoraDeRiscoCidadaoTests`   | Índice de 0 a 100, pisos por nível, bônus das combinações e limites das faixas                                                                                                |
+| `TextosRastreadosTests`            | Texto do usuário não vaza num log; texto verificado sai mascarado; publicação recusada ou com confirmação                                                                     |
+| `CorpusDeMemoriasTests`            | Precisão e recall do motor em 94 memórias simuladas com gabarito                                                                                                               |
 
 ## Evidências
 

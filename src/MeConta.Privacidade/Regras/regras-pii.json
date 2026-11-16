@@ -1,0 +1,288 @@
+{
+  "versao": "1.0.0",
+  "regras": [
+    {
+      "id": "PII-CPF-001",
+      "tipo": "Cpf",
+      "rotulo": "CPF",
+      "nivel": "Alto",
+      "padrao": "(?<!\\d)\\d{3}[ .]?\\d{3}[ .]?\\d{3}[ ./-]{0,2}\\d{2}(?!\\d)",
+      "validador": "cpf",
+      "contexto": [
+        "cpf",
+        "c p f",
+        "documento",
+        "cadastro de pessoa"
+      ],
+      "aceitaSemValidacaoComContexto": true,
+      "mascara": "Digitos",
+      "substituicao": "[CPF removido]",
+      "explicacao": "Com o CPF, golpistas fingem ser do banco ou do INSS, abrem contas e pedem empréstimos no nome da pessoa."
+    },
+    {
+      "id": "PII-RG-001",
+      "tipo": "Rg",
+      "rotulo": "RG",
+      "nivel": "Alto",
+      "padrao": "(?<![\\d.])\\d{1,2}\\.?\\d{3}\\.?\\d{3}-?[0-9x](?!\\d)",
+      "contexto": [
+        "rg",
+        "identidade",
+        "registro geral"
+      ],
+      "exigeContexto": true,
+      "mascara": "Digitos",
+      "substituicao": "[RG removido]",
+      "explicacao": "O número do RG ajuda a falsificar documentos e a confirmar a identidade da pessoa em golpes por telefone."
+    },
+    {
+      "id": "PII-CARTAO-001",
+      "tipo": "CartaoDeCredito",
+      "rotulo": "Número de cartão",
+      "nivel": "Alto",
+      "padrao": "(?<!\\d)\\d(?:[ -]?\\d){12,18}(?!\\d)",
+      "validador": "cartao",
+      "contexto": [
+        "cartao",
+        "credito",
+        "debito",
+        "visa",
+        "mastercard",
+        "master",
+        "elo"
+      ],
+      "mascara": "Digitos",
+      "substituicao": "[número de cartão removido]",
+      "explicacao": "Com o número do cartão dá para fazer compras pela internet e a cobrança cai na conta da pessoa."
+    },
+    {
+      "id": "PII-BANCO-001",
+      "tipo": "DadosBancarios",
+      "rotulo": "Agência bancária",
+      "nivel": "Alto",
+      "padrao": "\\bag(?:encia)?\\b\\.?\\s*(?:n(?:o|umero)?\\.?\\s*)?:?\\s*(?<valor>\\d{3,5}(?:-\\d)?)(?!\\d)",
+      "contexto": [
+        "banco",
+        "conta",
+        "caixa",
+        "bradesco",
+        "itau",
+        "santander",
+        "nubank"
+      ],
+      "mascara": "Digitos",
+      "substituicao": "[dado bancário removido]",
+      "explicacao": "Agência e conta permitem que golpistas façam depósitos falsos, peçam devolução ou tentem acessar a conta."
+    },
+    {
+      "id": "PII-BANCO-002",
+      "tipo": "DadosBancarios",
+      "rotulo": "Conta bancária",
+      "nivel": "Alto",
+      "padrao": "\\bconta\\s+(?:corrente|poupanca|salario|bancaria)\\s*(?:n(?:o|umero)?\\.?\\s*)?:?\\s*(?<valor>\\d{4,13}(?:-[0-9x])?)(?!\\d)",
+      "mascara": "Digitos",
+      "substituicao": "[dado bancário removido]",
+      "explicacao": "Agência e conta permitem que golpistas façam depósitos falsos, peçam devolução ou tentem acessar a conta."
+    },
+    {
+      "id": "PII-BANCO-003",
+      "tipo": "DadosBancarios",
+      "rotulo": "Conta bancária",
+      "nivel": "Alto",
+      "padrao": "\\bconta\\b\\s*(?:n(?:o|umero)?\\.?\\s*)?:?\\s*(?<valor>\\d{4,13}(?:-[0-9x])?)(?!\\d)",
+      "contexto": [
+        "banco",
+        "agencia",
+        "deposito",
+        "caixa",
+        "bradesco",
+        "itau",
+        "santander",
+        "nubank",
+        "pix"
+      ],
+      "exigeContexto": true,
+      "mascara": "Digitos",
+      "substituicao": "[dado bancário removido]",
+      "explicacao": "Agência e conta permitem que golpistas façam depósitos falsos, peçam devolução ou tentem acessar a conta."
+    },
+    {
+      "id": "PII-PIX-001",
+      "tipo": "ChavePix",
+      "rotulo": "Chave PIX",
+      "nivel": "Alto",
+      "padrao": "\\bpix\\b[^\\n]{0,40}?(?<valor>[a-z0-9._%+-]+@[a-z0-9-]+(?:\\.[a-z0-9-]+)+|[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}|\\+?\\d[\\d ().-]{8,}\\d)",
+      "mascara": "Digitos",
+      "substituicao": "[chave PIX removida]",
+      "explicacao": "A chave PIX publicada vira alvo de golpes do falso comprovante e de pedidos de devolução de PIX que nunca foi feito."
+    },
+    {
+      "id": "PII-SENHA-001",
+      "tipo": "Senha",
+      "rotulo": "Senha",
+      "nivel": "Alto",
+      "padrao": "\\bsenhas?\\b(?:\\s+(?:do|da|de|dos|das|no|na)\\s+[a-z]+){0,2}\\s*(?:e|eh|era|:|=|fica|foi)\\s*(?:a\\s+|o\\s+)?(?<valor>[^\\s,;!?]{3,})|\\bsenhas?\\b[^0-9\\n]{0,50}?(?<valor>\\d{4,8})(?!\\d)",
+      "contexto": [
+        "senha",
+        "banco",
+        "cartao",
+        "celular",
+        "aplicativo"
+      ],
+      "mascara": "Total",
+      "substituicao": "[senha removida]",
+      "explicacao": "Senha publicada é acesso direto: ao banco, ao celular ou ao aplicativo. Ninguém do bairro precisa saber."
+    },
+    {
+      "id": "PII-CODIGO-001",
+      "tipo": "CodigoDeVerificacao",
+      "rotulo": "Código de verificação",
+      "nivel": "Alto",
+      "padrao": "\\b(?:codigo|token)\\s+(?:de\\s+|do\\s+|da\\s+)?(?:verificacao|seguranca|confirmacao|acesso|sms|whatsapp|zap|validacao|banco)\\b[^0-9]{0,25}(?<valor>\\d{3}[ .-]\\d{3}|\\d{4,8})(?!\\d)|\\bcodigo\\s+que\\s+(?:chegou|recebeu|apareceu|veio|mandaram)\\b[^0-9]{0,25}(?<valor>\\d{3}[ .-]\\d{3}|\\d{4,8})(?!\\d)",
+      "mascara": "Total",
+      "substituicao": "[código removido]",
+      "explicacao": "O código que chega por SMS é o que golpistas pedem para clonar o WhatsApp e falar com a família pedindo dinheiro."
+    },
+    {
+      "id": "PII-SAUDE-001",
+      "tipo": "Saude",
+      "rotulo": "Dado de saúde",
+      "nivel": "Medio",
+      "padrao": "\\b(?:diabet\\w*|hipertens\\w*|pressao\\s+(?:alta|baixa)|(?<!signo\\s+de\\s+)(?<!sou\\s+de\\s+)cancer|tumor\\w*|leucemia|avc|derrame|infarto|enfarte|alzheimer|parkinson|demencia|depressao|depressiv[oa]|(?:crise|transtorno)\\s+de\\s+ansiedade|sindrome\\s+do\\s+panico|esquizofreni\\w*|bipolar|hiv|aids|hepatite|tuberculose|asma|enfisema|artrite|artrose|osteoporose|catarata|glaucoma|incontinencia|insuficiencia\\s+(?:cardiaca|renal|respiratoria)|colesterol\\s+alto|epilepsia|convuls\\w*|marca-?\\s?passo|surd[oa]|cadeira\\s+de\\s+rodas)\\b",
+      "mascara": "Palavras",
+      "substituicao": "[dado de saúde removido]",
+      "explicacao": "Dado de saúde é sensível pela LGPD. Publicado, pode atrair golpes de falsos planos de saúde, remédios milagrosos e falsas consultas."
+    },
+    {
+      "id": "PII-SAUDE-002",
+      "tipo": "Saude",
+      "rotulo": "Dado de saúde",
+      "nivel": "Medio",
+      "padrao": "\\b(?<!nao\\s+tem\\s+)(?<!sem\\s+)remedio\\w*(?!\\s+caseiro)(?:\\s+(?:para|pra|de|da|do)\\s+(?:a\\s+|o\\s+)?[a-z]+)?|\\b(?:medicament\\w*|comprimidos?|insulina|quimioterapia|quimio|radioterapia|hemodialise|dialise|internad[oa]\\s+(?:no|na|em)|internacao|uti|fa(?:z|co|zendo|zia)\\s+tratamento|tratamento\\s+contra|losartana|metformina|captopril|rivotril|clonazepam|fluoxetina|sertralina|omeprazol|atenolol|sinvastatina|anlodipino|hidroclorotiazida|marevan|varfarina)\\b",
+      "mascara": "Palavras",
+      "substituicao": "[dado de saúde removido]",
+      "explicacao": "Contar qual remédio ou tratamento a pessoa faz é dado de saúde (sensível pela LGPD) e ajuda golpistas a montar histórias convincentes."
+    },
+    {
+      "id": "PII-TEL-001",
+      "tipo": "Telefone",
+      "rotulo": "Telefone",
+      "nivel": "Medio",
+      "padrao": "(?<!\\d)(?:\\+?55[ .-]?)?\\(?\\d{2}\\)?[ .-]?\\d{4,5}[ .-]?\\d{4}(?!\\d)",
+      "validador": "telefone",
+      "contexto": [
+        "telefone",
+        "celular",
+        "whatsapp",
+        "zap",
+        "numero",
+        "ligar",
+        "liga",
+        "ligue",
+        "contato",
+        "fone"
+      ],
+      "mascara": "Digitos",
+      "substituicao": "[telefone removido]",
+      "explicacao": "Com o telefone, golpistas ligam ou mandam mensagem fingindo ser um neto, o banco ou a farmácia."
+    },
+    {
+      "id": "PII-EMAIL-001",
+      "tipo": "Email",
+      "rotulo": "E-mail",
+      "nivel": "Medio",
+      "padrao": "(?<![a-z0-9._%+-])[a-z0-9._%+-]+@[a-z0-9-]+(?:\\.[a-z0-9-]+)+|\\b[a-z0-9_-]+(?:\\s+ponto\\s+[a-z0-9_-]+)*\\s+arroba\\s+[a-z0-9-]+(?:\\s+ponto\\s+[a-z]{2,})+",
+      "contexto": [
+        "email",
+        "e-mail",
+        "correio eletronico"
+      ],
+      "mascara": "Palavras",
+      "substituicao": "[e-mail removido]",
+      "explicacao": "O e-mail publicado recebe mensagens falsas de bancos e lojas, com links que roubam senhas."
+    },
+    {
+      "id": "PII-END-001",
+      "tipo": "Endereco",
+      "rotulo": "Endereço",
+      "nivel": "Medio",
+      "padrao": "\\b(?:rua|r\\.|avenida|av\\.?|travessa|tv\\.|alameda|estrada|rodovia|praca|largo|viela)\\s+(?:(?!(?:por|quase|ha|desde|ate|faz|durante|mais|cerca|uns|umas)\\b)[a-z][a-z'.]*\\s+){0,5}?(?!(?:por|quase|ha|desde|ate|faz|durante|mais|cerca|uns|umas)\\b)[a-z][a-z'.]*(?:,?\\s*n(?:o|umero)?\\.?\\s*\\d{1,5}|,?\\s*(?!(?:19|20)\\d{2}\\b)\\d{1,5})(?!\\d)(?!\\s*(?:anos|vezes|metros|km|minutos|horas|dias|meses|reais))(?:\\s*,?\\s*(?:apto?\\.?|apartamento|casa|bloco|fundos)\\s*\\d{0,4}[a-z]?)?",
+      "contexto": [
+        "moro",
+        "mora",
+        "morava",
+        "casa",
+        "endereco",
+        "apartamento",
+        "vizinho",
+        "vizinha"
+      ],
+      "mascara": "Palavras",
+      "substituicao": "[endereço removido]",
+      "explicacao": "No mapa do bairro, rua e número mostram onde a pessoa mora. Junto com outras informações, facilita visitas de golpistas e furtos."
+    },
+    {
+      "id": "PII-CEP-001",
+      "tipo": "Cep",
+      "rotulo": "CEP",
+      "nivel": "Medio",
+      "padrao": "(?<!\\d)\\d{5}-?\\d{3}(?!\\d)",
+      "contexto": [
+        "cep"
+      ],
+      "exigeContexto": true,
+      "mascara": "Digitos",
+      "substituicao": "[CEP removido]",
+      "explicacao": "O CEP leva até a rua da pessoa. No mapa, basta o nome do bairro."
+    },
+    {
+      "id": "PII-NASC-001",
+      "tipo": "DataDeNascimento",
+      "rotulo": "Data de nascimento",
+      "nivel": "Medio",
+      "padrao": "\\b(?:nasci|nasceu|nascid[oa]|nascimento|aniversario|faco\\s+anos|faz\\s+anos)\\b[^0-9\\n]{0,20}(?<valor>\\d{1,2}\\s*(?:/|-|\\.|de)\\s*(?:\\d{1,2}|janeiro|fevereiro|marco|abril|maio|junho|julho|agosto|setembro|outubro|novembro|dezembro)\\s*(?:/|-|\\.|de)\\s*\\d{2,4})",
+      "mascara": "Digitos",
+      "substituicao": "[data de nascimento removida]",
+      "explicacao": "A data de nascimento completa é usada para confirmar identidade em bancos e órgãos públicos. Junto com o nome, ajuda golpistas a se passar pela pessoa."
+    },
+    {
+      "id": "PII-ROTINA-001",
+      "tipo": "Vulnerabilidade",
+      "rotulo": "Rotina da casa",
+      "nivel": "Medio",
+      "padrao": "\\b(?:moro|mora|morava|vivo|vive)\\s+(?:sozinh[oa]|so)\\b|\\b(?:fico|fica)\\s+sozinh[oa]\\b|\\bguard[oa]\\s+(?:o\\s+|meu\\s+|seu\\s+|um\\s+)?dinheiro\\s+(?:em\\s+casa|debaixo|embaixo|no\\s+colchao|no\\s+armario|na\\s+gaveta|no\\s+guarda-roupa)|\\b(?:nao\\s+tem|sem)\\s+(?:grade|portao|alarme|tranca)\\b",
+      "mascara": "Palavras",
+      "substituicao": "[informação sobre a rotina da casa removida]",
+      "explicacao": "Contar que mora sozinha, onde guarda dinheiro ou que a casa não tem grade avisa quem quer aplicar golpe ou furtar."
+    }
+  ],
+  "combinacoes": [
+    {
+      "id": "COMB-ENDERECO-ROTINA",
+      "tipos": [
+        "Endereco",
+        "Vulnerabilidade"
+      ],
+      "bonus": 25,
+      "explicacao": "Endereço junto com a rotina da casa diz onde a pessoa está e quando está sozinha."
+    },
+    {
+      "id": "COMB-TELEFONE-ROTINA",
+      "tipos": [
+        "Telefone",
+        "Vulnerabilidade"
+      ],
+      "bonus": 15,
+      "explicacao": "Telefone junto com a rotina da casa é o roteiro do golpe do falso parente."
+    },
+    {
+      "id": "COMB-ENDERECO-TELEFONE",
+      "tipos": [
+        "Endereco",
+        "Telefone"
+      ],
+      "bonus": 10,
+      "explicacao": "Endereço e telefone juntos permitem chegar à pessoa por dois caminhos."
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Módulo de privacidade do Me Conta: motor de detecção de dados pessoais (PII)
+    e tipos que marcam o texto do usuário como "não verificado" até passar pelo motor.
+    Não depende de nenhum outro projeto nem de pacote externo.
+  -->
+  <PropertyGroup>
+    <RootNamespace>MeConta.Privacidade</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- As regras padrão vão dentro da DLL; um arquivo externo pode substituí-las. -->
+    <EmbeddedResource Include="Regras\regras-pii.json" LogicalName="MeConta.Privacidade.regras-pii.json" />
+  </ItemGroup>
+
+</Project>

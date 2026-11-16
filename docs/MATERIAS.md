@@ -11,7 +11,7 @@ O Me Conta é uma solução só, dividida em partes. Esta API é o centro: o app
 | [C# Software Development](#c-software-development) | Web API em .NET 10 com domínio orientado a objetos, EF Core e LINQ | Este repositório (`src/`, `tests/`) | ✅ Pronta |
 | [SOA e Web Services](#soa-e-web-services) | Serviços REST que o app e o porta-retrato consomem, com banco, migrações e documentação automática | Este repositório (`src/`, `tests/`, `docs/`) | ✅ Pronta |
 | [Physical Computing (IoT)](#physical-computing-iot) | Porta-retrato com ESP32: acende quando chega pergunta e tem o botão "quero contar" | Rotas do aparelho nesta API; circuito no Wokwi; ponte Node-RED | 🟡 API pronta; circuito e Node-RED em andamento |
-| [Cybersecurity](#cybersecurity) | Filtro de dados pessoais antes de publicar no mapa do bairro, taint analysis e painel "Risco Cidadão" | Módulo `MeConta.Privacidade` dentro desta API | 🟡 Proteções básicas prontas; módulo em integração |
+| [Cybersecurity](#cybersecurity) | Filtro de dados pessoais antes de publicar no mapa do bairro, taint analysis e painel "Risco Cidadão" | Módulo `MeConta.Privacidade` dentro desta API | 🟡 Motor de PII pronto; integração, taint, IA e painel em andamento |
 | [Operating Systems](#operating-systems) | VM Linux que roda esta API, com monitoramento e logs de auditoria | Scripts Bash (pasta própria); esta API fornece o `/health` e a configuração por variável de ambiente | 🔜 A fazer |
 | [Testing, Compliance & QA](#testing-compliance--qa) | Backlog com critérios de aceite e casos de teste no Azure DevOps | Azure DevOps; nesta API, os casos que rodam pelo Swagger | ✅ Pronta |
 | [Mobile](#mobile) | App Expo que a neta usa: perguntar, enviar pelo WhatsApp e montar o caderno | Repositório do app; consome esta API | 🟡 Em andamento |
@@ -67,7 +67,7 @@ App ──HTTP──> Me Conta API <──HTTP── Node-RED <──MQTT──>
 
 | O que é pedido | Onde é atendido |
 | --- | --- |
-| **Mapeamento de PII (motor de regras)** | Em integração: projeto `src/MeConta.Privacidade` (regras em JSON, validadores de CPF, cartão e telefone, normalização de texto falado, índice Risco Cidadão), com seus testes. |
+| **Mapeamento de PII (motor de regras)** | Pronto: projeto [`src/MeConta.Privacidade`](../src/MeConta.Privacidade) com 17 regras em [`regras-pii.json`](../src/MeConta.Privacidade/Regras/regras-pii.json), validadores de CPF, cartão e telefone, normalização de texto falado e índice Risco Cidadão; [testes](../tests/MeConta.UnitTests/Privacidade) com dois conjuntos de memórias simuladas; [como funciona e avaliação](cyber/motor-pii.md). Ligação com as rotas de publicação em andamento. |
 | **Taint analysis** | Em integração: tipos que separam texto do usuário de texto verificado nas saídas (mapa do bairro, logs, LLM, porta-retrato, mensagens de erro), regras Semgrep em `seguranca/semgrep/` e verificação no GitHub Actions. |
 | **Tradução via IA** | Em integração: explicações do risco geradas pelo Gemini, recebendo só texto já mascarado, com explicações locais quando não há chave. |
 | **Dashboard "Risco Cidadão"** | Em integração: rota `GET /api/v1/risco-cidadao` e painel servido pela própria API. |

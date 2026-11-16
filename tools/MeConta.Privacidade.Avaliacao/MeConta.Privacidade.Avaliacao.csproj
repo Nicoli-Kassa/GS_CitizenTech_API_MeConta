@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Gera a tabela de precisão e recall do motor de PII nos dois conjuntos de memórias simuladas.
+    Uso (na raiz do repositório): dotnet run, com o projeto tools/MeConta.Privacidade.Avaliacao
+  -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>MeConta.Privacidade.Avaliacao</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\MeConta.Privacidade\MeConta.Privacidade.csproj" />
+    <!-- Mesma lógica de avaliação usada pelos testes. -->
+    <Compile Include="..\..\tests\MeConta.UnitTests\Privacidade\AvaliacaoDoCorpus.cs" Link="AvaliacaoDoCorpus.cs" />
+    <None Include="..\..\tests\MeConta.UnitTests\Privacidade\*.json" LinkBase="Privacidade" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

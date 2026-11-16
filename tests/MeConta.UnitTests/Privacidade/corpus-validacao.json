@@ -1,0 +1,225 @@
+[
+  {
+    "id": "V01",
+    "texto": "Sua bisavó fazia pão de queijo com polvilho azedo e queijo meia cura da feira.",
+    "tipos": [],
+    "deveBloquear": false
+  },
+  {
+    "id": "V02",
+    "texto": "No ano de 2003 a gente reformou a cozinha e o fogão a lenha virou churrasqueira.",
+    "tipos": [],
+    "deveBloquear": false
+  },
+  {
+    "id": "V03",
+    "texto": "O armazém do seu Joaquim vendia fiado e a conta era paga no dia 5.",
+    "tipos": [],
+    "deveBloquear": false
+  },
+  {
+    "id": "V04",
+    "texto": "Seu avô teve uma oficina na Rua Voluntários da Pátria por quase 40 anos.",
+    "tipos": [],
+    "deveBloquear": false
+  },
+  {
+    "id": "V05",
+    "texto": "Eu trabalhava de dia e estudava à noite, chegava em casa meia-noite e meia.",
+    "tipos": [],
+    "deveBloquear": false
+  },
+  {
+    "id": "V06",
+    "texto": "A gente pegava o bonde número 3 até o centro, custava 200 réis.",
+    "tipos": [],
+    "deveBloquear": false
+  },
+  {
+    "id": "V07",
+    "texto": "Ela sempre dizia: quem guarda tem. Mas guardava era botão, não dinheiro.",
+    "tipos": [],
+    "deveBloquear": false
+  },
+  {
+    "id": "V08",
+    "texto": "Seu tio nasceu no dia 14 de julho, igual à queda da Bastilha, ele adorava contar isso.",
+    "tipos": [],
+    "deveBloquear": false
+  },
+  {
+    "id": "V09",
+    "texto": "A senha pra entrar no clube era o nome do presidente, todo mundo sabia.",
+    "tipos": [],
+    "deveBloquear": false
+  },
+  {
+    "id": "V10",
+    "texto": "Eu fui operada de catarata em 2019 e agora enxergo até a novela.",
+    "tipos": [
+      "Saude"
+    ],
+    "deveBloquear": false
+  },
+  {
+    "id": "V11",
+    "texto": "Depois do infarto do seu avô, a família toda parou de fumar.",
+    "tipos": [
+      "Saude"
+    ],
+    "deveBloquear": false
+  },
+  {
+    "id": "V12",
+    "texto": "Tomo insulina de manhã e à noite, por isso não faço mais doce.",
+    "tipos": [
+      "Saude"
+    ],
+    "deveBloquear": false
+  },
+  {
+    "id": "V13",
+    "texto": "Minha mãe tinha Parkinson, e mesmo assim bordava toalha pra todo mundo.",
+    "tipos": [
+      "Saude"
+    ],
+    "deveBloquear": false
+  },
+  {
+    "id": "V14",
+    "texto": "Pode me ligar no 11 99123-4567 depois das sete.",
+    "tipos": [
+      "Telefone"
+    ],
+    "deveBloquear": false
+  },
+  {
+    "id": "V15",
+    "texto": "Anota o celular da sua tia Rosa: (21) 98111-2233.",
+    "tipos": [
+      "Telefone"
+    ],
+    "deveBloquear": false
+  },
+  {
+    "id": "V16",
+    "texto": "O número de casa ainda é o mesmo: 11 3955-1020.",
+    "tipos": [
+      "Telefone"
+    ],
+    "deveBloquear": false
+  },
+  {
+    "id": "V17",
+    "texto": "Meu documento, o CPF, é 543.231.948-97, guarda pra mim.",
+    "tipos": [
+      "Cpf"
+    ],
+    "deveBloquear": true
+  },
+  {
+    "id": "V18",
+    "texto": "O cpf do seu avô: nove nove seis, zero três zero, oito dois quatro, três zero.",
+    "tipos": [
+      "Cpf"
+    ],
+    "deveBloquear": true
+  },
+  {
+    "id": "V19",
+    "texto": "O número do cartão de crédito tá aqui: 4012 8888 8888 1881.",
+    "tipos": [
+      "CartaoDeCredito"
+    ],
+    "deveBloquear": true
+  },
+  {
+    "id": "V20",
+    "texto": "Deposita na conta poupança 012345-6, agência 0987, do banco da praça.",
+    "tipos": [
+      "DadosBancarios"
+    ],
+    "deveBloquear": true
+  },
+  {
+    "id": "V21",
+    "texto": "A chave pix da costura é o e-mail costuradalourdes@exemplo.com",
+    "tipos": [
+      "ChavePix"
+    ],
+    "deveBloquear": true
+  },
+  {
+    "id": "V22",
+    "texto": "Minha senha do celular é 1950, o ano que cheguei em São Paulo.",
+    "tipos": [
+      "Senha"
+    ],
+    "deveBloquear": true
+  },
+  {
+    "id": "V23",
+    "texto": "Me pediram o código do WhatsApp por mensagem: 845 221. Eu não passei!",
+    "tipos": [
+      "CodigoDeVerificacao"
+    ],
+    "deveBloquear": true
+  },
+  {
+    "id": "V24",
+    "texto": "Escreve pra mim no lourdes1948@exemplo.com.br que eu respondo.",
+    "tipos": [
+      "Email"
+    ],
+    "deveBloquear": false
+  },
+  {
+    "id": "V25",
+    "texto": "A casa fica na Travessa Santa Rita, 77, a do portão azul.",
+    "tipos": [
+      "Endereco"
+    ],
+    "deveBloquear": false
+  },
+  {
+    "id": "V26",
+    "texto": "Moramos na Avenida Mutinga, número 3500, bloco B.",
+    "tipos": [
+      "Endereco"
+    ],
+    "deveBloquear": false
+  },
+  {
+    "id": "V27",
+    "texto": "Eu fico sozinho de segunda a sexta, os filhos só vêm no domingo.",
+    "tipos": [
+      "Vulnerabilidade"
+    ],
+    "deveBloquear": false
+  },
+  {
+    "id": "V28",
+    "texto": "Ela vive só e guarda o dinheiro no armário da cozinha.",
+    "tipos": [
+      "Vulnerabilidade"
+    ],
+    "deveBloquear": false
+  },
+  {
+    "id": "V29",
+    "texto": "Meu RG é 23.456.789-0 e o CPF 99351819019.",
+    "tipos": [
+      "Cpf",
+      "Rg"
+    ],
+    "deveBloquear": true
+  },
+  {
+    "id": "V30",
+    "texto": "Nasci no dia 3/7/1945 e a certidão ainda tá na caixa de documentos.",
+    "tipos": [
+      "DataDeNascimento"
+    ],
+    "deveBloquear": false
+  }
+]

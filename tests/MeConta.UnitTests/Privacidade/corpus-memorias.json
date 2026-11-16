@@ -1,0 +1,469 @@
+[
+  {
+    "id": "M01",
+    "texto": "O segredo do bolo de domingo era bater as claras em neve e usar três ovos caipiras.",
+    "tipos": [],
+    "deveBloquear": false
+  },
+  {
+    "id": "M02",
+    "texto": "A receita leva duas xícaras de farinha, uma de açúcar e 250 gramas de manteiga.",
+    "tipos": [],
+    "deveBloquear": false
+  },
+  {
+    "id": "M03",
+    "texto": "Feijão bom é na panela de pressão: 25 minutos depois que começar a chiar.",
+    "tipos": [],
+    "deveBloquear": false
+  },
+  {
+    "id": "M04",
+    "texto": "Cheguei em Pirituba em 1958, quando a rua ainda era de terra e tinha só três casas.",
+    "tipos": [],
+    "deveBloquear": false
+  },
+  {
+    "id": "M05",
+    "texto": "A padaria da esquina virou farmácia lá por 1987. O pão de lá era o melhor do bairro.",
+    "tipos": [],
+    "deveBloquear": false
+  },
+  {
+    "id": "M06",
+    "texto": "Seu pai nasceu em 1975, num dia de chuva forte. Fomos de ônibus até a maternidade.",
+    "tipos": [],
+    "deveBloquear": false
+  },
+  {
+    "id": "M07",
+    "texto": "Trabalhei 32 anos como costureira. Fazia vestido de noiva para metade da rua 12.",
+    "tipos": [],
+    "deveBloquear": false
+  },
+  {
+    "id": "M08",
+    "texto": "Não tem remédio, minha filha: o que é da gente ninguém tira.",
+    "tipos": [],
+    "deveBloquear": false
+  },
+  {
+    "id": "M09",
+    "texto": "Me conta 1950 foi um ano difícil, mas a gente era feliz com pouco.",
+    "tipos": [],
+    "deveBloquear": false
+  },
+  {
+    "id": "M10",
+    "texto": "Sou de câncer, por isso choro em casamento. Sua avó dizia que era coisa de signo.",
+    "tipos": [],
+    "deveBloquear": false
+  },
+  {
+    "id": "M11",
+    "texto": "O ônibus 8700 passava de hora em hora e o cobrador conhecia todo mundo pelo nome.",
+    "tipos": [],
+    "deveBloquear": false
+  },
+  {
+    "id": "M12",
+    "texto": "A festa junina da rua tinha quadrilha, quentão e fogueira de 3 metros.",
+    "tipos": [],
+    "deveBloquear": false
+  },
+  {
+    "id": "M13",
+    "texto": "O melhor conselho que recebi: guarde sempre um pouco do salário, nem que seja pouco.",
+    "tipos": [],
+    "deveBloquear": false
+  },
+  {
+    "id": "M14",
+    "texto": "Seu avô consertava rádio. Tinha mais de 200 válvulas guardadas numa caixa de sapato.",
+    "tipos": [],
+    "deveBloquear": false
+  },
+  {
+    "id": "M15",
+    "texto": "A conta da venda era anotada na caderneta e a gente pagava no fim do mês.",
+    "tipos": [],
+    "deveBloquear": false
+  },
+  {
+    "id": "M16",
+    "texto": "O chá de boldo era o remédio caseiro pra tudo na casa da minha mãe.",
+    "tipos": [],
+    "deveBloquear": false
+  },
+  {
+    "id": "M17",
+    "texto": "Eu gostava de ir ao cinema da Lapa. O ingresso custava 5 cruzeiros.",
+    "tipos": [],
+    "deveBloquear": false
+  },
+  {
+    "id": "M18",
+    "texto": "Seu tio-avô jogava bola no campo de várzea. O time ganhou o campeonato de 1969.",
+    "tipos": [],
+    "deveBloquear": false
+  },
+  {
+    "id": "M19",
+    "texto": "Quando faltava luz, a gente contava história na varanda até a meia-noite.",
+    "tipos": [],
+    "deveBloquear": false
+  },
+  {
+    "id": "M20",
+    "texto": "A vizinha da frente fazia doce de abóbora e mandava um pote pra cada casa da rua.",
+    "tipos": [],
+    "deveBloquear": false
+  },
+  {
+    "id": "M21",
+    "texto": "Para o pudim: uma lata de leite condensado, a mesma medida de leite e quatro ovos.",
+    "tipos": [],
+    "deveBloquear": false
+  },
+  {
+    "id": "M22",
+    "texto": "Dancei muito no baile do clube em 1962. Foi lá que conheci o seu avô.",
+    "tipos": [],
+    "deveBloquear": false
+  },
+  {
+    "id": "M23",
+    "texto": "Meu primeiro emprego foi numa fábrica de tecidos. Entrava às 6 e saía às 4 da tarde.",
+    "tipos": [],
+    "deveBloquear": false
+  },
+  {
+    "id": "M24",
+    "texto": "A igreja do bairro foi construída pelos próprios moradores, tijolo por tijolo.",
+    "tipos": [],
+    "deveBloquear": false
+  },
+  {
+    "id": "M25",
+    "texto": "O trem passava às 7h10 e todo mundo acertava o relógio pelo apito.",
+    "tipos": [],
+    "deveBloquear": false
+  },
+  {
+    "id": "M26",
+    "texto": "Comprei a primeira televisão em 12 prestações. A rua inteira vinha assistir novela.",
+    "tipos": [],
+    "deveBloquear": false
+  },
+  {
+    "id": "M27",
+    "texto": "Pra abrir a conta, me pediram o CPF: 526.018.159-06. Nunca esqueço esse número.",
+    "tipos": [
+      "Cpf"
+    ],
+    "deveBloquear": true
+  },
+  {
+    "id": "M28",
+    "texto": "Meu cpf é cinco dois seis zero um oito um cinco nove zero seis, sua mãe sempre esquece.",
+    "tipos": [
+      "Cpf"
+    ],
+    "deveBloquear": true
+  },
+  {
+    "id": "M29",
+    "texto": "O documento do seu avô era 083.016.613-05, guardado na gaveta da cômoda.",
+    "tipos": [
+      "Cpf"
+    ],
+    "deveBloquear": true
+  },
+  {
+    "id": "M30",
+    "texto": "Anota aí meu CPF 18609139034 pra fazer o cadastro da farmácia.",
+    "tipos": [
+      "Cpf"
+    ],
+    "deveBloquear": true
+  },
+  {
+    "id": "M31",
+    "texto": "Meu RG é 12.345.678-9, tirado em 1970 na Lapa.",
+    "tipos": [
+      "Rg"
+    ],
+    "deveBloquear": true
+  },
+  {
+    "id": "M32",
+    "texto": "O cartão do mercado era 5555 5555 5555 4444 e eu usava pra tudo.",
+    "tipos": [
+      "CartaoDeCredito"
+    ],
+    "deveBloquear": true
+  },
+  {
+    "id": "M33",
+    "texto": "Seu avô deixou anotado o número do cartão: 4111-1111-1111-1111.",
+    "tipos": [
+      "CartaoDeCredito"
+    ],
+    "deveBloquear": true
+  },
+  {
+    "id": "M34",
+    "texto": "A aposentadoria cai na agência 1234-5, conta corrente 98765-4 do banco do bairro.",
+    "tipos": [
+      "DadosBancarios"
+    ],
+    "deveBloquear": true
+  },
+  {
+    "id": "M35",
+    "texto": "Se precisar, faz um PIX pra minha chave: lourdes.souza@exemplo.com.br",
+    "tipos": [
+      "ChavePix"
+    ],
+    "deveBloquear": true
+  },
+  {
+    "id": "M36",
+    "texto": "A senha do banco é 4521, mas não conta pra ninguém.",
+    "tipos": [
+      "Senha"
+    ],
+    "deveBloquear": true
+  },
+  {
+    "id": "M37",
+    "texto": "A senha do cartão sempre foi o ano em que casei, 1962.",
+    "tipos": [
+      "Senha"
+    ],
+    "deveBloquear": true
+  },
+  {
+    "id": "M38",
+    "texto": "Chegou um código de verificação no celular, 482913, e o rapaz pediu pra eu falar.",
+    "tipos": [
+      "CodigoDeVerificacao"
+    ],
+    "deveBloquear": true
+  },
+  {
+    "id": "M39",
+    "texto": "Tenho diabetes desde os 60 e por isso parei de fazer o bolo de domingo.",
+    "tipos": [
+      "Saude"
+    ],
+    "deveBloquear": false
+  },
+  {
+    "id": "M40",
+    "texto": "Tomo remédio para pressão todo dia, depois do café.",
+    "tipos": [
+      "Saude"
+    ],
+    "deveBloquear": false
+  },
+  {
+    "id": "M41",
+    "texto": "Seu avô teve um derrame em 1998 e ficou um tempo internado no Hospital do Bairro.",
+    "tipos": [
+      "Saude"
+    ],
+    "deveBloquear": false
+  },
+  {
+    "id": "M42",
+    "texto": "Faço hemodiálise três vezes por semana, mas ainda dá tempo de costurar.",
+    "tipos": [
+      "Saude"
+    ],
+    "deveBloquear": false
+  },
+  {
+    "id": "M43",
+    "texto": "Tomo losartana e metformina, a farmácia da esquina já me conhece.",
+    "tipos": [
+      "Saude"
+    ],
+    "deveBloquear": false
+  },
+  {
+    "id": "M44",
+    "texto": "Me liga no (11) 98765-4321 que eu te ensino a receita inteira.",
+    "tipos": [
+      "Telefone"
+    ],
+    "deveBloquear": false
+  },
+  {
+    "id": "M45",
+    "texto": "O telefone da casa era 3901-2345, com o 11 na frente: (11) 3901-2345.",
+    "tipos": [
+      "Telefone"
+    ],
+    "deveBloquear": false
+  },
+  {
+    "id": "M46",
+    "texto": "Meu zap é onze nove oito sete seis cinco quatro três dois um.",
+    "tipos": [
+      "Telefone"
+    ],
+    "deveBloquear": false
+  },
+  {
+    "id": "M47",
+    "texto": "Pode mandar as fotos pro meu email lourdes.costura@exemplo.com",
+    "tipos": [
+      "Email"
+    ],
+    "deveBloquear": false
+  },
+  {
+    "id": "M48",
+    "texto": "O email da sua tia é tereza ponto lima arroba exemplo ponto com",
+    "tipos": [
+      "Email"
+    ],
+    "deveBloquear": false
+  },
+  {
+    "id": "M49",
+    "texto": "Eu moro na Rua das Flores, 123, desde que casei.",
+    "tipos": [
+      "Endereco"
+    ],
+    "deveBloquear": false
+  },
+  {
+    "id": "M50",
+    "texto": "A casa da sua bisavó era na Avenida Mutinga nº 1200, perto do mercado.",
+    "tipos": [
+      "Endereco"
+    ],
+    "deveBloquear": false
+  },
+  {
+    "id": "M51",
+    "texto": "O cep daqui é 02998-000, você sempre pergunta.",
+    "tipos": [
+      "Cep"
+    ],
+    "deveBloquear": false
+  },
+  {
+    "id": "M52",
+    "texto": "Nasci em 12/03/1948, numa fazenda em Minas.",
+    "tipos": [
+      "DataDeNascimento"
+    ],
+    "deveBloquear": false
+  },
+  {
+    "id": "M53",
+    "texto": "Moro sozinha desde que seu avô se foi, mas a vizinha sempre passa aqui.",
+    "tipos": [
+      "Vulnerabilidade"
+    ],
+    "deveBloquear": false
+  },
+  {
+    "id": "M54",
+    "texto": "Eu guardo dinheiro debaixo do colchão, banco não é pra mim.",
+    "tipos": [
+      "Vulnerabilidade"
+    ],
+    "deveBloquear": false
+  },
+  {
+    "id": "M55",
+    "texto": "Moro sozinha na Rua das Palmeiras, 45. A casa não tem grade, mas nunca aconteceu nada.",
+    "tipos": [
+      "Endereco",
+      "Vulnerabilidade"
+    ],
+    "deveBloquear": false
+  },
+  {
+    "id": "M56",
+    "texto": "Fico sozinha a tarde toda. Se quiser, liga no (11) 97654-3210.",
+    "tipos": [
+      "Telefone",
+      "Vulnerabilidade"
+    ],
+    "deveBloquear": false
+  },
+  {
+    "id": "M57",
+    "texto": "Meu CPF é 628.194.821-12 e tenho artrose no joelho, por isso não danço mais.",
+    "tipos": [
+      "Cpf",
+      "Saude"
+    ],
+    "deveBloquear": true
+  },
+  {
+    "id": "M58",
+    "texto": "A senha do aplicativo é 2580 e o código que chegou foi 771204.",
+    "tipos": [
+      "CodigoDeVerificacao",
+      "Senha"
+    ],
+    "deveBloquear": true
+  },
+  {
+    "id": "M59",
+    "texto": "Nasci em 5 de maio de 1950 e moro na Rua Jorge Mobst Sobrinho, 300.",
+    "tipos": [
+      "DataDeNascimento",
+      "Endereco"
+    ],
+    "deveBloquear": false
+  },
+  {
+    "id": "M60",
+    "texto": "Tenho Alzheimer no começo e moro só. Meu telefone é (11) 96543-2109.",
+    "tipos": [
+      "Saude",
+      "Telefone",
+      "Vulnerabilidade"
+    ],
+    "deveBloquear": false
+  },
+  {
+    "id": "M61",
+    "texto": "Meu c​pf é 993.518.190​-19, escrevi com cuidado.",
+    "tipos": [
+      "Cpf"
+    ],
+    "deveBloquear": true
+  },
+  {
+    "id": "M62",
+    "texto": "CPF: ９９６.０３０.８２４-３０ (copiei do documento).",
+    "tipos": [
+      "Cpf"
+    ],
+    "deveBloquear": true
+  },
+  {
+    "id": "M63",
+    "texto": "Meu CPF é 937.865.797-42, se não me engano.",
+    "tipos": [
+      "Cpf"
+    ],
+    "deveBloquear": true
+  },
+  {
+    "id": "M64",
+    "texto": "Faz o PIX pro telefone: minha chave pix é 11 98877-6655.",
+    "tipos": [
+      "ChavePix"
+    ],
+    "deveBloquear": true
+  }
+]

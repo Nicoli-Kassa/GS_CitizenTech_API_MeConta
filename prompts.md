@@ -20,6 +20,7 @@ Defini o escopo, a arquitetura, as tecnologias e as regras de negócio a partir 
 | 5. Problemas             | 14/11         | Investiguei os erros e apliquei as correções                                 | Explicação das causas                                                    |
 | 6. Porta-retrato (IoT)   | 15/11         | Defini o papel do aparelho, gerei a migração, testei as rotas e tirei os prints | Primeira versão das entidades, serviços, rotas, testes e roteiro         |
 | 7. Dependência vulnerável | 15/11        | Atualizei o pacote e confirmei o build sem avisos                            | Explicação do aviso e da versão corrigida                                |
+| 8. Motor de PII (Cybersecurity) | 15/11   | Defini o que conta como dado de risco e o que bloqueia, revisei as regras e rodei os testes e a avaliação | Primeira versão do módulo, das regras, dos testes e dos conjuntos de memórias simuladas |
 
 ---
 
@@ -137,6 +138,36 @@ Defini o escopo, a arquitetura, as tecnologias e as regras de negócio a partir 
 | Problema | Como a IA ajudou | O que eu fiz |
 | --- | --- | --- |
 | O build mostrava os avisos NU1902 e NU1903 no pacote `System.Security.Cryptography.Pkcs` 9.0.11, usado indiretamente pelo projeto | Explicou que a versão tinha falhas de negação de serviço publicadas e qual versão já trazia a correção | Adicionei `System.Security.Cryptography.Pkcs` 10.0.13 na Infrastructure e confirmei o build sem avisos |
+
+---
+
+## 8. Motor de dados pessoais (Cybersecurity) · 15/11/2026
+
+**O que eu precisava:** um motor que procure dados pessoais numa memória antes de ela sair do caderno da família e ir para o mapa do bairro (US18), com regras que possam ser acrescentadas sem mexer no código e um índice "Risco Cidadão" para o painel.
+
+**Como usei a IA:** expliquei o problema, os dados que preocupam (CPF, saúde, senhas e o que expõe a rotina de uma pessoa idosa) e o fato de as respostas chegarem em áudio. Pedi apoio para gerar a primeira versão do módulo, das regras, dos testes e de dois conjuntos de memórias simuladas para medir os acertos.
+
+**Minhas decisões:**
+
+- O módulo fica dentro da solução da API (`src/MeConta.Privacidade`), sem pacote externo, para rodar onde o dado entra.
+- As regras ficam num arquivo JSON: dado novo = regra nova no arquivo.
+- Três níveis: risco alto bloqueia a publicação (CPF, RG, cartão, dados bancários, PIX, senha, código de verificação); risco médio pede confirmação da família (saúde, telefone, e-mail, endereço, CEP, data de nascimento, rotina da casa).
+- Na dúvida, bloquear: texto grande demais ou análise que passa do tempo não é liberado.
+- O resultado nunca guarda o dado em claro, só o trecho mascarado.
+- A avaliação mostra também os erros da primeira rodada no conjunto de validação, e não só o resultado depois dos ajustes.
+
+**Resultado:**
+
+- Projeto `MeConta.Privacidade`: normalização (acentos, caracteres invisíveis, números falados), 17 regras em `regras-pii.json`, validadores de CPF, cartão e telefone, combinações de risco, índice Risco Cidadão e os tipos `TextoDoUsuario` e `TextoVerificado`.
+- 117 testes novos em `tests/MeConta.UnitTests/Privacidade`, incluindo os casos CT41 a CT43 do backlog.
+- Conjuntos de 64 e 30 memórias simuladas com gabarito, e a ferramenta `tools/MeConta.Privacidade.Avaliacao`, que gera a tabela de precisão e recall.
+- Documentação em `docs/cyber/motor-pii.md`.
+
+**Meu trabalho de validação:**
+
+- Rodei `dotnet build` e `dotnet test`: 268 testes aprovados.
+- Rodei a ferramenta de avaliação e conferi as tabelas do `docs/cyber/motor-pii.md`.
+- Testei frases do dia a dia que não podem gerar alerta, como "panela de pressão" e "me conta 1950".
 
 ---
 

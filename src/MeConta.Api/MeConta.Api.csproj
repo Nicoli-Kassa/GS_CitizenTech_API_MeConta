@@ -1,10 +1,11 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <RootNamespace>MeConta.Api</RootNamespace>
     <!-- Os comentários /// dos controllers e DTOs viram descrições na documentação OpenAPI. -->
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>$(NoWarn);1591</NoWarn>
+    <UserSecretsId>d9f0c31f-26ea-470f-b771-a0d11c00409c</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
