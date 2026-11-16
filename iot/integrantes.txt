@@ -1,0 +1,9 @@
+Me Conta · Porta-retrato (Physical Computing / IoT)
+Global Solution FIAP 2026.2 · CitizenTech
+
+Integrantes
+Nicoli Amy Kassa – RM 559104 – Turma 3ESPW
+
+Projeto no Wokwi: https://wokwi.com/projects/480807903168932865
+Repositório: https://github.com/Nicoli-Kassa/GS_CitizenTech_API_MeConta (pasta iot/)
+Vídeo: [inserir link do vídeo]

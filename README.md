@@ -20,6 +20,7 @@ Backend do **Me Conta**, desenvolvido para a Global Solution FIAP 2026 (CitizenT
 | 📄 **Documentação da API** | `/swagger` e `/scalar` (com a API rodando)                        |
 | 🧪 **Testes**              | `dotnet test` (268 testes)                                        |
 | 🗂️ **Matérias**            | [O que cada matéria faz e onde cada entrega está](docs/MATERIAS.md) |
+| 🖼️ **Porta-retrato (IoT)** | [Circuito no Wokwi, ponte Node-RED e evidências](iot/README.md)     |
 
 ---
 
@@ -136,7 +137,7 @@ Cada matéria cuida de uma parte do Me Conta. O mapa completo, com cada critéri
 | --- | --- | --- |
 | **C# Software Development** | A Web API inteira, com domínio orientado a objetos, EF Core, LINQ e async/await | `src/` (4 projetos) e `tests/` · [detalhes](docs/MATERIAS.md#c-software-development) |
 | **SOA e Web Services** | Os serviços REST que o app e o porta-retrato consomem, com banco, migrações, documentação automática e testes | `src/`, `Migrations/`, `/swagger`, `/scalar`, `tests/` · [detalhes](docs/MATERIAS.md#soa-e-web-services) |
-| **Physical Computing (IoT)** | Porta-retrato com ESP32 que acende com pergunta nova e tem o botão "quero contar" | Rotas `/porta-retrato/*` e `/avisos`, migração `PortaRetrato` · [detalhes](docs/MATERIAS.md#physical-computing-iot) |
+| **Physical Computing (IoT)** | Porta-retrato com ESP32 que acende com pergunta nova e tem o botão "quero contar" | Pasta [`iot/`](iot/README.md) (circuito, firmware, ponte Node-RED e painel); rotas `/porta-retrato/*` e `/avisos`, migração `PortaRetrato` · [detalhes](docs/MATERIAS.md#physical-computing-iot) |
 | **Cybersecurity** | Filtro de dados pessoais, taint analysis e painel "Risco Cidadão" antes de publicar no mapa do bairro | Proteções em [Privacidade e segurança](#privacidade-e-segurança); motor de PII `MeConta.Privacidade` ([como funciona](docs/cyber/motor-pii.md)), integração em andamento · [detalhes](docs/MATERIAS.md#cybersecurity) |
 | **Operating Systems** | Servidor Linux que roda esta API, com monitoramento e logs | `/health`, perfil `rede-local`, banco por variável de ambiente · [detalhes](docs/MATERIAS.md#operating-systems) |
 | **Testing, Compliance & QA** | Backlog e casos de teste no Azure DevOps | Coluna "User story" dos [Endpoints](#endpoints) e [roteiro de testes](docs/ROTEIRO_DE_TESTES.md) · [detalhes](docs/MATERIAS.md#testing-compliance--qa) |
@@ -151,7 +152,7 @@ Cada matéria cuida de uma parte do Me Conta. O mapa completo, com cada critéri
 - **Caderno da família**: upload do áudio da resposta (e foto opcional), listagem paginada com filtros, áudio para ouvir no app e exclusão pela pessoa que criou a página.
 - **Modo offline**: o app manda uma chave de idempotência; se reenviar a mesma página, a API devolve a que já existe e não duplica.
 - **Indicador de impacto** "Conversas de verdade" da semana.
-- **Porta-retrato Me Conta (IoT)**: pareamento de uma caixinha com ESP32 ao idoso; a caixinha (pela ponte Node-RED) consulta se há pergunta esperando, avisa "quero contar" e informa se está conectada, usando uma chave própria no lugar do login. A família vê os avisos no app.
+- **Porta-retrato Me Conta (IoT)**: pareamento de uma caixinha com ESP32 ao idoso; a caixinha (pela ponte Node-RED) consulta se há pergunta esperando, avisa "quero contar" e informa se está conectada, usando uma chave própria no lugar do login. A família vê os avisos no app. O circuito no Wokwi, o firmware e a ponte Node-RED estão na pasta [`iot/`](iot/README.md).
 - **Login** com ASP.NET Identity (token Bearer) e regra de acesso: só a família vê os dados da família.
 
 ## Arquitetura
@@ -196,6 +197,7 @@ GS_CitizenTech_API_MeConta/
 │   ├── ROTEIRO_DE_TESTES.md     ← 88 chamadas com o resultado esperado
 │   ├── cyber/                   ← motor de PII: regras, índice e avaliação
 │   └── evidencias/              ← prints usados neste README
+├── iot/                         ← porta-retrato: circuito no Wokwi, firmware, ponte Node-RED e prints
 ├── src/
 │   ├── MeConta.Domain/          Comum · Entidades · Enums · Excecoes · Regras · ValueObjects
 │   ├── MeConta.Application/     Abstracoes · Adapters · Dtos · Excecoes · Servicos
@@ -531,6 +533,14 @@ dotnet test
 
 ### Porta-retrato Me Conta (IoT)
 
+A caixinha no Wokwi, ligada a esta API pela ponte Node-RED. Todos os prints do circuito e do painel estão em [`iot/README.md`](iot/README.md#evidências).
+
+![Wokwi e painel lado a lado: o "quero contar" da pergunta 10 registrado às 19:06 e a pergunta 11 já na telinha](iot/evidencias/11-integracao-wokwi-e-painel.png)
+
+![Painel da família no Node-RED com a caixinha conectada, a pergunta na telinha, os avisos "quero contar" e a luz do ambiente](iot/evidencias/09-painel.png)
+
+As rotas do aparelho pelo Swagger:
+
 ![Estado do aparelho: pergunta da Bia esperando a Vó Lourdes, moldura acesa](docs/evidencias/13-porta-retrato-estado.png)
 
 ![Botão "quero contar" enviado pelo aparelho: aviso criado para a família (201)](docs/evidencias/14-porta-retrato-quero-contar.png)
@@ -570,6 +580,7 @@ dotnet test
 | Documentação           | Microsoft.AspNetCore.OpenApi, Swagger UI, Scalar                   |
 | Testes                 | xUnit                                                              |
 | Monitoramento          | Health checks (`/health`)                                          |
+| Porta-retrato (IoT)    | ESP32 no Wokwi (Arduino), MQTT (PubSubClient, test.mosquitto.org), Node-RED com node-red-dashboard |
 
 ## Próximos passos
 

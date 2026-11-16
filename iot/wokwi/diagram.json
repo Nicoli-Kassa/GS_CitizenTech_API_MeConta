@@ -1,0 +1,177 @@
+{
+  "version": 1,
+  "author": "Nicoli Amy Kassa",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "board-esp32-devkit-c-v4",
+      "id": "esp",
+      "top": 0,
+      "left": -120,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-led-ring",
+      "id": "moldura",
+      "top": 0,
+      "left": 120,
+      "attrs": {
+        "pixels": "24",
+        "background": "#7a4a26"
+      }
+    },
+    {
+      "type": "board-ssd1306",
+      "id": "telinha",
+      "top": 52.2,
+      "left": 162.5,
+      "attrs": {
+        "i2cAddress": "0x3c"
+      }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "botao",
+      "top": 260,
+      "left": 180,
+      "attrs": {
+        "color": "green",
+        "label": "Quero contar"
+      }
+    },
+    {
+      "type": "wokwi-buzzer",
+      "id": "buzzer",
+      "top": 236,
+      "left": 300,
+      "attrs": {
+        "volume": "0.2"
+      }
+    },
+    {
+      "type": "wokwi-photoresistor-sensor",
+      "id": "sensorLuz",
+      "top": 40,
+      "left": -340,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-slide-switch",
+      "id": "testeWifi",
+      "top": 160,
+      "left": -230,
+      "attrs": {}
+    }
+  ],
+  "connections": [
+    [
+      "esp:TX",
+      "$serialMonitor:RX",
+      "",
+      []
+    ],
+    [
+      "esp:RX",
+      "$serialMonitor:TX",
+      "",
+      []
+    ],
+    [
+      "moldura:DIN",
+      "esp:4",
+      "green",
+      []
+    ],
+    [
+      "moldura:VCC",
+      "esp:5V",
+      "red",
+      []
+    ],
+    [
+      "moldura:GND",
+      "esp:GND.3",
+      "black",
+      []
+    ],
+    [
+      "telinha:SDA",
+      "esp:21",
+      "blue",
+      []
+    ],
+    [
+      "telinha:SCL",
+      "esp:22",
+      "violet",
+      []
+    ],
+    [
+      "telinha:VCC",
+      "esp:3V3",
+      "red",
+      []
+    ],
+    [
+      "telinha:GND",
+      "esp:GND.2",
+      "black",
+      []
+    ],
+    [
+      "botao:1.l",
+      "esp:13",
+      "green",
+      []
+    ],
+    [
+      "botao:2.l",
+      "esp:GND.1",
+      "black",
+      []
+    ],
+    [
+      "buzzer:2",
+      "esp:25",
+      "orange",
+      []
+    ],
+    [
+      "buzzer:1",
+      "esp:GND.1",
+      "black",
+      []
+    ],
+    [
+      "sensorLuz:AO",
+      "esp:34",
+      "gold",
+      []
+    ],
+    [
+      "sensorLuz:VCC",
+      "esp:3V3",
+      "red",
+      []
+    ],
+    [
+      "sensorLuz:GND",
+      "esp:GND.1",
+      "black",
+      []
+    ],
+    [
+      "testeWifi:2",
+      "esp:27",
+      "gray",
+      []
+    ],
+    [
+      "testeWifi:3",
+      "esp:GND.1",
+      "black",
+      []
+    ]
+  ],
+  "dependencies": {}
+}

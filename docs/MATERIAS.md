@@ -10,7 +10,7 @@ O Me Conta é uma solução só, dividida em partes. Esta API é o centro: o app
 | --- | --- | --- | --- |
 | [C# Software Development](#c-software-development) | Web API em .NET 10 com domínio orientado a objetos, EF Core e LINQ | Este repositório (`src/`, `tests/`) | ✅ Pronta |
 | [SOA e Web Services](#soa-e-web-services) | Serviços REST que o app e o porta-retrato consomem, com banco, migrações e documentação automática | Este repositório (`src/`, `tests/`, `docs/`) | ✅ Pronta |
-| [Physical Computing (IoT)](#physical-computing-iot) | Porta-retrato com ESP32: acende quando chega pergunta e tem o botão "quero contar" | Rotas do aparelho nesta API; circuito no Wokwi; ponte Node-RED | 🟡 API pronta; circuito e Node-RED em andamento |
+| [Physical Computing (IoT)](#physical-computing-iot) | Porta-retrato com ESP32: acende quando chega pergunta e tem o botão "quero contar" | Pasta [`iot/`](../iot/README.md) (circuito, firmware, ponte Node-RED, evidências) e rotas do aparelho nesta API | ✅ Pronta (falta o link do vídeo) |
 | [Cybersecurity](#cybersecurity) | Filtro de dados pessoais antes de publicar no mapa do bairro, taint analysis e painel "Risco Cidadão" | Módulo `MeConta.Privacidade` dentro desta API | 🟡 Motor de PII pronto; integração, taint, IA e painel em andamento |
 | [Operating Systems](#operating-systems) | VM Linux que roda esta API, com monitoramento e logs de auditoria | Scripts Bash (pasta própria); esta API fornece o `/health` e a configuração por variável de ambiente | 🔜 A fazer |
 | [Testing, Compliance & QA](#testing-compliance--qa) | Backlog com critérios de aceite e casos de teste no Azure DevOps | Azure DevOps; nesta API, os casos que rodam pelo Swagger | ✅ Pronta |
@@ -47,11 +47,17 @@ O Me Conta é uma solução só, dividida em partes. Esta API é o centro: o app
 
 ## Physical Computing (IoT)
 
-**A parte dela no Me Conta:** o porta-retrato Me Conta, para o idoso que ainda não usa bem o celular (degrau "Conectar", US15). Um anel de LEDs acende quando a família manda uma pergunta, a telinha mostra quem perguntou e o botão grande "quero contar" avisa a família no app.
+**A parte dela no Me Conta:** o porta-retrato Me Conta, para o idoso que ainda não usa bem o celular (degrau "Conectar", US15). Um anel de LEDs acende quando a família manda uma pergunta, a telinha mostra quem perguntou e o botão grande "quero contar" avisa a família no app. Um sensor de luz deixa o brilho mais baixo e tira o som quando a sala está escura. Documentação completa em **[iot/README.md](../iot/README.md)**.
 
 ```
-App ──HTTP──> Me Conta API <──HTTP── Node-RED <──MQTT──> broker <──MQTT──> ESP32 (Wokwi)
+App ──HTTP──> Me Conta API <──HTTP── Node-RED <──MQTT──> test.mosquitto.org <──MQTT──> ESP32 (Wokwi)
 ```
+
+| Entregável | Onde está |
+| --- | --- |
+| **Link do projeto no Wokwi** | [wokwi.com/projects/480807903168932865](https://wokwi.com/projects/480807903168932865) |
+| **Link do vídeo (até 4 min)** | [Assistir no YouTube](https://youtu.be/INSERIR-LINK-DO-VIDEO-IOT) |
+| **Arquivo com os integrantes** | [`iot/integrantes.txt`](../iot/integrantes.txt) |
 
 | O que é pedido | Onde é atendido |
 | --- | --- |
@@ -59,7 +65,9 @@ App ──HTTP──> Me Conta API <──HTTP── Node-RED <──MQTT──>
 | **Regras do aparelho** | [`PortaRetrato`](../src/MeConta.Domain/Entidades/PortaRetrato.cs), [`AvisoQueroContar`](../src/MeConta.Domain/Entidades/AvisoQueroContar.cs), [`FilaDoPortaRetrato`](../src/MeConta.Domain/Regras/FilaDoPortaRetrato.cs) e [`AparelhoPortaRetratoService`](../src/MeConta.Application/Servicos/AparelhoPortaRetratoService.cs): só o hash da chave é guardado, "quero contar" não duplica, conectado = sinal de vida nos últimos 90 s. |
 | **Banco** | Migração [`PortaRetrato`](../src/MeConta.Infrastructure/Persistencia/Migrations/20261115195031_PortaRetrato.cs) (tabelas `PortaRetratos` e `AvisosQueroContar`) e porta-retrato de demonstração da Vó Lourdes (código `k7m2q9xd`). |
 | **Testes e evidências** | [`PortaRetratoTests`](../tests/MeConta.UnitTests/Domain/PortaRetratoTests.cs), [`FilaDoPortaRetratoTests`](../tests/MeConta.UnitTests/Regras/FilaDoPortaRetratoTests.cs), [`AparelhoPortaRetratoServiceTests`](../tests/MeConta.UnitTests/Servicos/AparelhoPortaRetratoServiceTests.cs), [`PortaRetratoServiceTests`](../tests/MeConta.UnitTests/Servicos/PortaRetratoServiceTests.cs); chamadas 67 a 88 do [`MeConta.Api.http`](../src/MeConta.Api/MeConta.Api.http) (Bloco K do [roteiro](ROTEIRO_DE_TESTES.md)); prints [13](evidencias/13-porta-retrato-estado.png) a [17](evidencias/17-porta-retrato-moldura-apagada.png). |
-| **Circuito no Wokwi, ponte Node-RED, vídeo e integrantes** | Em andamento: firmware e `flows.json` vão para a pasta `iot/` deste repositório, junto com o link do Wokwi e o `integrantes.txt`. |
+| **Circuito com ESP32, sensores e componentes** | [`iot/wokwi/`](../iot/wokwi): [`diagram.json`](../iot/wokwi/diagram.json) com ESP32 DevKit C v4, anel de 24 LEDs RGB (moldura), tela OLED SSD1306, botão "quero contar", buzzer, sensor de luz (LDR) e chave para simular a queda do Wi-Fi; firmware comentado em [`sketch.ino`](../iot/wokwi/sketch.ino). Tabela de pinos em [O circuito](../iot/README.md#o-circuito). |
+| **Integração com a solução** | Ponte [`iot/node-red/flows.json`](../iot/node-red/flows.json): MQTT ↔ rotas da API (`estado`, `quero-contar`, `conexao`, `avisos`) e painel `/ui` com a visão da família. Mensagens em [Mensagens MQTT](../iot/README.md#mensagens-mqtt). |
+| **Funcionamento demonstrado** | Casos CT36 (pergunta acende a moldura e o botão avisa a família) e CT37 (sem Wi-Fi) aprovados em 16/11; prints da caixinha e do painel em [`iot/evidencias`](../iot/evidencias) e na seção [Evidências](../iot/README.md#evidências). |
 
 ## Cybersecurity
 

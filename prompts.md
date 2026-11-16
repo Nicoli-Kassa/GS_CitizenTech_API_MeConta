@@ -5,7 +5,7 @@ Este arquivo registra como usei inteligência artificial como ferramenta de apoi
 Defini o escopo, a arquitetura, as tecnologias e as regras de negócio a partir do backlog do projeto. Usei a IA como apoio para tirar dúvidas, acelerar a escrita de código e documentação e resolver problemas. Todo o conteúdo gerado com apoio da IA foi revisado, ajustado, compilado e testado por mim.
 
 **Ferramenta:** Claude (Anthropic)
-**Período:** 10 a 15/11/2026
+**Período:** 10 a 16/11/2026
 
 ---
 
@@ -21,6 +21,9 @@ Defini o escopo, a arquitetura, as tecnologias e as regras de negócio a partir 
 | 6. Porta-retrato (IoT)   | 15/11         | Defini o papel do aparelho, gerei a migração, testei as rotas e tirei os prints | Primeira versão das entidades, serviços, rotas, testes e roteiro         |
 | 7. Dependência vulnerável | 15/11        | Atualizei o pacote e confirmei o build sem avisos                            | Explicação do aviso e da versão corrigida                                |
 | 8. Motor de PII (Cybersecurity) | 15/11   | Defini o que conta como dado de risco e o que bloqueia, revisei as regras e rodei os testes e a avaliação | Primeira versão do módulo, das regras, dos testes e dos conjuntos de memórias simuladas |
+| 9. Circuito no Wokwi     | 16/11         | Escolhi os componentes e o visual da caixinha, montei no Wokwi e testei cada situação | Primeira versão do firmware e do `diagram.json`                    |
+| 10. Ponte Node-RED e painel | 16/11      | Instalei e configurei o Node-RED, rodei o ciclo completo com a API e ajustei o visual do painel | Primeira versão do fluxo e do painel                       |
+| 11. Documentação do IoT  | 16/11         | Revisei os textos e tirei os prints                                          | Estrutura do README da pasta `iot/`                                      |
 
 ---
 
@@ -168,6 +171,62 @@ Defini o escopo, a arquitetura, as tecnologias e as regras de negócio a partir 
 - Rodei `dotnet build` e `dotnet test`: 268 testes aprovados.
 - Rodei a ferramenta de avaliação e conferi as tabelas do `docs/cyber/motor-pii.md`.
 - Testei frases do dia a dia que não podem gerar alerta, como "panela de pressão" e "me conta 1950".
+
+---
+
+## 9. Circuito do porta-retrato no Wokwi · 16/11/2026
+
+**O que eu precisava:** um circuito com ESP32 que fosse parte do Me Conta, e não um projeto à parte: a pergunta que a neta manda pelo app tinha que acender a caixinha na casa da avó, e o botão tinha que avisar a família.
+
+**Como usei a IA:** descrevi o porta-retrato que eu queria (uma caixinha bonita, com moldura de LEDs e uma telinha) e pedi apoio para gerar a primeira versão do firmware, do circuito e das mensagens MQTT.
+
+**Minhas decisões:**
+
+- Visual de porta-retrato: anel de LEDs como moldura, com a tela OLED no meio, e um botão grande "quero contar".
+- Sensor de luz para o modo noite: brilho baixo e sem som quando a sala está escura.
+- Uma chave no circuito só para testar a queda do Wi-Fi durante a demonstração.
+- Pelo broker público passam só o apelido, o primeiro nome de quem perguntou e o texto da pergunta.
+
+**Meu trabalho de validação:** rodei no Wokwi cada situação (conexão, pergunta nova com buzzer, pergunta longa com acentos, "quero contar", queda do Wi-Fi com reconexão e modo noite) e tirei os prints de `iot/evidencias/`.
+
+| Problema | Como a IA ajudou | O que eu fiz |
+| --- | --- | --- |
+| O Wokwi não compilava (`unknown type name 'class'`) | Explicou que o projeto tinha sido criado no modelo em C, e não no de Arduino | Criei o projeto de novo no modelo ESP32 Arduino |
+| Erro `'Nota' does not name a type` | Explicou que a IDE cria as declarações das funções antes dos tipos | Movi o tipo para antes da primeira função |
+| O Wi-Fi ficava parado no status 0 | Explicou que o status 0 indica conexão sem endereço IP e que o gateway do simulador pode demorar | Comparei com outro projeto que conectava, esperei e confirmei a conexão |
+| O MQTT caía com a simulação lenta | Sugeriu um keepalive maior e mensagens mais espaçadas | Ajustei e a conexão ficou estável |
+| A moldura parecia marrom no Wokwi | Explicou que o simulador pinta a cor exata do LED | Usei cores mais fortes |
+
+---
+
+## 10. Ponte Node-RED e painel da família · 16/11/2026
+
+**O que eu precisava:** ligar o porta-retrato à API, que roda na minha máquina e não é alcançada pelo Wokwi, e mostrar o lado da família durante a demonstração.
+
+**Como usei a IA:** pedi apoio para gerar a primeira versão do fluxo do Node-RED e do painel, com as chamadas às rotas do aparelho e aos avisos.
+
+**Minhas decisões:**
+
+- Node-RED como ponte entre o MQTT e a API, com as configurações nas variáveis de ambiente da aba.
+- Painel com o pacote `node-red-dashboard` clássico, com um botão que faz o mesmo envio de pergunta que o app faz.
+- Cores do painel no tom marrom do porta-retrato.
+
+**Meu trabalho de validação:** rodei a API, o Node-RED e o Wokwi juntos: mandei a pergunta da semana pelo painel, vi a moldura acender, apertei "quero contar" e conferi o aviso no painel e na API. Os casos CT36 e CT37 passaram.
+
+| Problema | Como a IA ajudou | O que eu fiz |
+| --- | --- | --- |
+| "Tipos não reconhecidos" ao importar o fluxo | Explicou que faltava o pacote do painel | Instalei o `node-red-dashboard` pela paleta e importei de novo |
+| `ECONNREFUSED` nas chamadas à API | Explicou que a API precisava estar no ar antes | Subi a API e as chamadas passaram |
+| `localhost:5080` dava 404 no navegador | Explicou que a API não tem página na raiz | Passei a conferir por `/swagger` e `/health` |
+| Títulos e botões se sobrepondo no painel | Sugeriu outro tamanho e disposição para os grupos | Ajustei o layout e as cores e exportei o fluxo final |
+
+---
+
+## 11. Documentação do porta-retrato · 16/11/2026
+
+**Como usei a IA:** pedi apoio para estruturar o README da pasta `iot/` e para ligar cada entregável ao arquivo que o atende em `docs/MATERIAS.md`.
+
+**Meu trabalho:** revisei os textos, escolhi e tirei os prints e conferi os links.
 
 ---
 

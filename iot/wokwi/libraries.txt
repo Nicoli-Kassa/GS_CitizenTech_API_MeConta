@@ -1,0 +1,7 @@
+# Bibliotecas do porta-retrato Me Conta (o Wokwi instala pelo nome)
+PubSubClient
+ArduinoJson
+Adafruit NeoPixel
+Adafruit GFX Library
+Adafruit SSD1306
+Adafruit BusIO

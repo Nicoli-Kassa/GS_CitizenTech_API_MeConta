@@ -1,0 +1,1488 @@
+[
+    {
+        "id": "aba-ponte-porta-retrato",
+        "type": "tab",
+        "label": "Ponte do porta-retrato",
+        "disabled": false,
+        "info": "Liga o porta-retrato (ESP32 no Wokwi, por MQTT) à API do Me Conta (HTTP) e mostra o painel em /ui.\nConfiguração nas variáveis de ambiente desta aba (duplo clique na aba > Environment Variables).",
+        "env": [
+            {
+                "name": "API_URL",
+                "value": "http://localhost:5080",
+                "type": "str"
+            },
+            {
+                "name": "CHAVE_PORTA_RETRATO",
+                "value": "demo-porta-retrato-vo-lourdes-2026",
+                "type": "str"
+            },
+            {
+                "name": "IDOSO_ID",
+                "value": "1",
+                "type": "str"
+            },
+            {
+                "name": "FAMILIA_ID",
+                "value": "1",
+                "type": "str"
+            },
+            {
+                "name": "EMAIL_FAMILIA",
+                "value": "bia@example.com",
+                "type": "str"
+            },
+            {
+                "name": "SENHA_FAMILIA",
+                "value": "MeConta@2026",
+                "type": "str"
+            }
+        ]
+    },
+    {
+        "id": "broker-porta-retrato",
+        "type": "mqtt-broker",
+        "name": "test.mosquitto.org",
+        "broker": "test.mosquitto.org",
+        "port": "1883",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "ui-aba",
+        "type": "ui_tab",
+        "name": "Porta-retrato Me Conta",
+        "icon": "fa-picture-o",
+        "order": 1,
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "ui-caixinha",
+        "type": "ui_group",
+        "name": "Na caixinha agora",
+        "tab": "ui-aba",
+        "order": 1,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "disabled": false,
+        "hidden": false,
+        "className": ""
+    },
+    {
+        "id": "ui-avisos",
+        "type": "ui_group",
+        "name": "Avisos para a família",
+        "tab": "ui-aba",
+        "order": 2,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "disabled": false,
+        "hidden": false,
+        "className": ""
+    },
+    {
+        "id": "ui-luz",
+        "type": "ui_group",
+        "name": "Luz do ambiente",
+        "tab": "ui-aba",
+        "order": 3,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "disabled": false,
+        "hidden": false,
+        "className": ""
+    },
+    {
+        "id": "ui-familia",
+        "type": "ui_group",
+        "name": "Família (simulação)",
+        "tab": "ui-aba",
+        "order": 4,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "disabled": false,
+        "hidden": false,
+        "className": ""
+    },
+    {
+        "id": "0067ab8c91a46b35",
+        "type": "ui_base",
+        "theme": {
+            "name": "theme-custom",
+            "lightTheme": {
+                "default": "#0094CE",
+                "baseColor": "#643c1b",
+                "baseFont": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif",
+                "edited": true,
+                "reset": false
+            },
+            "darkTheme": {
+                "default": "#097479",
+                "baseColor": "#097479",
+                "baseFont": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif",
+                "edited": false
+            },
+            "customTheme": {
+                "name": "Untitled Theme 1",
+                "default": "#4B7930",
+                "baseColor": "#643f20",
+                "baseFont": "Gill Sans,Geneva,sans-serif",
+                "reset": false
+            },
+            "themeState": {
+                "base-color": {
+                    "default": "#4B7930",
+                    "value": "#643f20",
+                    "edited": true
+                },
+                "page-titlebar-backgroundColor": {
+                    "value": "#643f20",
+                    "edited": false
+                },
+                "page-backgroundColor": {
+                    "value": "#f7f1e3",
+                    "edited": true
+                },
+                "page-sidebar-backgroundColor": {
+                    "value": "#fffcf5",
+                    "edited": true
+                },
+                "group-textColor": {
+                    "value": "#9e6433",
+                    "edited": false
+                },
+                "group-borderColor": {
+                    "value": "#555555",
+                    "edited": false
+                },
+                "group-backgroundColor": {
+                    "value": "#f5f0e6",
+                    "edited": true
+                },
+                "widget-textColor": {
+                    "value": "#000000",
+                    "edited": true
+                },
+                "widget-backgroundColor": {
+                    "value": "#643f20",
+                    "edited": false
+                },
+                "widget-borderColor": {
+                    "value": "#f5f0e6",
+                    "edited": true
+                },
+                "base-font": {
+                    "value": "Gill Sans,Geneva,sans-serif"
+                }
+            },
+            "angularTheme": {
+                "primary": "indigo",
+                "accents": "blue",
+                "warn": "red",
+                "background": "grey",
+                "palette": "light"
+            }
+        },
+        "site": {
+            "name": "Node-RED Dashboard",
+            "hideToolbar": "false",
+            "allowSwipe": "false",
+            "lockMenu": "false",
+            "allowTempTheme": "true",
+            "dateFormat": "DD/MM/YYYY",
+            "sizes": {
+                "sx": 48,
+                "sy": 48,
+                "gx": 6,
+                "gy": 6,
+                "cx": 6,
+                "cy": 6,
+                "px": 0,
+                "py": 0
+            }
+        }
+    },
+    {
+        "id": "c1",
+        "type": "comment",
+        "z": "aba-ponte-porta-retrato",
+        "name": "1. A cada 5 s: pergunta a API o que a caixinha deve mostrar e publica (retido) só quando muda",
+        "info": "",
+        "x": 700,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "ao-iniciar",
+        "type": "inject",
+        "z": "aba-ponte-porta-retrato",
+        "name": "ao iniciar",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "2",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 480,
+        "y": 260,
+        "wires": [
+            [
+                "zerar-memoria"
+            ]
+        ]
+    },
+    {
+        "id": "zerar-memoria",
+        "type": "function",
+        "z": "aba-ponte-porta-retrato",
+        "name": "esquece o último estado",
+        "func": "// Depois de um deploy ou reinício, publica o estado de novo mesmo que não tenha mudado.\nflow.set('ultimoEstadoPublicado', null);\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 730,
+        "y": 260,
+        "wires": [
+            [
+                "pedir-estado"
+            ]
+        ]
+    },
+    {
+        "id": "a-cada-5s",
+        "type": "inject",
+        "z": "aba-ponte-porta-retrato",
+        "name": "a cada 5 s",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "5",
+        "crontab": "",
+        "once": false,
+        "onceDelay": "0.1",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 490,
+        "y": 340,
+        "wires": [
+            [
+                "pedir-estado"
+            ]
+        ]
+    },
+    {
+        "id": "atualizar-caixinha",
+        "type": "link in",
+        "z": "aba-ponte-porta-retrato",
+        "name": "atualizar caixinha agora",
+        "links": [
+            "avisar-mudanca"
+        ],
+        "x": 415,
+        "y": 400,
+        "wires": [
+            [
+                "pedir-estado"
+            ]
+        ]
+    },
+    {
+        "id": "pedir-estado",
+        "type": "function",
+        "z": "aba-ponte-porta-retrato",
+        "name": "GET /porta-retrato/estado",
+        "func": "msg.method = 'GET';\nmsg.url = env.get('API_URL') + '/api/v1/porta-retrato/estado';\nmsg.headers = { 'X-Chave-PortaRetrato': env.get('CHAVE_PORTA_RETRATO') };\ndelete msg.payload;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 730,
+        "y": 340,
+        "wires": [
+            [
+                "http-estado"
+            ]
+        ]
+    },
+    {
+        "id": "http-estado",
+        "type": "http request",
+        "z": "aba-ponte-porta-retrato",
+        "name": "API",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 970,
+        "y": 340,
+        "wires": [
+            [
+                "tratar-estado"
+            ]
+        ]
+    },
+    {
+        "id": "tratar-estado",
+        "type": "function",
+        "z": "aba-ponte-porta-retrato",
+        "name": "monta a mensagem da caixinha",
+        "func": "// Saídas: 1 = MQTT (pergunta, retida); 2 = painel \"na telinha\"; 3 = painel \"API\".\nif (msg.statusCode !== 200) {\n    const motivo = typeof msg.statusCode === 'number' ? 'HTTP ' + msg.statusCode : 'sem resposta';\n    node.status({ fill: 'red', shape: 'ring', text: 'API: ' + motivo });\n    return [null, null, { payload: '🔴 Fora do ar (' + motivo + ')' }];\n}\n\nconst e = msg.payload;\n// Para a caixinha vão só o apelido, o primeiro nome de quem perguntou e o texto (o broker é público).\nconst saida = {\n    temPerguntaNova: !!e.temPerguntaNova,\n    apelido: e.apelido,\n    perguntasEsperando: e.perguntasEsperando || 0\n};\nif (e.pergunta) {\n    saida.envioId = e.pergunta.envioId;\n    saida.quemPerguntou = e.pergunta.quemPerguntou;\n    saida.pergunta = e.pergunta.texto;\n}\n\nconst naTela = e.pergunta\n    ? '🟠 ' + e.pergunta.quemPerguntou + ' perguntou: ' + e.pergunta.texto +\n      (e.perguntasEsperando > 1 ? ' (+' + (e.perguntasEsperando - 1) + ' na fila)' : '')\n    : '⚫ Nada novo (moldura apagada)';\nnode.status({\n    fill: e.temPerguntaNova ? 'yellow' : 'green', shape: 'dot',\n    text: e.temPerguntaNova ? 'envio ' + saida.envioId + ' (' + saida.perguntasEsperando + ' esperando)' : 'sem pergunta'\n});\n\nconst texto = JSON.stringify(saida);\nconst mudou = texto !== flow.get('ultimoEstadoPublicado');\nif (mudou) flow.set('ultimoEstadoPublicado', texto);\nreturn [mudou ? { payload: saida } : null, { payload: naTela }, { payload: '🟢 No ar' }];",
+        "outputs": 3,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1250,
+        "y": 340,
+        "wires": [
+            [
+                "publicar-pergunta"
+            ],
+            [
+                "ui-na-tela"
+            ],
+            [
+                "ui-api"
+            ]
+        ]
+    },
+    {
+        "id": "publicar-pergunta",
+        "type": "mqtt out",
+        "z": "aba-ponte-porta-retrato",
+        "name": "pergunta (retida)",
+        "topic": "meconta/k7m2q9xd/pergunta",
+        "qos": "1",
+        "retain": "true",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "broker-porta-retrato",
+        "x": 1590,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "ui-na-tela",
+        "type": "ui_text",
+        "z": "aba-ponte-porta-retrato",
+        "group": "ui-caixinha",
+        "order": 2,
+        "width": "6",
+        "height": "3",
+        "name": "",
+        "label": "Na telinha",
+        "format": "{{msg.payload}}",
+        "layout": "col-center",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#000000",
+        "x": 1560,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "ui-api",
+        "type": "ui_text",
+        "z": "aba-ponte-porta-retrato",
+        "group": "ui-caixinha",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "API do Me Conta",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#000000",
+        "x": 1590,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "c2",
+        "type": "comment",
+        "z": "aba-ponte-porta-retrato",
+        "name": "2. Botão \"quero contar\" da caixinha: avisa a API, atualiza a caixinha e a lista de avisos",
+        "info": "",
+        "x": 680,
+        "y": 580,
+        "wires": []
+    },
+    {
+        "id": "ouvir-quero-contar",
+        "type": "mqtt in",
+        "z": "aba-ponte-porta-retrato",
+        "name": "quero-contar",
+        "topic": "meconta/k7m2q9xd/quero-contar",
+        "qos": "1",
+        "datatype": "json",
+        "broker": "broker-porta-retrato",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 450,
+        "y": 640,
+        "wires": [
+            [
+                "pedir-quero-contar"
+            ]
+        ]
+    },
+    {
+        "id": "pedir-quero-contar",
+        "type": "function",
+        "z": "aba-ponte-porta-retrato",
+        "name": "POST /porta-retrato/quero-contar",
+        "func": "const envioId = (msg.payload && typeof msg.payload.envioId === 'number') ? msg.payload.envioId : null;\nmsg.method = 'POST';\nmsg.url = env.get('API_URL') + '/api/v1/porta-retrato/quero-contar';\nmsg.headers = { 'X-Chave-PortaRetrato': env.get('CHAVE_PORTA_RETRATO'), 'Content-Type': 'application/json' };\nmsg.payload = { envioId: envioId };\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 720,
+        "y": 640,
+        "wires": [
+            [
+                "http-quero-contar"
+            ]
+        ]
+    },
+    {
+        "id": "http-quero-contar",
+        "type": "http request",
+        "z": "aba-ponte-porta-retrato",
+        "name": "API",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 1010,
+        "y": 640,
+        "wires": [
+            [
+                "tratar-quero-contar"
+            ]
+        ]
+    },
+    {
+        "id": "tratar-quero-contar",
+        "type": "function",
+        "z": "aba-ponte-porta-retrato",
+        "name": "registra o aviso",
+        "func": "// Saídas: 1 = painel \"último aviso\"; 2 = atualizar caixinha e avisos.\nif (msg.statusCode === 201 || msg.statusCode === 200) {\n    const a = msg.payload;\n    const hora = new Date(a.criadoEm).toLocaleTimeString('pt-BR', { timeZone: 'America/Sao_Paulo', hour: '2-digit', minute: '2-digit' });\n    node.status({ fill: 'green', shape: 'dot', text: 'aviso ' + a.id + (msg.statusCode === 201 ? ' criado' : ' já existia') });\n    return [{ payload: hora + ' · ' + a.apelido + ' quer contar' + (a.pergunta ? ': ' + a.pergunta : ' uma história') },\n            { payload: 'atualizar' }];\n}\nnode.status({ fill: 'red', shape: 'ring', text: 'recusado: ' + msg.statusCode });\nnode.warn({ aviso: 'quero-contar recusado pela API', status: msg.statusCode, resposta: msg.payload });\nreturn [{ payload: 'Aviso recusado pela API (' + msg.statusCode + ')' }, null];",
+        "outputs": 2,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1220,
+        "y": 640,
+        "wires": [
+            [
+                "ui-ultimo-aviso"
+            ],
+            [
+                "avisar-mudanca"
+            ]
+        ]
+    },
+    {
+        "id": "ui-ultimo-aviso",
+        "type": "ui_text",
+        "z": "aba-ponte-porta-retrato",
+        "group": "ui-caixinha",
+        "order": 3,
+        "width": "6",
+        "height": "3",
+        "name": "",
+        "label": "Último \"quero contar\"",
+        "format": "{{msg.payload}}",
+        "layout": "col-center",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#000000",
+        "x": 1460,
+        "y": 600,
+        "wires": []
+    },
+    {
+        "id": "avisar-mudanca",
+        "type": "link out",
+        "z": "aba-ponte-porta-retrato",
+        "name": "atualizar caixinha e avisos",
+        "mode": "link",
+        "links": [
+            "atualizar-caixinha",
+            "atualizar-avisos"
+        ],
+        "x": 1375,
+        "y": 660,
+        "wires": []
+    },
+    {
+        "id": "c3",
+        "type": "comment",
+        "z": "aba-ponte-porta-retrato",
+        "name": "3. Conexão da caixinha: online/offline (last will) e sinal de vida a cada 30 s para a API",
+        "info": "",
+        "x": 670,
+        "y": 820,
+        "wires": []
+    },
+    {
+        "id": "ouvir-status",
+        "type": "mqtt in",
+        "z": "aba-ponte-porta-retrato",
+        "name": "status",
+        "topic": "meconta/k7m2q9xd/status",
+        "qos": "1",
+        "datatype": "utf8",
+        "broker": "broker-porta-retrato",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 450,
+        "y": 900,
+        "wires": [
+            [
+                "tratar-status"
+            ]
+        ]
+    },
+    {
+        "id": "tratar-status",
+        "type": "function",
+        "z": "aba-ponte-porta-retrato",
+        "name": "online ou offline",
+        "func": "const online = String(msg.payload).trim() === 'online';\nflow.set('caixinhaOnline', online);\nnode.status({ fill: online ? 'green' : 'red', shape: 'dot', text: online ? 'online' : 'offline' });\nreturn [{ payload: online ? '🟢 Conectada' : '🔴 Desconectada' }, { payload: { online: online } }];",
+        "outputs": 2,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 680,
+        "y": 900,
+        "wires": [
+            [
+                "ui-conexao"
+            ],
+            [
+                "pedir-conexao"
+            ]
+        ]
+    },
+    {
+        "id": "a-cada-30s",
+        "type": "inject",
+        "z": "aba-ponte-porta-retrato",
+        "name": "a cada 30 s",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "30",
+        "crontab": "",
+        "once": false,
+        "onceDelay": "0.1",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 490,
+        "y": 1000,
+        "wires": [
+            [
+                "sinal-de-vida"
+            ]
+        ]
+    },
+    {
+        "id": "sinal-de-vida",
+        "type": "function",
+        "z": "aba-ponte-porta-retrato",
+        "name": "só se estiver online",
+        "func": "return flow.get('caixinhaOnline') === true ? { payload: { online: true } } : null;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 690,
+        "y": 1000,
+        "wires": [
+            [
+                "pedir-conexao"
+            ]
+        ]
+    },
+    {
+        "id": "ui-conexao",
+        "type": "ui_text",
+        "z": "aba-ponte-porta-retrato",
+        "group": "ui-caixinha",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Caixinha",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#000000",
+        "x": 900,
+        "y": 880,
+        "wires": []
+    },
+    {
+        "id": "pedir-conexao",
+        "type": "function",
+        "z": "aba-ponte-porta-retrato",
+        "name": "PUT /porta-retrato/conexao",
+        "func": "msg.method = 'PUT';\nmsg.url = env.get('API_URL') + '/api/v1/porta-retrato/conexao';\nmsg.headers = { 'X-Chave-PortaRetrato': env.get('CHAVE_PORTA_RETRATO'), 'Content-Type': 'application/json' };\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1000,
+        "y": 940,
+        "wires": [
+            [
+                "http-conexao"
+            ]
+        ]
+    },
+    {
+        "id": "http-conexao",
+        "type": "http request",
+        "z": "aba-ponte-porta-retrato",
+        "name": "API",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 1250,
+        "y": 940,
+        "wires": [
+            [
+                "tratar-conexao"
+            ]
+        ]
+    },
+    {
+        "id": "tratar-conexao",
+        "type": "function",
+        "z": "aba-ponte-porta-retrato",
+        "name": "confere a resposta",
+        "func": "if (msg.statusCode === 204) {\n    node.status({ fill: 'green', shape: 'dot', text: 'API avisada: ' + (flow.get('caixinhaOnline') ? 'online' : 'offline') });\n} else {\n    node.status({ fill: 'red', shape: 'ring', text: 'HTTP ' + msg.statusCode });\n}\nreturn null;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1470,
+        "y": 940,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "c4",
+        "type": "comment",
+        "z": "aba-ponte-porta-retrato",
+        "name": "4. Luz do ambiente: fica só no painel (brilho e modo noite da caixinha)",
+        "info": "",
+        "x": 630,
+        "y": 1140,
+        "wires": []
+    },
+    {
+        "id": "ouvir-ambiente",
+        "type": "mqtt in",
+        "z": "aba-ponte-porta-retrato",
+        "name": "ambiente",
+        "topic": "meconta/k7m2q9xd/ambiente",
+        "qos": "0",
+        "datatype": "json",
+        "broker": "broker-porta-retrato",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 460,
+        "y": 1240,
+        "wires": [
+            [
+                "tratar-ambiente"
+            ]
+        ]
+    },
+    {
+        "id": "tratar-ambiente",
+        "type": "function",
+        "z": "aba-ponte-porta-retrato",
+        "name": "lux e modo noite",
+        "func": "const a = msg.payload;\nif (!a || typeof a !== 'object' || typeof a.lux !== 'number') return null;\nconst lux = Math.round(a.lux);\nreturn [\n    { payload: Math.min(lux, 1000) },\n    { payload: lux, topic: 'lux' },\n    { payload: a.modoNoite ? '🌙 Ligado (sem bipe, brilho baixo)' : '☀️ Desligado' }\n];",
+        "outputs": 3,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 660,
+        "y": 1240,
+        "wires": [
+            [
+                "ui-luz-medidor"
+            ],
+            [
+                "ui-luz-grafico"
+            ],
+            [
+                "ui-modo-noite"
+            ]
+        ]
+    },
+    {
+        "id": "ui-luz-medidor",
+        "type": "ui_gauge",
+        "z": "aba-ponte-porta-retrato",
+        "name": "",
+        "group": "ui-luz",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "gtype": "gage",
+        "title": "Luz agora",
+        "label": "lux",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "1000",
+        "colors": [
+            "#2c3e50",
+            "#e6a700",
+            "#ffd75e"
+        ],
+        "seg1": "10",
+        "seg2": "300",
+        "diff": false,
+        "className": "",
+        "x": 900,
+        "y": 1200,
+        "wires": []
+    },
+    {
+        "id": "ui-luz-grafico",
+        "type": "ui_chart",
+        "z": "aba-ponte-porta-retrato",
+        "name": "",
+        "group": "ui-luz",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "label": "Luz nos últimos 10 min (lux)",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "Esperando a caixinha...",
+        "dot": false,
+        "ymin": "0",
+        "ymax": "",
+        "removeOlder": "10",
+        "removeOlderPoints": "",
+        "removeOlderUnit": "60",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#e6a700",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 950,
+        "y": 1240,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "ui-modo-noite",
+        "type": "ui_text",
+        "z": "aba-ponte-porta-retrato",
+        "group": "ui-luz",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Modo noite",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#000000",
+        "x": 910,
+        "y": 1280,
+        "wires": []
+    },
+    {
+        "id": "c5",
+        "type": "comment",
+        "z": "aba-ponte-porta-retrato",
+        "name": "5. Avisos \"quero contar\" que a família ainda não viu (login como a Bia); botão Visto marca na API",
+        "info": "",
+        "x": 710,
+        "y": 1420,
+        "wires": []
+    },
+    {
+        "id": "avisos-a-cada-5s",
+        "type": "inject",
+        "z": "aba-ponte-porta-retrato",
+        "name": "a cada 5 s",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "5",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "3",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 490,
+        "y": 1500,
+        "wires": [
+            [
+                "token-avisos"
+            ]
+        ]
+    },
+    {
+        "id": "atualizar-avisos",
+        "type": "link in",
+        "z": "aba-ponte-porta-retrato",
+        "name": "atualizar avisos agora",
+        "links": [
+            "avisar-mudanca",
+            "avisar-visto"
+        ],
+        "x": 415,
+        "y": 1560,
+        "wires": [
+            [
+                "token-avisos"
+            ]
+        ]
+    },
+    {
+        "id": "token-avisos",
+        "type": "link call",
+        "z": "aba-ponte-porta-retrato",
+        "name": "garantir login",
+        "links": [
+            "sub-token"
+        ],
+        "linkType": "static",
+        "timeout": "30",
+        "x": 710,
+        "y": 1500,
+        "wires": [
+            [
+                "pedir-avisos"
+            ]
+        ]
+    },
+    {
+        "id": "pedir-avisos",
+        "type": "function",
+        "z": "aba-ponte-porta-retrato",
+        "name": "GET /familias/{id}/avisos",
+        "func": "if (!msg.token) return null;\nmsg.method = 'GET';\nmsg.url = env.get('API_URL') + '/api/v1/familias/' + env.get('FAMILIA_ID') + '/avisos?somenteNaoVistos=true';\nmsg.headers = { Authorization: 'Bearer ' + msg.token };\ndelete msg.payload;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 950,
+        "y": 1500,
+        "wires": [
+            [
+                "http-avisos"
+            ]
+        ]
+    },
+    {
+        "id": "http-avisos",
+        "type": "http request",
+        "z": "aba-ponte-porta-retrato",
+        "name": "API",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 1150,
+        "y": 1500,
+        "wires": [
+            [
+                "tratar-avisos"
+            ]
+        ]
+    },
+    {
+        "id": "tratar-avisos",
+        "type": "function",
+        "z": "aba-ponte-porta-retrato",
+        "name": "monta a lista",
+        "func": "if (msg.statusCode === 401) { flow.set('tokenFamilia', null); return null; }\nif (msg.statusCode !== 200 || !Array.isArray(msg.payload)) {\n    node.status({ fill: 'red', shape: 'ring', text: 'HTTP ' + msg.statusCode });\n    return null;\n}\nconst lista = msg.payload.map(a => ({\n    id: a.id,\n    apelido: a.apelido,\n    pergunta: a.pergunta,\n    hora: new Date(a.criadoEm).toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo', day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })\n}));\nnode.status({ fill: lista.length ? 'yellow' : 'green', shape: 'dot', text: lista.length + ' aviso(s) não visto(s)' });\nconst assinatura = JSON.stringify(lista);\nif (assinatura === context.get('ultimaLista')) return null;  // não redesenha à toa\ncontext.set('ultimaLista', assinatura);\nreturn { payload: lista };",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1310,
+        "y": 1500,
+        "wires": [
+            [
+                "ui-lista-avisos"
+            ]
+        ]
+    },
+    {
+        "id": "ui-lista-avisos",
+        "type": "ui_template",
+        "z": "aba-ponte-porta-retrato",
+        "group": "ui-avisos",
+        "name": "lista de avisos",
+        "order": 1,
+        "width": "6",
+        "height": "6",
+        "format": "<div ng-if=\"!msg.payload || msg.payload.length === 0\" style=\"opacity:.7;padding:8px 0\">\n  Nenhum aviso novo. Quando o botão \"quero contar\" for apertado, ele aparece aqui.\n</div>\n<div ng-repeat=\"a in msg.payload\" style=\"display:flex;align-items:center;justify-content:space-between;gap:8px;border-bottom:1px solid rgba(0,0,0,.12);padding:8px 0\">\n  <div style=\"flex:1;min-width:0\">\n    <div><b>{{a.apelido}}</b> quer contar</div>\n    <div style=\"font-size:13px;opacity:.85\">{{a.pergunta || 'uma história (sem pergunta)'}}</div>\n    <div style=\"font-size:12px;opacity:.6\">{{a.hora}}</div>\n  </div>\n  <md-button class=\"md-raised\" style=\"flex-shrink:0;min-width:72px\" ng-click=\"send({payload: a.id})\">Visto</md-button>\n</div>",
+        "storeOutMessages": true,
+        "fwdInMessages": false,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 1500,
+        "y": 1500,
+        "wires": [
+            [
+                "token-visto"
+            ]
+        ]
+    },
+    {
+        "id": "token-visto",
+        "type": "link call",
+        "z": "aba-ponte-porta-retrato",
+        "name": "garantir login",
+        "links": [
+            "sub-token"
+        ],
+        "linkType": "static",
+        "timeout": "30",
+        "x": 1690,
+        "y": 1500,
+        "wires": [
+            [
+                "pedir-visto"
+            ]
+        ]
+    },
+    {
+        "id": "pedir-visto",
+        "type": "function",
+        "z": "aba-ponte-porta-retrato",
+        "name": "POST /avisos/{id}/visto",
+        "func": "const id = msg.payload;\nif (!msg.token || typeof id !== 'number') return null;\nmsg.method = 'POST';\nmsg.url = env.get('API_URL') + '/api/v1/avisos/' + id + '/visto';\nmsg.headers = { Authorization: 'Bearer ' + msg.token };\nmsg.payload = '';\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1910,
+        "y": 1500,
+        "wires": [
+            [
+                "http-visto"
+            ]
+        ]
+    },
+    {
+        "id": "http-visto",
+        "type": "http request",
+        "z": "aba-ponte-porta-retrato",
+        "name": "API",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 2110,
+        "y": 1500,
+        "wires": [
+            [
+                "tratar-visto"
+            ]
+        ]
+    },
+    {
+        "id": "tratar-visto",
+        "type": "function",
+        "z": "aba-ponte-porta-retrato",
+        "name": "confere",
+        "func": "if (msg.statusCode === 401) flow.set('tokenFamilia', null);\nnode.status({ fill: msg.statusCode === 200 ? 'green' : 'red', shape: 'dot', text: 'visto: ' + msg.statusCode });\nreturn { payload: 'atualizar' };",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 2260,
+        "y": 1500,
+        "wires": [
+            [
+                "avisar-visto"
+            ]
+        ]
+    },
+    {
+        "id": "avisar-visto",
+        "type": "link out",
+        "z": "aba-ponte-porta-retrato",
+        "name": "atualizar avisos",
+        "mode": "link",
+        "links": [
+            "atualizar-avisos"
+        ],
+        "x": 2375,
+        "y": 1500,
+        "wires": []
+    },
+    {
+        "id": "c6",
+        "type": "comment",
+        "z": "aba-ponte-porta-retrato",
+        "name": "6. Simulação da família: a Bia manda a pergunta da semana pela API (o mesmo que o app faz)",
+        "info": "",
+        "x": 710,
+        "y": 1700,
+        "wires": []
+    },
+    {
+        "id": "ui-botao-pergunta",
+        "type": "ui_button",
+        "z": "aba-ponte-porta-retrato",
+        "name": "",
+        "group": "ui-familia",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "Bia manda a pergunta da semana",
+        "tooltip": "Simula o app: envia uma pergunta para a Vó Lourdes",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "fa-paper-plane",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "",
+        "topicType": "str",
+        "x": 540,
+        "y": 1780,
+        "wires": [
+            [
+                "token-pergunta"
+            ]
+        ]
+    },
+    {
+        "id": "token-pergunta",
+        "type": "link call",
+        "z": "aba-ponte-porta-retrato",
+        "name": "garantir login",
+        "links": [
+            "sub-token"
+        ],
+        "linkType": "static",
+        "timeout": "30",
+        "x": 810,
+        "y": 1780,
+        "wires": [
+            [
+                "pedir-sugestao"
+            ]
+        ]
+    },
+    {
+        "id": "pedir-sugestao",
+        "type": "function",
+        "z": "aba-ponte-porta-retrato",
+        "name": "GET /idosos/{id}/pergunta-da-semana",
+        "func": "if (!msg.token) return [null, { payload: 'Não consegui entrar como a família. A API está no ar?' }];\nmsg.method = 'GET';\nmsg.url = env.get('API_URL') + '/api/v1/idosos/' + env.get('IDOSO_ID') + '/pergunta-da-semana';\nmsg.headers = { Authorization: 'Bearer ' + msg.token };\ndelete msg.payload;\nreturn [msg, null];",
+        "outputs": 2,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1090,
+        "y": 1780,
+        "wires": [
+            [
+                "http-sugestao"
+            ],
+            [
+                "ui-resultado-familia"
+            ]
+        ]
+    },
+    {
+        "id": "http-sugestao",
+        "type": "http request",
+        "z": "aba-ponte-porta-retrato",
+        "name": "API",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 1350,
+        "y": 1720,
+        "wires": [
+            [
+                "pedir-envio"
+            ]
+        ]
+    },
+    {
+        "id": "pedir-envio",
+        "type": "function",
+        "z": "aba-ponte-porta-retrato",
+        "name": "POST /idosos/{id}/envios",
+        "func": "if (msg.statusCode === 401) { flow.set('tokenFamilia', null); return [null, { payload: 'Sessão vencida: clique de novo.' }]; }\nif (msg.statusCode === 204) return [null, { payload: 'Todas as perguntas do catálogo já foram enviadas para este idoso.' }];\nif (msg.statusCode !== 200) return [null, { payload: 'Erro ao buscar a sugestão (' + msg.statusCode + ')' }];\nconst pergunta = msg.payload.pergunta;\nmsg.method = 'POST';\nmsg.url = env.get('API_URL') + '/api/v1/idosos/' + env.get('IDOSO_ID') + '/envios';\nmsg.headers = { Authorization: 'Bearer ' + msg.token, 'Content-Type': 'application/json' };\nmsg.payload = { perguntaId: pergunta.id };\nreturn [msg, null];",
+        "outputs": 2,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1610,
+        "y": 1720,
+        "wires": [
+            [
+                "http-envio"
+            ],
+            [
+                "ui-resultado-familia"
+            ]
+        ]
+    },
+    {
+        "id": "http-envio",
+        "type": "http request",
+        "z": "aba-ponte-porta-retrato",
+        "name": "API",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 1870,
+        "y": 1680,
+        "wires": [
+            [
+                "tratar-envio"
+            ]
+        ]
+    },
+    {
+        "id": "tratar-envio",
+        "type": "function",
+        "z": "aba-ponte-porta-retrato",
+        "name": "confere o envio",
+        "func": "if (msg.statusCode === 201) {\n    node.status({ fill: 'green', shape: 'dot', text: 'envio ' + msg.payload.id });\n    return [{ payload: 'Enviada: ' + msg.payload.pergunta }, { payload: 'atualizar' }];\n}\nconst detalhe = msg.payload && msg.payload.detail ? ': ' + msg.payload.detail : '';\nreturn [{ payload: 'Envio recusado (' + msg.statusCode + ')' + detalhe }, null];",
+        "outputs": 2,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 2100,
+        "y": 1680,
+        "wires": [
+            [
+                "ui-resultado-familia"
+            ],
+            [
+                "avisar-envio"
+            ]
+        ]
+    },
+    {
+        "id": "ui-resultado-familia",
+        "type": "ui_text",
+        "z": "aba-ponte-porta-retrato",
+        "group": "ui-familia",
+        "order": 2,
+        "width": "6",
+        "height": "3",
+        "name": "",
+        "label": "Resultado",
+        "format": "{{msg.payload}}",
+        "layout": "col-center",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#000000",
+        "x": 1960,
+        "y": 1780,
+        "wires": []
+    },
+    {
+        "id": "avisar-envio",
+        "type": "link out",
+        "z": "aba-ponte-porta-retrato",
+        "name": "atualizar caixinha",
+        "mode": "link",
+        "links": [
+            "atualizar-caixinha"
+        ],
+        "x": 2285,
+        "y": 1700,
+        "wires": []
+    },
+    {
+        "id": "c7",
+        "type": "comment",
+        "z": "aba-ponte-porta-retrato",
+        "name": "Sub-rotina \"garantir login\": entra como a Bia na API e guarda o token (usada pelas partes 5 e 6)",
+        "info": "",
+        "x": 710,
+        "y": 1940,
+        "wires": []
+    },
+    {
+        "id": "sub-token",
+        "type": "link in",
+        "z": "aba-ponte-porta-retrato",
+        "name": "garantir login",
+        "links": [],
+        "x": 420,
+        "y": 2040,
+        "wires": [
+            [
+                "tem-token"
+            ]
+        ]
+    },
+    {
+        "id": "tem-token",
+        "type": "function",
+        "z": "aba-ponte-porta-retrato",
+        "name": "já tem token?",
+        "func": "const token = flow.get('tokenFamilia');\nconst expira = flow.get('tokenFamiliaExpira') || 0;\nif (token && Date.now() < expira - 60000) {\n    msg.token = token;\n    return [null, msg];\n}\nmsg.guardado = { payload: msg.payload, topic: msg.topic };\nmsg.method = 'POST';\nmsg.url = env.get('API_URL') + '/api/v1/auth/login';\nmsg.headers = { 'Content-Type': 'application/json' };\nmsg.payload = { email: env.get('EMAIL_FAMILIA'), password: env.get('SENHA_FAMILIA') };\nreturn [msg, null];",
+        "outputs": 2,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 630,
+        "y": 2040,
+        "wires": [
+            [
+                "http-login"
+            ],
+            [
+                "volta-token"
+            ]
+        ]
+    },
+    {
+        "id": "http-login",
+        "type": "http request",
+        "z": "aba-ponte-porta-retrato",
+        "name": "API",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 830,
+        "y": 2000,
+        "wires": [
+            [
+                "guardar-token"
+            ]
+        ]
+    },
+    {
+        "id": "guardar-token",
+        "type": "function",
+        "z": "aba-ponte-porta-retrato",
+        "name": "guarda o token",
+        "func": "if (msg.statusCode === 200 && msg.payload && msg.payload.accessToken) {\n    flow.set('tokenFamilia', msg.payload.accessToken);\n    flow.set('tokenFamiliaExpira', Date.now() + (msg.payload.expiresIn || 3600) * 1000);\n    msg.token = msg.payload.accessToken;\n    node.status({ fill: 'green', shape: 'dot', text: 'login ok' });\n} else {\n    msg.token = null;\n    node.status({ fill: 'red', shape: 'ring', text: 'login: ' + msg.statusCode });\n}\nmsg.payload = msg.guardado ? msg.guardado.payload : undefined;\nmsg.topic = msg.guardado ? msg.guardado.topic : undefined;\ndelete msg.guardado;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1040,
+        "y": 2000,
+        "wires": [
+            [
+                "volta-token"
+            ]
+        ]
+    },
+    {
+        "id": "volta-token",
+        "type": "link out",
+        "z": "aba-ponte-porta-retrato",
+        "name": "volta",
+        "mode": "return",
+        "links": [],
+        "x": 1195,
+        "y": 2100,
+        "wires": []
+    },
+    {
+        "id": "0e9e4a0d19e53538",
+        "type": "global-config",
+        "env": [],
+        "modules": {
+            "node-red-dashboard": "3.6.6"
+        }
+    }
+]
