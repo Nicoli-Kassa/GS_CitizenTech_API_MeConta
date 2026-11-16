@@ -22,6 +22,12 @@ public interface IMotorPii
     /// num <see cref="TextoVerificado"/>, que as saídas do sistema aceitam.
     /// </summary>
     TextoVerificado Verificar(TextoDoUsuario texto);
+
+    /// <summary>
+    /// Verifica vários campos do mesmo conteúdo de uma vez (ex.: título e transcrição),
+    /// com uma decisão e um índice Risco Cidadão para o conjunto.
+    /// </summary>
+    CamposVerificados VerificarCampos(IReadOnlyList<CampoDoUsuario> campos);
 }
 
 /// <summary>
@@ -64,6 +70,38 @@ public sealed class MotorPii : IMotorPii
     {
         ArgumentNullException.ThrowIfNull(texto);
         return new TextoVerificado(texto.ValorBruto, Analisar(texto.ValorBruto));
+    }
+
+    public CamposVerificados VerificarCampos(IReadOnlyList<CampoDoUsuario> campos)
+    {
+        ArgumentNullException.ThrowIfNull(campos);
+
+        if (campos.Count == 0)
+        {
+            throw new ArgumentException("Informe pelo menos um campo.", nameof(campos));
+        }
+
+        if (campos.Select(campo => campo.Nome).Distinct(StringComparer.Ordinal).Count() != campos.Count)
+        {
+            throw new ArgumentException("Os nomes dos campos não podem se repetir.", nameof(campos));
+        }
+
+        List<ResultadoDoCampo> resultados = campos
+            .Select(campo => new ResultadoDoCampo(campo.Nome, Analisar(campo.Texto.ValorBruto)))
+            .ToList();
+
+        // Cada achado leva o nome do campo, e a posição continua relativa ao texto do próprio campo.
+        List<AchadoPii> achados = resultados
+            .SelectMany(campo => campo.Resultado.Achados.Select(achado => achado with { Campo = campo.Nome }))
+            .ToList();
+
+        bool completa = resultados.All(campo => campo.Resultado.AnaliseCompleta);
+        List<CombinacaoEncontrada> combinacoes = completa ? EncontrarCombinacoes(achados) : [];
+        int indice = completa ? CalculadoraDeRiscoCidadao.Calcular(achados, combinacoes) : 100;
+
+        AnaliseDeCampos analise = new(resultados, achados, combinacoes, indice, VersaoDasRegras);
+        Dictionary<string, string> originais = campos.ToDictionary(campo => campo.Nome, campo => campo.Texto.ValorBruto);
+        return new CamposVerificados(originais, analise);
     }
 
     public ResultadoAnalisePii Analisar(string texto)

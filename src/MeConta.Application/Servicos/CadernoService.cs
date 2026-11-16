@@ -11,7 +11,7 @@ namespace MeConta.Application.Servicos;
 
 /// <summary>
 /// Caderno da família: guardar a resposta em áudio (US08), funcionar sem internet (US10),
-/// ver e ouvir (US09) e apagar (US11).
+/// ver e ouvir (US09), apagar (US11) e guardar a transcrição que o filtro de dados pessoais confere (US18).
 /// </summary>
 public sealed class CadernoService(
     IControleDeAcesso acesso,
@@ -83,6 +83,7 @@ public sealed class CadernoService(
                 membro.Id,
                 resposta.ChaveIdempotencia ?? Guid.NewGuid(),
                 relogio.GetUtcNow().UtcDateTime);
+            pagina.DefinirTranscricao(resposta.Transcricao);
             await unidadeDeTrabalho.SalvarAlteracoesAsync(cancellationToken);
 
             return new ResultadoGuardarResposta(PaginaResponse.De(pagina), Criada: true);
@@ -181,6 +182,20 @@ public sealed class CadernoService(
         {
             await armazenamento.RemoverAsync(fotoCaminho, cancellationToken);
         }
+    }
+
+    public async Task<PaginaResponse> DefinirTranscricaoAsync(
+        int paginaId,
+        TranscricaoRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+        PaginaCaderno pagina = await ObterComAcessoAsync(paginaId, cancellationToken);
+
+        pagina.DefinirTranscricao(request.Texto);
+        await unidadeDeTrabalho.SalvarAlteracoesAsync(cancellationToken);
+
+        return PaginaResponse.De(pagina);
     }
 
     private async Task<string> SalvarAsync(

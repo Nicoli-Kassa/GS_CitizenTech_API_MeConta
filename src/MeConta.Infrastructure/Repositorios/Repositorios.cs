@@ -302,3 +302,41 @@ public sealed class IndicadorConsulta(AppDbContext db) : IIndicadorConsulta
         return new DadosIndicador(cadastrados, responderam, segundos, respondemSozinhos);
     }
 }
+
+public sealed class MemoriaDoBairroRepository(AppDbContext db) : RepositorioEf<MemoriaDoBairro>(db), IMemoriaDoBairroRepository
+{
+    public Task<MemoriaDoBairro?> ObterNoMapaDaPaginaAsync(int paginaId, CancellationToken cancellationToken = default) =>
+        Db.MemoriasDoBairro.FirstOrDefaultAsync(
+            memoria => memoria.PaginaId == paginaId && memoria.RemovidaEm == null,
+            cancellationToken);
+
+    public Task<MemoriaDoBairro?> ObterNoMapaComPaginaAsync(int id, CancellationToken cancellationToken = default) =>
+        Db.MemoriasDoBairro
+            .AsNoTracking()
+            .Include(memoria => memoria.Pagina)
+            .FirstOrDefaultAsync(memoria => memoria.Id == id && memoria.RemovidaEm == null, cancellationToken);
+
+    public async Task<IReadOnlyList<MemoriaDoBairro>> ListarNoMapaDoBairroAsync(
+        string bairro,
+        CancellationToken cancellationToken = default) =>
+        await Db.MemoriasDoBairro
+            .AsNoTracking()
+            .Where(memoria => memoria.RemovidaEm == null && memoria.Bairro == bairro)
+            .OrderByDescending(memoria => memoria.PublicadaEm)
+            .ThenByDescending(memoria => memoria.Id)
+            .ToListAsync(cancellationToken);
+}
+
+public sealed class RegistroDePrivacidadeRepository(AppDbContext db)
+    : RepositorioEf<RegistroDePrivacidade>(db), IRegistroDePrivacidadeRepository
+{
+    public async Task<IReadOnlyList<RegistroDePrivacidade>> ListarDesdeAsync(
+        DateTime desdeUtc,
+        CancellationToken cancellationToken = default) =>
+        await Db.RegistrosDePrivacidade
+            .AsNoTracking()
+            .Include(registro => registro.Achados)
+            .Where(registro => registro.CriadoEm >= desdeUtc)
+            .OrderBy(registro => registro.CriadoEm)
+            .ToListAsync(cancellationToken);
+}

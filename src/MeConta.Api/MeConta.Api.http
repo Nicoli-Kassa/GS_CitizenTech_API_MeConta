@@ -2,6 +2,7 @@
 # No Visual Studio 2022 (17.12 ou mais novo), clique em "Send Request" acima de cada chamada, na ordem.
 # O token, o código do convite, o envio e o aviso passam sozinhos de uma chamada para a outra
 # ({{nome.response.body.$.campo}}). Os passos 49 a 53 (envio de áudio) são feitos pelo Swagger.
+# O bloco L (passos 89 a 108) precisa da API rodando com --Banco:PaginasDoFiltroDePrivacidade=true.
 # Todos os dados são fictícios.
 
 @api = http://localhost:5080
@@ -577,3 +578,141 @@ X-Chave-PortaRetrato: {{chavePortaRetrato}}
 
 # Não incluído de propósito: POST /api/v1/idosos/{idosoId}/porta-retrato (parear de novo).
 # Ele gera uma chave nova e a chave de demonstração, usada pelo Node-RED, para de funcionar.
+
+###############################################################################
+# Bloco L · Filtro de dados pessoais e mapa do bairro, Cybersecurity (US16, US17, US18)
+# Antes: pare a API e suba com
+#   dotnet run --project src/MeConta.Api --launch-profile http -- --Banco:PaginasDoFiltroDePrivacidade=true
+# e rode de novo o passo 6 (login da Bia).
+# As páginas vêm da lista do passo 89, da mais recente para a mais antiga:
+# itens[0] = casa, itens[1] = chás, itens[2] = fábrica, itens[3] = bolo.
+# Se o caderno tiver outras páginas, troque os índices pelos ids anotados no passo 89.
+###############################################################################
+
+### 89. Caderno com as 4 páginas de demonstração (200)
+# @name cadernoFiltro
+GET {{api}}/api/v1/familias/{{familiaSouza}}/caderno
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
+
+### 90. Análise da fábrica: CPF na transcrição (200, Bloqueada, índice 70)
+POST {{api}}/api/v1/paginas/{{cadernoFiltro.response.body.$.itens[2].id}}/analise-privacidade
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
+
+### 91. Análise do bolo: nenhum dado pessoal (200, Liberada, índice 0)
+POST {{api}}/api/v1/paginas/{{cadernoFiltro.response.body.$.itens[3].id}}/analise-privacidade
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
+
+### 92. Análise dos chás: dado de saúde (200, PrecisaConfirmar, índice 30)
+POST {{api}}/api/v1/paginas/{{cadernoFiltro.response.body.$.itens[1].id}}/analise-privacidade
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
+
+### 93. Análise da casa: endereço + "moro sozinha" (200, PrecisaConfirmar, índice 85)
+POST {{api}}/api/v1/paginas/{{cadernoFiltro.response.body.$.itens[0].id}}/analise-privacidade
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
+
+### 94. Publicar a fábrica, mesmo confirmando (422: CPF sempre bloqueia)
+POST {{api}}/api/v1/paginas/{{cadernoFiltro.response.body.$.itens[2].id}}/publicacao
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
+Content-Type: application/json
+
+{
+  "bairro": "Pirituba",
+  "idosoAutorizou": true,
+  "confirmoDadosPessoais": true
+}
+
+### 95. Publicar o bolo sem a autorização da Vó Lourdes (400)
+POST {{api}}/api/v1/paginas/{{cadernoFiltro.response.body.$.itens[3].id}}/publicacao
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
+Content-Type: application/json
+
+{
+  "bairro": "Pirituba",
+  "idosoAutorizou": false
+}
+
+### 96. Publicar o bolo com endereço no lugar do bairro (400)
+POST {{api}}/api/v1/paginas/{{cadernoFiltro.response.body.$.itens[3].id}}/publicacao
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
+Content-Type: application/json
+
+{
+  "bairro": "Rua das Flores, 123",
+  "idosoAutorizou": true
+}
+
+### 97. Publicar o bolo em Pirituba (201)
+# @name publicarBolo
+POST {{api}}/api/v1/paginas/{{cadernoFiltro.response.body.$.itens[3].id}}/publicacao
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
+Content-Type: application/json
+
+{
+  "bairro": "Pirituba",
+  "idosoAutorizou": true
+}
+
+### 98. Publicar o bolo de novo (409)
+POST {{api}}/api/v1/paginas/{{cadernoFiltro.response.body.$.itens[3].id}}/publicacao
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
+Content-Type: application/json
+
+{
+  "bairro": "Pirituba",
+  "idosoAutorizou": true
+}
+
+### 99. Publicar os chás sem confirmar o dado de saúde (422, PrecisaConfirmar)
+POST {{api}}/api/v1/paginas/{{cadernoFiltro.response.body.$.itens[1].id}}/publicacao
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
+Content-Type: application/json
+
+{
+  "bairro": "Pirituba",
+  "idosoAutorizou": true
+}
+
+### 100. Publicar os chás com a confirmação da família (201)
+POST {{api}}/api/v1/paginas/{{cadernoFiltro.response.body.$.itens[1].id}}/publicacao
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
+Content-Type: application/json
+
+{
+  "bairro": "Pirituba",
+  "idosoAutorizou": true,
+  "confirmoDadosPessoais": true
+}
+
+### 101. Mapa de Pirituba, sem token (200 com 2 memórias)
+GET {{api}}/api/v1/bairros/Pirituba/memorias
+
+### 102. Áudio da memória do bolo, sem token (200)
+GET {{api}}/api/v1/memorias/{{publicarBolo.response.body.$.memoria.id}}/audio
+
+### 103. Tirar os chás do mapa (204)
+DELETE {{api}}/api/v1/paginas/{{cadernoFiltro.response.body.$.itens[1].id}}/publicacao
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
+
+### 104. Nova transcrição da casa, sem endereço nem rotina (200)
+PUT {{api}}/api/v1/paginas/{{cadernoFiltro.response.body.$.itens[0].id}}/transcricao
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
+Content-Type: application/json
+
+{
+  "texto": "A casa tinha um pé de jabuticaba no quintal e a família inteira almoçava debaixo dele."
+}
+
+### 105. Análise da casa de novo (200, Liberada, índice 0)
+POST {{api}}/api/v1/paginas/{{cadernoFiltro.response.body.$.itens[0].id}}/analise-privacidade
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
+
+### 106. Painel Risco Cidadão, sem token (200: 9 verificações, índice 35)
+GET {{api}}/api/v1/risco-cidadao
+
+### 107. Período inválido (400)
+GET {{api}}/api/v1/risco-cidadao?dias=0
+
+### 108. Apagar a página do bolo tira a memória do mapa junto (204)
+DELETE {{api}}/api/v1/paginas/{{cadernoFiltro.response.body.$.itens[3].id}}
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
+

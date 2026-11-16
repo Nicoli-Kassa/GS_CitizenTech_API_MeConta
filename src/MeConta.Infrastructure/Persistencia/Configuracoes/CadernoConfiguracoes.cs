@@ -56,6 +56,7 @@ internal sealed class PaginaCadernoConfiguracao : IEntityTypeConfiguration<Pagin
         builder.Property(pagina => pagina.Titulo).HasMaxLength(PaginaCaderno.TamanhoMaximoTitulo).IsRequired();
         builder.Property(pagina => pagina.AudioCaminho).HasMaxLength(260).IsRequired();
         builder.Property(pagina => pagina.FotoCaminho).HasMaxLength(260);
+        builder.Property(pagina => pagina.Transcricao).HasMaxLength(PaginaCaderno.TamanhoMaximoTranscricao);
         builder.Ignore(pagina => pagina.TemFoto);
 
         // US10: a mesma chave enviada duas vezes pelo celular não cria duas páginas.

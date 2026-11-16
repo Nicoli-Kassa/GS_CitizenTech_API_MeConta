@@ -20,7 +20,7 @@ Defini o escopo, a arquitetura, as tecnologias e as regras de negócio a partir 
 | 5. Problemas             | 14/11         | Investiguei os erros e apliquei as correções                                 | Explicação das causas                                                    |
 | 6. Porta-retrato (IoT)   | 15/11         | Defini o papel do aparelho, gerei a migração, testei as rotas e tirei os prints | Primeira versão das entidades, serviços, rotas, testes e roteiro         |
 | 7. Dependência vulnerável | 15/11        | Atualizei o pacote e confirmei o build sem avisos                            | Explicação do aviso e da versão corrigida                                |
-| 8. Motor de PII (Cybersecurity) | 15/11   | Defini o que conta como dado de risco e o que bloqueia, revisei as regras e rodei os testes e a avaliação | Primeira versão do módulo, das regras, dos testes e dos conjuntos de memórias simuladas |
+| 8. Motor de PII e filtro na API (Cybersecurity) | 15 e 16/11 | Defini o que conta como dado de risco, o que bloqueia e as regras de consentimento; gerei a migração, rodei os testes e o roteiro | Primeira versão do módulo, das regras, das rotas do mapa do bairro, dos testes e dos conjuntos de memórias simuladas |
 | 9. Circuito no Wokwi     | 16/11         | Escolhi os componentes e o visual da caixinha, montei no Wokwi e testei cada situação | Primeira versão do firmware e do `diagram.json`                    |
 | 10. Ponte Node-RED e painel | 16/11      | Instalei e configurei o Node-RED, rodei o ciclo completo com a API e ajustei o visual do painel | Primeira versão do fluxo e do painel                       |
 | 11. Documentação do IoT  | 16/11         | Revisei os textos e tirei os prints                                          | Estrutura do README da pasta `iot/`                                      |
@@ -171,6 +171,32 @@ Defini o escopo, a arquitetura, as tecnologias e as regras de negócio a partir 
 - Rodei `dotnet build` e `dotnet test`: 268 testes aprovados.
 - Rodei a ferramenta de avaliação e conferi as tabelas do `docs/cyber/motor-pii.md`.
 - Testei frases do dia a dia que não podem gerar alerta, como "panela de pressão" e "me conta 1950".
+
+### Parte 2 · Filtro ligado à API e mapa do bairro · 16/11/2026
+
+**O que eu precisava:** usar o motor de verdade na API: guardar a transcrição do áudio, conferir título e transcrição antes de levar uma memória ao mapa do bairro (US16, US17, US18) e calcular o indicador "Risco Cidadão" a partir do que aconteceu.
+
+**Como usei a IA:** descrevi o fluxo da publicação e as regras de consentimento e pedi apoio para gerar a primeira versão das entidades, dos serviços, das rotas, dos testes e do bloco L do roteiro.
+
+**Minhas decisões:**
+
+- Nada vai para o mapa sem a autorização da pessoa idosa, registrada na memória publicada.
+- Título, transcrição e bairro passam pelo motor; o que vai para o mapa é o texto liberado por ele.
+- Dado de risco alto bloqueia sempre; dado de risco médio só vai com a confirmação da família.
+- A tentativa barrada também fica no histórico, só com o tipo do dado e o trecho mascarado, para o painel mostrar os vazamentos evitados.
+- O mapa do bairro e o painel "Risco Cidadão" são abertos (sem login), mas mostram só apelido, título, texto liberado, números e trechos mascarados.
+- As páginas de demonstração do filtro ficam desligadas por padrão, para não mudar os números do roteiro dos blocos anteriores.
+
+**Resultado:**
+
+- Entidades `MemoriaDoBairro` e `RegistroDePrivacidade`, transcrição na página, serviços `PrivacidadeService` e `RiscoCidadaoService`.
+- Rotas `/paginas/{id}/transcricao`, `/paginas/{id}/analise-privacidade`, `/paginas/{id}/publicacao`, `/bairros/{bairro}/memorias`, `/memorias/{id}/audio` e `/risco-cidadao`; publicação recusada responde 422 com a análise mascarada.
+- 42 testes novos (310 no total) e o bloco L do roteiro (passos 89 a 108).
+
+**Meu trabalho de validação:**
+
+- Gerei a migração com `dotnet ef migrations add Privacidade` e rodei `dotnet build` e `dotnet test`: 310 testes aprovados.
+- Segui o bloco L do roteiro pelo Swagger e tirei os prints 18 a 21.
 
 ---
 

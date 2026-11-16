@@ -70,13 +70,61 @@ public sealed class TextoVerificado
 }
 
 /// <summary>
+/// Um campo de texto do usuário, com o nome que ele terá nos achados (ex.: "Titulo", "Transcricao").
+/// </summary>
+public sealed record CampoDoUsuario(string Nome, TextoDoUsuario Texto);
+
+/// <summary>
+/// Vários campos do mesmo conteúdo que já passaram juntos pelo motor (ex.: título e transcrição).
+/// A decisão de publicar vale para o conjunto: se um campo tem dado de risco alto, nenhum é liberado.
+/// Só o motor cria este tipo.
+/// </summary>
+public sealed class CamposVerificados
+{
+    private readonly Dictionary<string, string> _originais;
+
+    internal CamposVerificados(IReadOnlyDictionary<string, string> originais, AnaliseDeCampos analise)
+    {
+        _originais = new Dictionary<string, string>(originais, StringComparer.Ordinal);
+        Analise = analise;
+    }
+
+    public AnaliseDeCampos Analise { get; }
+
+    /// <summary>Versão segura do campo, com os dados trocados por avisos. Pode ir para log e IA.</summary>
+    public string ParaRegistro(string campo) => Analise.TextoSeguroDe(campo);
+
+    public bool PodePublicar(bool familiaConfirmou) =>
+        !Analise.DeveBloquear && (!Analise.ExigeConfirmacao || familiaConfirmou);
+
+    /// <summary>
+    /// Texto original do campo, liberado para o mapa do bairro só se a análise do conjunto permitir.
+    /// </summary>
+    /// <exception cref="PublicacaoBloqueadaException">Risco alto em algum campo, ou risco médio sem confirmação.</exception>
+    public string ConteudoParaPublicar(string campo, bool familiaConfirmou)
+    {
+        if (!_originais.TryGetValue(campo, out string? original))
+        {
+            throw new ArgumentException($"O campo \"{campo}\" não foi verificado.", nameof(campo));
+        }
+
+        if (!PodePublicar(familiaConfirmou))
+        {
+            throw new PublicacaoBloqueadaException(Analise);
+        }
+
+        return original;
+    }
+}
+
+/// <summary>
 /// A memória não pode ir para o mapa do bairro. Leva o resultado da análise (sem o dado em si)
 /// para a API responder com os achados mascarados.
 /// </summary>
-public sealed class PublicacaoBloqueadaException(ResultadoAnalisePii resultado)
+public sealed class PublicacaoBloqueadaException(IResultadoDeRisco resultado)
     : Exception(resultado.DeveBloquear
         ? "A memória tem dados que podem expor a pessoa a golpes e não pode ser publicada."
         : "A memória tem dados pessoais. Confirme que a família quer publicar mesmo assim.")
 {
-    public ResultadoAnalisePii Resultado { get; } = resultado;
+    public IResultadoDeRisco Resultado { get; } = resultado;
 }

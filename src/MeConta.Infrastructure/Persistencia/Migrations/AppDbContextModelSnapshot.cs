@@ -22,6 +22,53 @@ namespace MeConta.Infrastructure.Persistencia.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("MeConta.Domain.Entidades.AchadoRegistrado", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Campo")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("Nivel")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<int>("RegistroId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RegraId")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
+
+                    b.Property<string>("Rotulo")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("nvarchar(60)");
+
+                    b.Property<string>("Tipo")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
+
+                    b.Property<string>("TrechoMascarado")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RegistroId");
+
+                    b.ToTable("AchadosDePrivacidade", (string)null);
+                });
+
             modelBuilder.Entity("MeConta.Domain.Entidades.AvisoQueroContar", b =>
                 {
                     b.Property<int>("Id")
@@ -303,6 +350,78 @@ namespace MeConta.Infrastructure.Persistencia.Migrations
                     b.ToTable("Membros", (string)null);
                 });
 
+            modelBuilder.Entity("MeConta.Domain.Entidades.MemoriaDoBairro", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Apelido")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
+
+                    b.Property<bool>("AutorizadaPeloIdoso")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Bairro")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("nvarchar(60)");
+
+                    b.Property<int>("CategoriaId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("FamiliaId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IdosoId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IndiceRiscoCidadao")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PaginaId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("PublicadaEm")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("PublicadaPorMembroId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("RemovidaEm")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("RemovidaPorMembroId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Titulo")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Transcricao")
+                        .HasMaxLength(4000)
+                        .HasColumnType("nvarchar(4000)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PaginaId")
+                        .IsUnique()
+                        .HasFilter("[RemovidaEm] IS NULL");
+
+                    b.HasIndex("PublicadaPorMembroId");
+
+                    b.HasIndex("RemovidaPorMembroId");
+
+                    b.HasIndex("Bairro", "RemovidaEm");
+
+                    b.ToTable("MemoriasDoBairro", (string)null);
+                });
+
             modelBuilder.Entity("MeConta.Domain.Entidades.PaginaCaderno", b =>
                 {
                     b.Property<int>("Id")
@@ -339,6 +458,10 @@ namespace MeConta.Infrastructure.Persistencia.Migrations
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Transcricao")
+                        .HasMaxLength(4000)
+                        .HasColumnType("nvarchar(4000)");
 
                     b.HasKey("Id");
 
@@ -459,6 +582,61 @@ namespace MeConta.Infrastructure.Persistencia.Migrations
                         .IsUnique();
 
                     b.ToTable("PortaRetratos", (string)null);
+                });
+
+            modelBuilder.Entity("MeConta.Domain.Entidades.RegistroDePrivacidade", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("AnaliseCompleta")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Bairro")
+                        .HasMaxLength(60)
+                        .HasColumnType("nvarchar(60)");
+
+                    b.Property<DateTime>("CriadoEm")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("FamiliaId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IdosoId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IndiceRiscoCidadao")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MembroId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Origem")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<int>("PaginaId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Resultado")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("VersaoDasRegras")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CriadoEm");
+
+                    b.ToTable("RegistrosDePrivacidade", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -838,6 +1016,15 @@ namespace MeConta.Infrastructure.Persistencia.Migrations
                     b.HasDiscriminator().HasValue("Familia");
                 });
 
+            modelBuilder.Entity("MeConta.Domain.Entidades.AchadoRegistrado", b =>
+                {
+                    b.HasOne("MeConta.Domain.Entidades.RegistroDePrivacidade", null)
+                        .WithMany("Achados")
+                        .HasForeignKey("RegistroId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("MeConta.Domain.Entidades.AvisoQueroContar", b =>
                 {
                     b.HasOne("MeConta.Domain.Entidades.EnvioPergunta", null)
@@ -917,6 +1104,28 @@ namespace MeConta.Infrastructure.Persistencia.Migrations
                         .HasForeignKey("MeConta.Domain.Entidades.Membro", "UsuarioId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("MeConta.Domain.Entidades.MemoriaDoBairro", b =>
+                {
+                    b.HasOne("MeConta.Domain.Entidades.PaginaCaderno", "Pagina")
+                        .WithMany()
+                        .HasForeignKey("PaginaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MeConta.Domain.Entidades.Membro", null)
+                        .WithMany()
+                        .HasForeignKey("PublicadaPorMembroId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("MeConta.Domain.Entidades.Membro", null)
+                        .WithMany()
+                        .HasForeignKey("RemovidaPorMembroId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Pagina");
                 });
 
             modelBuilder.Entity("MeConta.Domain.Entidades.PaginaCaderno", b =>
@@ -1059,6 +1268,11 @@ namespace MeConta.Infrastructure.Persistencia.Migrations
                     b.Navigation("Idosos");
 
                     b.Navigation("Participacoes");
+                });
+
+            modelBuilder.Entity("MeConta.Domain.Entidades.RegistroDePrivacidade", b =>
+                {
+                    b.Navigation("Achados");
                 });
 #pragma warning restore 612, 618
         }

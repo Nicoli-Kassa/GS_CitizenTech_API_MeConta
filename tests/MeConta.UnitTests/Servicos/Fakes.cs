@@ -30,6 +30,12 @@ internal sealed class BancoFake
 
     public List<AvisoQueroContar> Avisos { get; } = [];
 
+    public List<PaginaCaderno> Paginas { get; } = [];
+
+    public List<MemoriaDoBairro> Memorias { get; } = [];
+
+    public List<RegistroDePrivacidade> Registros { get; } = [];
+
     public int Salvamentos { get; private set; }
 
     /// <summary>Dá um Id fixo a uma entidade criada no teste (o Id tem setter protegido).</summary>
@@ -40,6 +46,16 @@ internal sealed class BancoFake
         return entidade;
     }
 
+    /// <summary>
+    /// Preenche uma navegação que o Entity Framework carregaria do banco (ex.: o idoso de um envio).
+    /// </summary>
+    public static T ComNavegacao<T>(T entidade, string propriedade, object valor)
+        where T : Entidade
+    {
+        typeof(T).GetProperty(propriedade)!.SetValue(entidade, valor);
+        return entidade;
+    }
+
     public void Salvar()
     {
         Salvamentos++;
@@ -47,7 +63,10 @@ internal sealed class BancoFake
             .Concat(Idosos)
             .Concat(Envios)
             .Concat(PortaRetratos)
-            .Concat(Avisos);
+            .Concat(Avisos)
+            .Concat(Paginas)
+            .Concat(Memorias)
+            .Concat(Registros);
 
         foreach (Entidade entidade in todas.Where(entidade => entidade.Id == 0))
         {
@@ -156,6 +175,80 @@ internal sealed class AvisoRepositoryFake(BancoFake banco) : RepositorioFake<Avi
         bool somenteNaoVistos,
         CancellationToken cancellationToken = default) =>
         throw new NotSupportedException("Consulta coberta pelos testes de integração.");
+}
+
+internal sealed class PaginaRepositoryFake(BancoFake banco) : RepositorioFake<PaginaCaderno>(banco.Paginas), IPaginaRepository
+{
+    public Task<PaginaCaderno?> ObterPorChaveAsync(Guid chaveIdempotencia, CancellationToken cancellationToken = default) =>
+        Task.FromResult(Itens.FirstOrDefault(pagina => pagina.ChaveIdempotencia == chaveIdempotencia));
+
+    public Task<PaginaCaderno?> ObterComEnvioAsync(int id, CancellationToken cancellationToken = default) =>
+        ObterPorIdAsync(id, cancellationToken);
+
+    public Task<(IReadOnlyList<PaginaCaderno> Itens, int Total)> ListarDaFamiliaAsync(
+        int familiaId,
+        int? idosoId,
+        int? categoriaId,
+        int pagina,
+        int tamanho,
+        CancellationToken cancellationToken = default) =>
+        throw new NotSupportedException("Consulta coberta pelos testes de integração.");
+}
+
+internal sealed class MemoriaDoBairroRepositoryFake(BancoFake banco)
+    : RepositorioFake<MemoriaDoBairro>(banco.Memorias), IMemoriaDoBairroRepository
+{
+    public Task<MemoriaDoBairro?> ObterNoMapaDaPaginaAsync(int paginaId, CancellationToken cancellationToken = default) =>
+        Task.FromResult(Itens.FirstOrDefault(memoria => memoria.PaginaId == paginaId && memoria.EstaNoMapa));
+
+    public Task<MemoriaDoBairro?> ObterNoMapaComPaginaAsync(int id, CancellationToken cancellationToken = default)
+    {
+        MemoriaDoBairro? memoria = Itens.FirstOrDefault(item => item.Id == id && item.EstaNoMapa);
+        PaginaCaderno? pagina = memoria is null ? null : banco.Paginas.FirstOrDefault(item => item.Id == memoria.PaginaId);
+        return Task.FromResult(memoria is null || pagina is null
+            ? memoria
+            : BancoFake.ComNavegacao(memoria, nameof(MemoriaDoBairro.Pagina), pagina));
+    }
+
+    public Task<IReadOnlyList<MemoriaDoBairro>> ListarNoMapaDoBairroAsync(string bairro, CancellationToken cancellationToken = default) =>
+        Task.FromResult<IReadOnlyList<MemoriaDoBairro>>(Itens
+            .Where(memoria => memoria.EstaNoMapa && string.Equals(memoria.Bairro, bairro, StringComparison.OrdinalIgnoreCase))
+            .OrderByDescending(memoria => memoria.PublicadaEm)
+            .ToList());
+}
+
+internal sealed class RegistroDePrivacidadeRepositoryFake(BancoFake banco)
+    : RepositorioFake<RegistroDePrivacidade>(banco.Registros), IRegistroDePrivacidadeRepository
+{
+    public Task<IReadOnlyList<RegistroDePrivacidade>> ListarDesdeAsync(DateTime desdeUtc, CancellationToken cancellationToken = default) =>
+        Task.FromResult<IReadOnlyList<RegistroDePrivacidade>>(Itens
+            .Where(registro => registro.CriadoEm >= desdeUtc)
+            .OrderBy(registro => registro.CriadoEm)
+            .ToList());
+}
+
+/// <summary>Armazenamento em memória: guarda os bytes por caminho.</summary>
+internal sealed class ArmazenamentoFake : IArmazenamentoDeArquivos
+{
+    public Dictionary<string, byte[]> Arquivos { get; } = [];
+
+    public async Task<string> SalvarAsync(Stream conteudo, MeConta.Domain.ValueObjects.ArquivoDeMidia arquivo, CancellationToken cancellationToken = default)
+    {
+        using MemoryStream copia = new();
+        await conteudo.CopyToAsync(copia, cancellationToken);
+        string caminho = $"audios/{Guid.NewGuid():N}{arquivo.Extensao}";
+        Arquivos[caminho] = copia.ToArray();
+        return caminho;
+    }
+
+    public Task<Stream?> AbrirAsync(string caminho, CancellationToken cancellationToken = default) =>
+        Task.FromResult<Stream?>(Arquivos.TryGetValue(caminho, out byte[]? bytes) ? new MemoryStream(bytes) : null);
+
+    public Task RemoverAsync(string caminho, CancellationToken cancellationToken = default)
+    {
+        Arquivos.Remove(caminho);
+        return Task.CompletedTask;
+    }
 }
 
 /// <summary>

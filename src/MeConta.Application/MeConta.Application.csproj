@@ -1,12 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <!-- Casos de uso do Me Conta. Depende só do domínio; banco, disco e HTTP ficam atrás de interfaces. -->
+  <!-- Casos de uso do Me Conta. Depende do domínio e do motor de privacidade; banco, disco e HTTP ficam atrás de interfaces. -->
   <PropertyGroup>
     <RootNamespace>MeConta.Application</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\MeConta.Domain\MeConta.Domain.csproj" />
+    <ProjectReference Include="..\MeConta.Privacidade\MeConta.Privacidade.csproj" />
   </ItemGroup>
 
 </Project>

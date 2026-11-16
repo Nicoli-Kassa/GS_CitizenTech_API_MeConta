@@ -257,7 +257,7 @@ Para montar do zero: crie um projeto ESP32 **Arduino** em https://wokwi.com/proj
 
 ### Testes automatizados (na API)
 
-As regras do aparelho são cobertas pelos testes xUnit da API (`dotnet test`, 268 aprovados): [`PortaRetratoTests`](../tests/MeConta.UnitTests/Domain/PortaRetratoTests.cs), [`FilaDoPortaRetratoTests`](../tests/MeConta.UnitTests/Regras/FilaDoPortaRetratoTests.cs), [`AparelhoPortaRetratoServiceTests`](../tests/MeConta.UnitTests/Servicos/AparelhoPortaRetratoServiceTests.cs) e [`PortaRetratoServiceTests`](../tests/MeConta.UnitTests/Servicos/PortaRetratoServiceTests.cs). As chamadas 67 a 88 do [roteiro de testes](../docs/ROTEIRO_DE_TESTES.md) (Bloco K) testam as rotas do aparelho pelo Swagger, inclusive os casos de erro (chave inválida, pergunta de outro idoso, botão apertado várias vezes).
+As regras do aparelho são cobertas pelos testes xUnit da API (`dotnet test`, 310 aprovados): [`PortaRetratoTests`](../tests/MeConta.UnitTests/Domain/PortaRetratoTests.cs), [`FilaDoPortaRetratoTests`](../tests/MeConta.UnitTests/Regras/FilaDoPortaRetratoTests.cs), [`AparelhoPortaRetratoServiceTests`](../tests/MeConta.UnitTests/Servicos/AparelhoPortaRetratoServiceTests.cs) e [`PortaRetratoServiceTests`](../tests/MeConta.UnitTests/Servicos/PortaRetratoServiceTests.cs). As chamadas 67 a 88 do [roteiro de testes](../docs/ROTEIRO_DE_TESTES.md) (Bloco K) testam as rotas do aparelho pelo Swagger, inclusive os casos de erro (chave inválida, pergunta de outro idoso, botão apertado várias vezes).
 
 ## Evidências
 

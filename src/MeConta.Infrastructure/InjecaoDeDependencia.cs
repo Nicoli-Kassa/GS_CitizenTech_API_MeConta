@@ -58,6 +58,8 @@ public static class InjecaoDeDependencia
         services.AddScoped<IIndicadorConsulta, IndicadorConsulta>();
         services.AddScoped<IPortaRetratoRepository, PortaRetratoRepository>();
         services.AddScoped<IAvisoRepository, AvisoRepository>();
+        services.AddScoped<IMemoriaDoBairroRepository, MemoriaDoBairroRepository>();
+        services.AddScoped<IRegistroDePrivacidadeRepository, RegistroDePrivacidadeRepository>();
 
         services.AddSingleton<IArmazenamentoDeArquivos>(new ArmazenamentoEmDiscoAdapter(pastaDeArquivos));
         services.AddSingleton<IGeradorDeCodigoConvite, GeradorDeCodigoConvite>();

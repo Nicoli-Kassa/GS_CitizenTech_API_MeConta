@@ -1,5 +1,6 @@
 using MeConta.Application.Excecoes;
 using MeConta.Domain.Excecoes;
+using MeConta.Privacidade.Taint;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,6 +20,8 @@ public sealed class TratadorDeExcecoes(ILogger<TratadorDeExcecoes> logger) : IEx
         // A ordem importa: as classes mais específicas vêm antes da classe base.
         (int status, string titulo) = exception switch
         {
+            PublicacaoRecusadaException or PublicacaoBloqueadaException
+                => (StatusCodes.Status422UnprocessableEntity, "Publicação recusada pelo filtro de dados pessoais"),
             ArquivoMuitoGrandeException => (StatusCodes.Status413PayloadTooLarge, "Arquivo muito grande"),
             ConflitoException => (StatusCodes.Status409Conflict, "Conflito"),
             RegraDeNegocioException => (StatusCodes.Status400BadRequest, "Regra de negócio"),
@@ -43,6 +46,12 @@ public sealed class TratadorDeExcecoes(ILogger<TratadorDeExcecoes> logger) : IEx
                 : exception.Message,
             Instance = httpContext.Request.Path,
         };
+
+        // A análise vai junto, só com trechos mascarados, para o app mostrar o alerta e a versão segura.
+        if (exception is PublicacaoRecusadaException recusa)
+        {
+            problema.Extensions["analise"] = recusa.Analise;
+        }
 
         httpContext.Response.StatusCode = status;
         await httpContext.Response.WriteAsJsonAsync(problema, cancellationToken);

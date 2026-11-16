@@ -1,6 +1,6 @@
 # Roteiro de testes da Me Conta API
 
-Passo a passo para testar **todas as requisições** da API, inclusive as do porta-retrato Me Conta (IoT), com o resultado esperado de cada uma. As marcas 📸 indicam onde tirar as fotos usadas no [README](../README.md) (salve em `docs/evidencias/` com o nome indicado).
+Passo a passo para testar **todas as requisições** da API, inclusive as do porta-retrato Me Conta (IoT) e as do filtro de dados pessoais e mapa do bairro (Cybersecurity), com o resultado esperado de cada uma. As marcas 📸 indicam onde tirar as fotos usadas no [README](../README.md) (salve em `docs/evidencias/` com o nome indicado).
 
 Todos os dados usados aqui são **fictícios**.
 
@@ -12,7 +12,7 @@ Todos os dados usados aqui são **fictícios**.
 
 | Ferramenta | Para quê |
 |---|---|
-| **Visual Studio 2022 (17.12 ou mais novo)** | Rodar o arquivo [`src/MeConta.Api/MeConta.Api.http`](../src/MeConta.Api/MeConta.Api.http): 88 chamadas numeradas, na mesma ordem deste roteiro (menos as de envio de áudio, 49 a 53). O token, o convite, o envio e o aviso passam sozinhos de uma chamada para a outra. |
+| **Visual Studio 2022 (17.12 ou mais novo)** | Rodar o arquivo [`src/MeConta.Api/MeConta.Api.http`](../src/MeConta.Api/MeConta.Api.http): 108 chamadas numeradas, na mesma ordem deste roteiro (menos as de envio de áudio, 49 a 53). O token, o convite, o envio e o aviso passam sozinhos de uma chamada para a outra. |
 | **Swagger UI** (`http://localhost:5080/swagger`) | Envio de áudio (multipart, passos 49 a 53) e as fotos. |
 | **Terminal** | Subir a API e rodar os testes automatizados. |
 
@@ -23,7 +23,7 @@ cd me-conta-api
 dotnet run --project src/MeConta.Api --launch-profile http
 ```
 
-Na primeira vez, a API cria o banco `MeConta`, aplica as migrações (`InitialCreate` e `PortaRetrato`), grava as 5 categorias e as 25 perguntas e cria os dados de demonstração, inclusive o porta-retrato da Vó Lourdes.
+Na primeira vez, a API cria o banco `MeConta`, aplica as migrações (`InitialCreate`, `PortaRetrato` e `Privacidade`), grava as 5 categorias e as 25 perguntas e cria os dados de demonstração, inclusive o porta-retrato da Vó Lourdes.
 
 ### Começar do zero
 
@@ -242,6 +242,44 @@ Neste ponto, a Vó Lourdes tem **duas perguntas esperando**: a do envio 1 (dos d
 
 **Não use** `POST /api/v1/idosos/{idosoId}/porta-retrato` (parear de novo) nem `DELETE /api/v1/idosos/{idosoId}/porta-retrato` durante o roteiro. O primeiro gera uma chave nova, e a chave de demonstração para de funcionar; o segundo remove o porta-retrato. Para voltar ao porta-retrato de demonstração, comece do zero (seção 1).
 
+
+### Bloco L · Filtro de dados pessoais e mapa do bairro, Cybersecurity (US16, US17, US18)
+
+Antes de uma página do caderno ir para o mapa do bairro, o título e a transcrição passam pelo motor de dados pessoais. Dado de risco **alto** (CPF, senha, cartão, conta, PIX, código) **bloqueia**; dado de risco **médio** (saúde, telefone, e-mail, endereço, rotina da casa) **pede a confirmação** da família. Como o motor funciona: [`docs/cyber/motor-pii.md`](cyber/motor-pii.md).
+
+**Preparação:** este bloco usa quatro páginas de demonstração da Vó Lourdes, com transcrições fictícias. Elas ficam desligadas por padrão, para não mudar os números dos blocos anteriores. Pare a API (`Ctrl+C`) e suba de novo com a opção ligada:
+
+```powershell
+dotnet run --project src/MeConta.Api --launch-profile http -- --Banco:PaginasDoFiltroDePrivacidade=true
+```
+
+Faça login de novo como **Bia** (passo 6) e use o token dela no Authorize.
+
+| Nº | Requisição | O que enviar | Esperado | ✓ |
+|---|---|---|---|---|
+| 89 | `GET /api/v1/familias/1/caderno` | token da Bia | **200** com as 4 páginas de demonstração, cada uma com `transcricao`: "O bolo de domingo", "A fábrica de tecidos", "Os chás da vó" e "A casa da Rua das Flores". **Anote o `id` de cada uma.** | ☐ |
+| 90 📸 `18-analise-cpf.png` | `POST /api/v1/paginas/{id da fábrica}/analise-privacidade` | — | **200** com `resultado` = `Bloqueada`, `indiceRiscoCidadao` = 70, `faixa` = `Alto`, um achado `Cpf` no campo `Transcricao` com `trechoMascarado` = `***.***.***-09`, e `versaoSegura.transcricao` com "[CPF removido]" no lugar do número | ☐ |
+| 91 | `POST /api/v1/paginas/{id do bolo}/analise-privacidade` | — | **200** com `resultado` = `Liberada`, `indiceRiscoCidadao` = 0 e `achados` vazio ("panela de pressão" não é dado de saúde) | ☐ |
+| 92 | `POST /api/v1/paginas/{id dos chás}/analise-privacidade` | — | **200** com `resultado` = `PrecisaConfirmar`, `indiceRiscoCidadao` = 30 e um achado `Saude` ("r****** p*** p******") | ☐ |
+| 93 | `POST /api/v1/paginas/{id da casa}/analise-privacidade` | — | **200** com `resultado` = `PrecisaConfirmar`, `indiceRiscoCidadao` = 85, `faixa` = `Alto`, achados `Endereco` e dois `Vulnerabilidade`, e a combinação `COMB-ENDERECO-ROTINA` | ☐ |
+| 94 📸 `19-publicacao-bloqueada.png` | `POST /api/v1/paginas/{id da fábrica}/publicacao` | `{ "bairro": "Pirituba", "idosoAutorizou": true, "confirmoDadosPessoais": true }` | **422** com `title` = "Publicação recusada pelo filtro de dados pessoais" e o campo `analise` com `bloqueada` = `true`: confirmar não libera CPF | ☐ |
+| 95 | `POST /api/v1/paginas/{id do bolo}/publicacao` | `{ "bairro": "Pirituba", "idosoAutorizou": false }` | **400** "Marque que Vó Lourdes autorizou a publicação no mapa do bairro" | ☐ |
+| 96 | `POST /api/v1/paginas/{id do bolo}/publicacao` | `{ "bairro": "Rua das Flores, 123", "idosoAutorizou": true }` | **400** "Use só o nome do bairro, sem rua, número ou outro dado pessoal" | ☐ |
+| 97 📸 `20-publicacao-liberada.png` | `POST /api/v1/paginas/{id do bolo}/publicacao` | `{ "bairro": "Pirituba", "idosoAutorizou": true }` | **201** com `memoria.apelido` = `Vó Lourdes`, `memoria.titulo`, `memoria.transcricao`, `memoria.audioUrl` e `analise.resultado` = `Publicada`. Nada de telefone ou nome completo. **Anote `memoria.id`.** | ☐ |
+| 98 | `POST /api/v1/paginas/{id do bolo}/publicacao` | o mesmo do passo 97 | **409** "Esta memória já está no mapa do bairro" | ☐ |
+| 99 | `POST /api/v1/paginas/{id dos chás}/publicacao` | `{ "bairro": "Pirituba", "idosoAutorizou": true }` | **422** com `analise.resultado` = `PrecisaConfirmar` e `analise.exigeConfirmacao` = `true` | ☐ |
+| 100 | `POST /api/v1/paginas/{id dos chás}/publicacao` | `{ "bairro": "Pirituba", "idosoAutorizou": true, "confirmoDadosPessoais": true }` | **201**: com a confirmação da família, o dado de risco médio é publicado | ☐ |
+| 101 | `GET /api/v1/bairros/Pirituba/memorias` | **sem token** (clique em **Logout** no Authorize) | **200** com as 2 memórias, da mais recente para a mais antiga: qualquer morador vê o mapa | ☐ |
+| 102 | `GET /api/v1/memorias/{memoria.id do passo 97}/audio` | sem token | **200**: o som de demonstração toca | ☐ |
+| 103 | `DELETE /api/v1/paginas/{id dos chás}/publicacao` | token da Bia | **204**. Repetindo o passo 101, só sobra a memória do bolo. | ☐ |
+| 104 | `PUT /api/v1/paginas/{id da casa}/transcricao` | `{ "texto": "A casa tinha um pé de jabuticaba no quintal e a família inteira almoçava debaixo dele." }` | **200** com a `transcricao` nova | ☐ |
+| 105 | `POST /api/v1/paginas/{id da casa}/analise-privacidade` | — | **200** com `resultado` = `Liberada` e `indiceRiscoCidadao` = 0: sem endereço e sem rotina, a memória pode ir para o mapa | ☐ |
+| 106 📸 `21-risco-cidadao.png` | `GET /api/v1/risco-cidadao` | sem token | **200** com `totais.verificacoes` = 9, `publicadas` = 2, `bloqueadas` = 2, `precisaramConfirmar` = 3, `semRisco` = 3, `dadosEncontrados` = 8, `vazamentosEvitados` = 1, `indiceRiscoCidadao` = 35 (`faixa` = `Medio`), `porTipo` com "Dado de saúde" em primeiro, `porBairro` com Pirituba (4 tentativas) e `ultimosAlertas` só com trechos mascarados | ☐ |
+| 107 | `GET /api/v1/risco-cidadao?dias=0` | sem token | **400** "Escolha um período de 1 a 90 dias." | ☐ |
+| 108 | `DELETE /api/v1/paginas/{id do bolo}` | token da Bia | **204**. Repetindo o passo 101, a lista fica vazia: apagar a página tira a memória do mapa junto. | ☐ |
+
+Os números do passo 106 valem para este bloco feito uma vez, na ordem. Cada análise e cada tentativa de publicação entram no histórico (passos 90 a 94, 97, 99, 100 e 105); os passos 95, 96 e 98 são recusados antes do filtro e não entram.
+
 ---
 
 ## 4. Banco de dados e migrações
@@ -249,9 +287,9 @@ Neste ponto, a Vó Lourdes tem **duas perguntas esperando**: a do envio 1 (dos d
 | Foto | O que fazer | ✓ |
 |---|---|---|
 | 📸 `10-banco.png` | No Visual Studio: **Exibir → Pesquisador de Objetos do SQL Server** → `(localdb)\MSSQLLocalDB` → **Bancos de Dados** → `MeConta` → **Tabelas**. Clique com o botão direito em `dbo.Perguntas` → **Exibir Dados** (aparecem as 25 do catálogo e a da família, com a coluna `Origem`). | ☐ |
-| 📸 `11-migracoes.png` | Clique com o botão direito em `dbo.__EFMigrationsHistory` → **Exibir Dados** (linhas `..._InitialCreate` e `..._PortaRetrato`) e mostre a pasta `src/MeConta.Infrastructure/Persistencia/Migrations` no Gerenciador de Soluções. | ☐ |
+| 📸 `11-migracoes.png` | Clique com o botão direito em `dbo.__EFMigrationsHistory` → **Exibir Dados** (linhas `..._InitialCreate`, `..._PortaRetrato` e `..._Privacidade`) e mostre a pasta `src/MeConta.Infrastructure/Persistencia/Migrations` no Gerenciador de Soluções. | ☐ |
 
-Confira também que existem as tabelas `Familias`, `Participacoes`, `Convites`, `Idosos`, `Categorias`, `Perguntas`, `Envios`, `Paginas`, `PortaRetratos`, `AvisosQueroContar`, `Membros` e `AspNetUsers`, e que os áudios enviados foram para `src/MeConta.Api/storage/audios/`.
+Confira também que existem as tabelas `Familias`, `Participacoes`, `Convites`, `Idosos`, `Categorias`, `Perguntas`, `Envios`, `Paginas`, `PortaRetratos`, `AvisosQueroContar`, `MemoriasDoBairro`, `RegistrosDePrivacidade`, `AchadosDePrivacidade`, `Membros` e `AspNetUsers`, e que os áudios enviados foram para `src/MeConta.Api/storage/audios/`.
 
 ---
 
@@ -259,7 +297,7 @@ Confira também que existem as tabelas `Familias`, `Participacoes`, `Convites`, 
 
 | Foto | O que fazer | Esperado | ✓ |
 |---|---|---|---|
-| 📸 `12-testes.png` | Pare a API (`Ctrl+C`) e rode `dotnet test` na pasta do projeto | `total: 151; falhou: 0` e nenhum aviso amarelo no build | ☐ |
+| 📸 `12-testes.png` | Pare a API (`Ctrl+C`) e rode `dotnet test` na pasta do projeto | `total: 310; falhou: 0` e nenhum aviso amarelo no build | ☐ |
 
 ---
 
@@ -281,5 +319,8 @@ Confira também que existem as tabelas `Familias`, `Participacoes`, `Convites`, 
 | US12 · Indicador "Conversas de verdade" | 60, 61 |
 | US14 · Roteiro "Ensine sua avó" | 35 |
 | US15 · Porta-retrato (aviso de pergunta nova e botão "quero contar") | 67 a 88 |
+| US16 · Publicar uma memória no mapa (com autorização) | 94 a 100, 103, 108 |
+| US17 · Ouvir as memórias do bairro | 101, 102 |
+| US18 · Bloquear dados sensíveis antes de publicar (painel "Risco Cidadão") | 89 a 94, 99, 104 a 107 |
 | Login, perfil e acesso | 3 a 8, 16 a 21, 70, 71 |
 | Monitoramento | 1 |

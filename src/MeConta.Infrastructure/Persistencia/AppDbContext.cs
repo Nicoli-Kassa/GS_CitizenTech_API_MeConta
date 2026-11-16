@@ -35,6 +35,10 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
 
     public DbSet<AvisoQueroContar> Avisos => Set<AvisoQueroContar>();
 
+    public DbSet<MemoriaDoBairro> MemoriasDoBairro => Set<MemoriaDoBairro>();
+
+    public DbSet<RegistroDePrivacidade> RegistrosDePrivacidade => Set<RegistroDePrivacidade>();
+
     public Task<int> SalvarAlteracoesAsync(CancellationToken cancellationToken = default) =>
         SaveChangesAsync(cancellationToken);
 

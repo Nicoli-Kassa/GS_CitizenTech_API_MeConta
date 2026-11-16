@@ -10,6 +10,7 @@ namespace MeConta.Domain.Entidades;
 public sealed class PaginaCaderno : Entidade
 {
     public const int TamanhoMaximoTitulo = 200;
+    public const int TamanhoMaximoTranscricao = 4000;
 
     // Construtor usado pelo Entity Framework ao ler do banco.
     private PaginaCaderno()
@@ -76,6 +77,12 @@ public sealed class PaginaCaderno : Entidade
 
     public string? FotoCaminho { get; private set; }
 
+    /// <summary>
+    /// O que a pessoa idosa disse no áudio, escrito pela família (ou por um serviço de transcrição).
+    /// Opcional. É o texto que o filtro de dados pessoais confere antes de a memória ir para o mapa do bairro.
+    /// </summary>
+    public string? Transcricao { get; private set; }
+
     public int CriadaPorMembroId { get; private set; }
 
     /// <summary>
@@ -89,6 +96,27 @@ public sealed class PaginaCaderno : Entidade
     public EnvioPergunta? Envio { get; private set; }
 
     public bool TemFoto => FotoCaminho is not null;
+
+    /// <summary>
+    /// Guarda ou troca a transcrição do áudio. Texto em branco apaga a transcrição.
+    /// </summary>
+    /// <exception cref="RegraDeNegocioException">Transcrição maior que o limite.</exception>
+    public void DefinirTranscricao(string? texto)
+    {
+        if (string.IsNullOrWhiteSpace(texto))
+        {
+            Transcricao = null;
+            return;
+        }
+
+        string normalizada = texto.Trim();
+        if (normalizada.Length > TamanhoMaximoTranscricao)
+        {
+            throw new RegraDeNegocioException($"Use até {TamanhoMaximoTranscricao} caracteres na transcrição");
+        }
+
+        Transcricao = normalizada;
+    }
 
     /// <summary>
     /// Só quem criou a página pode apagá-la (US11).

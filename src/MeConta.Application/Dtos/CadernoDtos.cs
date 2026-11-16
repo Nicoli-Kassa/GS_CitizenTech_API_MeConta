@@ -11,12 +11,14 @@ namespace MeConta.Application.Dtos;
 public sealed record ArquivoRecebido(string NomeArquivo, long TamanhoBytes, Func<Stream> AbrirLeitura);
 
 /// <summary>Resposta em áudio que vira página do caderno (US08 e US10).</summary>
+/// <param name="Transcricao">O que a pessoa idosa disse no áudio, escrito pela família (opcional).</param>
 public sealed record NovaResposta(
     string? Titulo,
     int DuracaoSegundos,
     Guid? ChaveIdempotencia,
     ArquivoRecebido Audio,
-    ArquivoRecebido? Foto);
+    ArquivoRecebido? Foto,
+    string? Transcricao = null);
 
 public sealed record PaginaResponse(
     int Id,
@@ -25,6 +27,7 @@ public sealed record PaginaResponse(
     string IdosoApelido,
     string Titulo,
     string Pergunta,
+    string? Transcricao,
     int CategoriaId,
     int DuracaoSegundos,
     bool TemFoto,
@@ -49,6 +52,7 @@ public sealed record PaginaResponse(
             envio.Idoso?.Apelido ?? string.Empty,
             pagina.Titulo,
             envio.TextoPergunta,
+            pagina.Transcricao,
             envio.CategoriaId,
             pagina.DuracaoSegundos,
             pagina.TemFoto,
@@ -59,6 +63,9 @@ public sealed record PaginaResponse(
             pagina.CriadaEm);
     }
 }
+
+/// <summary>Transcrição do áudio da página. Texto em branco apaga a transcrição.</summary>
+public sealed record TranscricaoRequest(string? Texto);
 
 /// <summary>Resultado de guardar uma resposta: <c>Criada</c> é falso quando a chave já existia.</summary>
 public sealed record ResultadoGuardarResposta(PaginaResponse Pagina, bool Criada);

@@ -27,7 +27,7 @@ public partial class Program
         builder.Services.AdicionarInfraestrutura(provedor, connectionString, pastaDeArquivos);
 
         // Casos de uso (camada Application) e regras do domínio.
-        builder.Services.AdicionarAplicacao();
+        builder.Services.AdicionarAplicacao(builder.Configuration["Privacidade:ArquivoDeRegras"]);
         builder.Services.AddHttpContextAccessor();
         builder.Services.AddScoped<IUsuarioAtual, UsuarioAtualHttp>();
 
@@ -82,7 +82,8 @@ public partial class Program
         app.MapHealthChecks("/health");
 
         bool dadosDeDemonstracao = builder.Configuration.GetValue("Banco:DadosDeDemonstracao", false);
-        await DbInicializador.InicializarAsync(app.Services, dadosDeDemonstracao);
+        bool paginasDoFiltro = builder.Configuration.GetValue("Banco:PaginasDoFiltroDePrivacidade", false);
+        await DbInicializador.InicializarAsync(app.Services, dadosDeDemonstracao, paginasDoFiltro);
 
         await app.RunAsync();
     }

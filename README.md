@@ -18,7 +18,7 @@ Backend do **Me Conta**, desenvolvido para a Global Solution FIAP 2026 (CitizenT
 | -------------------------- | ----------------------------------------------------------------- |
 | 🎬 **Pitch**               | [**Assistir no YouTube**](https://youtu.be/INSERIR-LINK-DO-PITCH) |
 | 📄 **Documentação da API** | `/swagger` e `/scalar` (com a API rodando)                        |
-| 🧪 **Testes**              | `dotnet test` (268 testes)                                        |
+| 🧪 **Testes**              | `dotnet test` (310 testes)                                        |
 | 🗂️ **Matérias**            | [O que cada matéria faz e onde cada entrega está](docs/MATERIAS.md) |
 | 🖼️ **Porta-retrato (IoT)** | [Circuito no Wokwi, ponte Node-RED e evidências](iot/README.md)     |
 
@@ -181,7 +181,7 @@ flowchart LR
 | Projeto                  | Responsabilidade                                                                                                                                                            | Depende de                  |
 | ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------- |
 | `MeConta.Domain`         | Entidades, value objects, exceções e regras de negócio puras. Nenhum pacote externo.                                                                                        | —                           |
-| `MeConta.Application`    | Casos de uso (serviços), DTOs e as interfaces que a infraestrutura implementa (`IRepository<T,TId>`, `IUnidadeDeTrabalho`, `IArmazenamentoDeArquivos`, `IUsuarioAtual`...). | Domain                      |
+| `MeConta.Application`    | Casos de uso (serviços), DTOs e as interfaces que a infraestrutura implementa (`IRepository<T,TId>`, `IUnidadeDeTrabalho`, `IArmazenamentoDeArquivos`, `IUsuarioAtual`...). | Domain, Privacidade         |
 | `MeConta.Infrastructure` | `AppDbContext` (EF Core + Identity), configurações Fluent API, migrações, repositórios, consultas LINQ e adapters de disco e de código de convite.                          | Application                 |
 | `MeConta.Api`            | Controllers REST, autenticação, tratamento de erros, documentação OpenAPI, health check e composição da injeção de dependência.                                             | Application, Infrastructure |
 | `MeConta.Privacidade`    | Motor de dados pessoais (PII): regras em JSON, validadores, índice Risco Cidadão e os tipos que separam texto não verificado de texto verificado ([como funciona](docs/cyber/motor-pii.md)). Nenhum pacote externo. | —                           |
@@ -393,6 +393,12 @@ Todas as rotas ficam em `/api/v1` e, exceto login, cadastro, categorias e as rot
 | PUT                 | `/porta-retrato/conexao` (chave do aparelho)                         | US15          | 204 · 401                   |
 | GET                 | `/familias/{familiaId}/avisos?somenteNaoVistos=`                     | US15          | 200 · 403                   |
 | POST                | `/avisos/{avisoId}/visto`                                            | US15          | 200 · 403 · 404             |
+| PUT                 | `/paginas/{paginaId}/transcricao`                                    | US18          | 200 · 400 · 403             |
+| POST                | `/paginas/{paginaId}/analise-privacidade`                            | US18          | 200 · 403 · 404             |
+| POST · DELETE       | `/paginas/{paginaId}/publicacao`                                     | US16 · US18   | 201 · 204 · 400 · 409 · 422 |
+| GET                 | `/bairros/{bairro}/memorias` (sem login)                             | US17          | 200                         |
+| GET                 | `/memorias/{memoriaId}/audio` (sem login)                            | US17          | 200 · 404                   |
+| GET                 | `/risco-cidadao?dias=` (sem login, só números e trechos mascarados)  | US18          | 200 · 400                   |
 | GET                 | `/health`                                                            | Monitoramento | 200 · 503                   |
 
 ## Regras de negócio
@@ -411,6 +417,11 @@ Todas as rotas ficam em `/api/v1` e, exceto login, cadastro, categorias e as rot
 | Mesma chave de idempotência não duplica a página                                          | `CadernoService` + índice único         | 200 com a página existente                               |
 | Só a família vê o caderno; só quem criou apaga a página                                   | `ControleDeAcesso` · `PaginaCaderno`    | 403                                                      |
 | Indicador sem idosos cadastrados não divide por zero                                      | `IndicadorService`                      | 200 "Ainda não há dados"                                 |
+| Nada vai para o mapa do bairro sem a autorização da pessoa idosa                          | `MemoriaDoBairro`                       | 400 "Marque que Vó Lourdes autorizou..."                 |
+| Dado de risco alto (CPF, senha, cartão, conta, PIX, código) bloqueia a publicação         | `PrivacidadeService` + motor de PII     | 422 com a análise mascarada                              |
+| Dado de risco médio (saúde, telefone, endereço, rotina) só vai com a confirmação          | `CamposVerificados` + motor de PII      | 422 até `confirmoDadosPessoais` = `true`                 |
+| O bairro é só o nome do bairro, nunca endereço                                            | `PrivacidadeService` + motor de PII     | 400 "Use só o nome do bairro..."                         |
+| Cada página aparece no mapa no máximo uma vez; tirar do mapa é imediato                   | `MemoriaDoBairro` + índice único        | 409 · 204                                                |
 
 ## Como executar
 
@@ -477,7 +488,7 @@ dotnet ef migrations add NomeDaMudanca -p src/MeConta.Infrastructure -s src/MeCo
 dotnet test
 ```
 
-**268 testes unitários** em xUnit (`tests/MeConta.UnitTests`), sem banco e sem rede, com dublês escritos à mão (`PerguntaFake`, `FiltroFake` e, para os serviços, repositórios em memória, `RelogioFake` e `ControleDeAcessoFake`). Os nomes seguem o padrão `Metodo_Cenario_ResultadoEsperado`.
+**310 testes unitários** em xUnit (`tests/MeConta.UnitTests`), sem banco e sem rede, com dublês escritos à mão (`PerguntaFake`, `FiltroFake` e, para os serviços, repositórios em memória, `RelogioFake` e `ControleDeAcessoFake`). Os nomes seguem o padrão `Metodo_Cenario_ResultadoEsperado`.
 
 | Arquivo                            | O que testa                                                                                                                                                                   |
 | ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -500,6 +511,10 @@ dotnet test
 | `CalculadoraDeRiscoCidadaoTests`   | Índice de 0 a 100, pisos por nível, bônus das combinações e limites das faixas                                                                                                |
 | `TextosRastreadosTests`            | Texto do usuário não vaza num log; texto verificado sai mascarado; publicação recusada ou com confirmação                                                                     |
 | `CorpusDeMemoriasTests`            | Precisão e recall do motor em 94 memórias simuladas com gabarito                                                                                                               |
+| `CamposVerificadosTests`           | Título e transcrição verificados juntos: CPF num campo bloqueia o outro, combinação entre campos, análise incompleta bloqueia                                                 |
+| `MemoriaDoBairroTests`             | Autorização da pessoa idosa obrigatória, bairro vazio ou longo, tirar do mapa, limite da transcrição                                                                           |
+| `PrivacidadeServiceTests`          | Análise e publicação: liberada, bloqueada (422), pedir confirmação, bairro com endereço, memória já no mapa, tirar do mapa, histórico sem dado em claro                        |
+| `RiscoCidadaoServiceTests`         | Painel: totais, vazamentos evitados, por tipo, por bairro, dia de Brasília, período fora do limite                                                                            |
 
 ## Evidências
 
@@ -551,13 +566,23 @@ As rotas do aparelho pelo Swagger:
 
 ![Avisos "quero contar" que a família ainda não viu](docs/evidencias/16-avisos-quero-contar.png)
 
+### Filtro de dados pessoais e mapa do bairro (Cybersecurity)
+
+![Análise de privacidade: CPF encontrado na transcrição, mascarado, e versão segura do texto](docs/evidencias/18-analise-cpf.png)
+
+![Publicação recusada (422): CPF sempre bloqueia, mesmo com a confirmação da família](docs/evidencias/19-publicacao-bloqueada.png)
+
+![Memória sem dado pessoal publicada no mapa de Pirituba (201)](docs/evidencias/20-publicacao-liberada.png)
+
+![Indicador Risco Cidadão com as verificações do roteiro](docs/evidencias/21-risco-cidadao.png)
+
 ### Banco de dados, migrações e testes
 
 ![Tabelas criadas no SQL Server](docs/evidencias/10-banco.png)
 
 ![Migrações aplicadas](docs/evidencias/11-migracoes.png)
 
-![151 testes automatizados aprovados](docs/evidencias/12-testes.png)
+![310 testes automatizados aprovados](docs/evidencias/12-testes.png)
 
 ## Privacidade e segurança
 
@@ -567,6 +592,8 @@ As rotas do aparelho pelo Swagger:
 - **Arquivos seguros:** o nome do arquivo enviado nunca vira caminho no servidor (Guid gerado pela API) e caminhos fora da pasta de armazenamento são recusados.
 - **Erros sem vazamento:** erros inesperados devolvem uma mensagem genérica; o detalhe fica só no log.
 - **Porta-retrato com chave própria:** o aparelho não usa o login da família. A chave é sorteada com gerador criptográfico, aparece uma vez só e o banco guarda apenas o hash (SHA-256). Ela só dá acesso ao estado do próprio idoso e ao botão "quero contar". O que vai para o aparelho é o mínimo: apelido, primeiro nome de quem perguntou e o texto da pergunta, nada de telefone, nome completo ou áudio.
+- **Filtro de dados pessoais antes do mapa do bairro (US18):** título, transcrição e bairro passam pelo motor `MeConta.Privacidade` antes de qualquer publicação. Dado de risco alto bloqueia; dado de risco médio exige a confirmação da família; a autorização da pessoa idosa fica registrada (LGPD, art. 7º, I). O histórico do filtro guarda só o tipo do dado e o trecho mascarado. Detalhes em [`docs/cyber/motor-pii.md`](docs/cyber/motor-pii.md).
+- **Texto do usuário rastreado:** o título e a transcrição entram no motor como `TextoDoUsuario` e só saem para o mapa como texto verificado (`CamposVerificados`). Se alguém escrever um `TextoDoUsuario` num log por engano, sai só um aviso, nunca o conteúdo.
 - **Somente dados fictícios:** os dados de demonstração usam o domínio reservado `example.com` e um telefone inventado.
 
 ## Tecnologias
@@ -586,6 +613,6 @@ As rotas do aparelho pelo Swagger:
 
 - **Testes de integração** dos endpoints com `WebApplicationFactory`.
 - **Hospedagem** em uma VM Linux, com monitoramento de CPU, memória e disco.
-- **Mapa de memórias do bairro** (degrau 3), com consentimento registrado e filtro de dados pessoais antes de publicar.
+- **Mapa visual do bairro** no app, em cima das rotas `/bairros/{bairro}/memorias` que já existem.
 - **Transcrição dos áudios**, para buscar no caderno por palavra.
 - **Login por código no celular**, no lugar de e-mail e senha.

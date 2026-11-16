@@ -105,6 +105,24 @@ public interface IAvisoRepository : IRepository<AvisoQueroContar, int>
         CancellationToken cancellationToken = default);
 }
 
+public interface IMemoriaDoBairroRepository : IRepository<MemoriaDoBairro, int>
+{
+    /// <summary>Memória da página que está no mapa agora (cada página aparece no mapa no máximo uma vez).</summary>
+    Task<MemoriaDoBairro?> ObterNoMapaDaPaginaAsync(int paginaId, CancellationToken cancellationToken = default);
+
+    /// <summary>Memória que está no mapa, com a página carregada (para tocar o áudio).</summary>
+    Task<MemoriaDoBairro?> ObterNoMapaComPaginaAsync(int id, CancellationToken cancellationToken = default);
+
+    /// <summary>Memórias que estão no mapa do bairro, da mais recente para a mais antiga.</summary>
+    Task<IReadOnlyList<MemoriaDoBairro>> ListarNoMapaDoBairroAsync(string bairro, CancellationToken cancellationToken = default);
+}
+
+public interface IRegistroDePrivacidadeRepository : IRepository<RegistroDePrivacidade, int>
+{
+    /// <summary>Verificações feitas a partir da data (UTC), com os achados carregados.</summary>
+    Task<IReadOnlyList<RegistroDePrivacidade>> ListarDesdeAsync(DateTime desdeUtc, CancellationToken cancellationToken = default);
+}
+
 /// <summary>
 /// Consulta agregada do indicador "Conversas de verdade" (US12).
 /// </summary>

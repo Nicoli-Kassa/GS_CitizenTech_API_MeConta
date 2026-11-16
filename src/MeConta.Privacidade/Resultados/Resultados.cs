@@ -5,6 +5,7 @@ namespace MeConta.Privacidade.Resultados;
 /// <summary>
 /// Um dado pessoal encontrado. Nunca guarda o dado em si: só a posição e o trecho mascarado.
 /// Por isso um achado pode ir para log, painel ou IA sem vazar nada.
+/// <see cref="Campo"/> diz em que campo ele estava, quando a análise é de vários campos (título, transcrição).
 /// </summary>
 public sealed record AchadoPii(
     string RegraId,
@@ -16,7 +17,8 @@ public sealed record AchadoPii(
     string TrechoMascarado,
     double Confianca,
     bool TemContexto,
-    string Explicacao);
+    string Explicacao,
+    string? Campo = null);
 
 /// <summary>
 /// Combinação de dados que aumentou o risco (ex.: endereço + "moro sozinha").
@@ -24,9 +26,33 @@ public sealed record AchadoPii(
 public sealed record CombinacaoEncontrada(string Id, int Bonus, string Explicacao);
 
 /// <summary>
+/// O que todo resultado de análise informa: os achados, o índice Risco Cidadão e a decisão.
+/// </summary>
+public interface IResultadoDeRisco
+{
+    IReadOnlyList<AchadoPii> Achados { get; }
+
+    IReadOnlyList<CombinacaoEncontrada> Combinacoes { get; }
+
+    int IndiceRiscoCidadao { get; }
+
+    NivelDeRisco Faixa { get; }
+
+    bool AnaliseCompleta { get; }
+
+    string VersaoDasRegras { get; }
+
+    /// <summary>Algum dado de risco alto, ou análise incompleta: não pode publicar.</summary>
+    bool DeveBloquear { get; }
+
+    /// <summary>Algum dado de risco médio: a família precisa confirmar antes de publicar.</summary>
+    bool ExigeConfirmacao { get; }
+}
+
+/// <summary>
 /// Resultado da análise de um texto pelo motor.
 /// </summary>
-public sealed class ResultadoAnalisePii
+public sealed class ResultadoAnalisePii : IResultadoDeRisco
 {
     internal ResultadoAnalisePii(
         IReadOnlyList<AchadoPii> achados,

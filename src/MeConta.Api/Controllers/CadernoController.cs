@@ -7,7 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace MeConta.Api.Controllers;
 
 /// <summary>
-/// Caderno da família: guardar a resposta em áudio (US08, US10), ver e ouvir (US09) e apagar (US11).
+/// Caderno da família: guardar a resposta em áudio (US08, US10), ver e ouvir (US09), apagar (US11)
+/// e guardar a transcrição que o filtro de dados pessoais confere (US18).
 /// </summary>
 [ApiController]
 [Authorize]
@@ -47,7 +48,8 @@ public sealed class CadernoController(ICadernoService caderno) : ControllerBase
             form.DuracaoSegundos,
             form.ChaveIdempotencia,
             ParaArquivo(form.Audio),
-            form.Foto is null ? null : ParaArquivo(form.Foto));
+            form.Foto is null ? null : ParaArquivo(form.Foto),
+            form.Transcricao);
 
         ResultadoGuardarResposta resultado = await caderno.GuardarRespostaAsync(envioId, resposta, cancellationToken);
 
@@ -121,6 +123,22 @@ public sealed class CadernoController(ICadernoService caderno) : ControllerBase
         return NoContent();
     }
 
+    /// <summary>
+    /// Guarda ou troca a transcrição do áudio (o que a pessoa idosa disse). Texto em branco apaga.
+    /// É o texto que o filtro de dados pessoais confere antes de a memória ir para o mapa do bairro.
+    /// </summary>
+    /// <response code="200">Página com a transcrição nova.</response>
+    /// <response code="400">Transcrição acima de 4000 caracteres.</response>
+    [HttpPut("paginas/{paginaId:int}/transcricao")]
+    [ProducesResponseType<PaginaResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status403Forbidden)]
+    public async Task<ActionResult<PaginaResponse>> DefinirTranscricaoAsync(
+        int paginaId,
+        TranscricaoRequest request,
+        CancellationToken cancellationToken) =>
+        Ok(await caderno.DefinirTranscricaoAsync(paginaId, request, cancellationToken));
+
     private static ArquivoRecebido ParaArquivo(IFormFile arquivo) =>
         new(arquivo.FileName, arquivo.Length, arquivo.OpenReadStream);
 }
@@ -147,4 +165,8 @@ public sealed class RespostaForm
 
     /// <summary>Identificador gerado pelo celular para não duplicar a página no modo offline.</summary>
     public Guid? ChaveIdempotencia { get; set; }
+
+    /// <summary>O que a pessoa idosa disse no áudio, escrito pela família (opcional, até 4000 caracteres).</summary>
+    [StringLength(4000)]
+    public string? Transcricao { get; set; }
 }
