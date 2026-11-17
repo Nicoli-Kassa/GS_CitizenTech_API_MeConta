@@ -18,7 +18,7 @@ namespace MeConta.Application.Servicos;
 /// Fluxo dos dados (taint): o título e a transcrição da página são texto do usuário
 /// (<see cref="TextoDoUsuario"/>). Só o motor de PII os transforma em <see cref="CamposVerificados"/>,
 /// e só de lá sai o texto que vai para o mapa, que é uma saída pública.
-/// O histórico guarda apenas o tipo do dado e o trecho mascarado.
+/// O histórico e o log de auditoria guardam apenas o tipo do dado e o trecho mascarado.
 /// </summary>
 public sealed class PrivacidadeService(
     IControleDeAcesso acesso,
@@ -28,6 +28,7 @@ public sealed class PrivacidadeService(
     IArmazenamentoDeArquivos armazenamento,
     IMotorPii motor,
     IUnidadeDeTrabalho unidadeDeTrabalho,
+    IRegistroDeAuditoria auditoria,
     TimeProvider relogio) : IPrivacidadeService
 {
     public const string MensagemMemoriaForaDoMapa = "Memória não encontrada no mapa do bairro.";
@@ -214,6 +215,15 @@ public sealed class PrivacidadeService(
             relogio.GetUtcNow().UtcDateTime);
 
         await registros.AdicionarAsync(registro, cancellationToken);
+
+        // Log de auditoria no servidor: ids, resultado e dados só mascarados ("CPF ***.***.***-09").
+        auditoria.Registrar(new EventoDePrivacidade(
+            origem.ToString(),
+            pagina.Id,
+            membro.Id,
+            resultado.ToString(),
+            analise.IndiceRiscoCidadao,
+            analise.Achados.Select(achado => $"{achado.Rotulo} {achado.TrechoMascarado}").ToList()));
     }
 
     private async Task<PaginaCaderno> ObterComAcessoAsync(int paginaId, CancellationToken cancellationToken)

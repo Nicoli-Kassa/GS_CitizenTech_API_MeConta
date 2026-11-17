@@ -227,6 +227,14 @@ internal sealed class RegistroDePrivacidadeRepositoryFake(BancoFake banco)
             .ToList());
 }
 
+/// <summary>Auditoria em memória: guarda as linhas que iriam para o log do servidor.</summary>
+internal sealed class AuditoriaFake : IRegistroDeAuditoria
+{
+    public List<EventoDePrivacidade> Eventos { get; } = [];
+
+    public void Registrar(EventoDePrivacidade evento) => Eventos.Add(evento);
+}
+
 /// <summary>Armazenamento em memória: guarda os bytes por caminho.</summary>
 internal sealed class ArmazenamentoFake : IArmazenamentoDeArquivos
 {

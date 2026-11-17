@@ -1,0 +1,19 @@
+# Verificações antes de cada commit (opcional, para quem desenvolve no Linux, no macOS ou no WSL).
+# Instalar uma vez:  pip install pre-commit  →  pre-commit install
+# Rodar em tudo:     pre-commit run --all-files
+# As mesmas verificações rodam no GitHub Actions (.github/workflows/seguranca.yml) a cada push.
+
+repos:
+  # Taint analysis com as regras do Me Conta: texto do usuário não pode chegar a log,
+  # porta-retrato, IA ou mapa do bairro sem passar pelo motor de dados pessoais.
+  - repo: https://github.com/semgrep/pre-commit
+    rev: v1.185.0
+    hooks:
+      - id: semgrep
+        args: ["--config", "seguranca/semgrep", "--error", "--metrics=off", "--skip-unknown-extensions"]
+
+  # Segredos (chaves de API, senhas, tokens) no commit que está sendo feito.
+  - repo: https://github.com/trufflesecurity/trufflehog
+    rev: v3.90.0
+    hooks:
+      - id: trufflehog

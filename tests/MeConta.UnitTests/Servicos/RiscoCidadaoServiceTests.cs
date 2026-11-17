@@ -15,6 +15,7 @@ public sealed class RiscoCidadaoServiceTests
 {
     private readonly BancoFake _banco = new();
     private readonly RelogioFake _relogio = new(Agora);
+    private readonly AuditoriaFake _auditoria = new();
     private readonly Idoso _lourdes;
     private readonly PrivacidadeService _privacidade;
     private readonly RiscoCidadaoService _painel;
@@ -36,6 +37,7 @@ public sealed class RiscoCidadaoServiceTests
             new ArmazenamentoFake(),
             motor,
             new UnidadeDeTrabalhoFake(_banco),
+            _auditoria,
             _relogio);
         _painel = new RiscoCidadaoService(new RegistroDePrivacidadeRepositoryFake(_banco), motor, _relogio);
     }

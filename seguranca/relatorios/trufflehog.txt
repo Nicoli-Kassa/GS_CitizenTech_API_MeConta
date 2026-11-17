@@ -1,0 +1,5 @@
+🐷🔑🐷  TruffleHog. Unearth your secrets. 🐷🔑🐷
+
+2026-11-16T22:42:59-03:00	info-0	trufflehog	running source	{"source_manager_worker_id": "3mpQg", "with_units": true}
+2026-11-16T22:42:59-03:00	info-0	trufflehog	scanning repo	{"source_manager_worker_id": "3mpQg", "unit_kind": "dir", "unit": ".", "repo": "https://github.com/Nicoli-Kassa/GS_CitizenTech_API_MeConta"}
+2026-11-16T22:43:00-03:00	info-0	trufflehog	finished scanning	{"chunks": 392, "bytes": 997250, "verified_secrets": 0, "unverified_secrets": 0, "scan_duration": "1.296223783s", "trufflehog_version": "3.90.0", "verification_caching": {"Hits":0,"Misses":0,"HitsWasted":0,"AttemptsSaved":0,"VerificationTimeSpentMS":0}}

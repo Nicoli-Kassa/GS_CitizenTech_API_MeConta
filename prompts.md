@@ -20,7 +20,7 @@ Defini o escopo, a arquitetura, as tecnologias e as regras de negócio a partir 
 | 5. Problemas             | 14/11         | Investiguei os erros e apliquei as correções                                 | Explicação das causas                                                    |
 | 6. Porta-retrato (IoT)   | 15/11         | Defini o papel do aparelho, gerei a migração, testei as rotas e tirei os prints | Primeira versão das entidades, serviços, rotas, testes e roteiro         |
 | 7. Dependência vulnerável | 15/11        | Atualizei o pacote e confirmei o build sem avisos                            | Explicação do aviso e da versão corrigida                                |
-| 8. Motor de PII e filtro na API (Cybersecurity) | 15 e 16/11 | Defini o que conta como dado de risco, o que bloqueia e as regras de consentimento; gerei a migração, rodei os testes e o roteiro | Primeira versão do módulo, das regras, das rotas do mapa do bairro, dos testes e dos conjuntos de memórias simuladas |
+| 8. Motor de PII, filtro na API e taint analysis (Cybersecurity) | 15 e 16/11 | Defini o que conta como dado de risco, o que bloqueia, as regras de consentimento e as saídas inseguras; gerei a migração, rodei os testes, o roteiro e o pipeline | Primeira versão do módulo, das regras (PII e Semgrep), das rotas do mapa do bairro, dos testes, do pipeline e dos conjuntos de memórias simuladas |
 | 9. Circuito no Wokwi     | 16/11         | Escolhi os componentes e o visual da caixinha, montei no Wokwi e testei cada situação | Primeira versão do firmware e do `diagram.json`                    |
 | 10. Ponte Node-RED e painel | 16/11      | Instalei e configurei o Node-RED, rodei o ciclo completo com a API e ajustei o visual do painel | Primeira versão do fluxo e do painel                       |
 | 11. Documentação do IoT  | 16/11         | Revisei os textos e tirei os prints                                          | Estrutura do README da pasta `iot/`                                      |
@@ -197,6 +197,32 @@ Defini o escopo, a arquitetura, as tecnologias e as regras de negócio a partir 
 
 - Gerei a migração com `dotnet ef migrations add Privacidade` e rodei `dotnet build` e `dotnet test`: 310 testes aprovados.
 - Segui o bloco L do roteiro pelo Swagger e tirei os prints 18 a 21.
+
+### Parte 3 · Taint analysis e pipeline de segurança · 16/11/2026
+
+**O que eu precisava:** provar que texto escrito pela família não chega a uma saída insegura (log, porta-retrato, IA, mapa do bairro) sem passar pelo motor, e que isso é conferido automaticamente a cada mudança.
+
+**Como usei a IA:** pedi apoio para escrever as regras do Semgrep em modo taint, os casos de teste das regras, o pipeline do GitHub Actions e a configuração de pre-commit, e para rodar a auditoria no código que já estava no GitHub.
+
+**Minhas decisões:**
+
+- As regras do Me Conta bloqueiam o pipeline; as regras públicas de C# entram só como relatório.
+- Tratar o porta-retrato como saída pública, porque a pergunta passa por um broker MQTT aberto.
+- Corrigir os vazamentos que a auditoria achou, em vez de marcar como exceção.
+- Registrar uma linha de auditoria a cada verificação, só com ids, resultado e trechos mascarados.
+
+**Resultado:**
+
+- 5 regras de taint e 2 de segredos em `seguranca/semgrep/`, com 27 casos de teste.
+- Auditoria do protótipo: 5 vazamentos reais (pergunta e apelido indo crus para o porta-retrato; caminho da URL no log de erro), corrigidos; relatórios de antes e depois em `seguranca/relatorios/`.
+- Pipeline `.github/workflows/seguranca.yml` com Semgrep, TruffleHog e `dotnet test`; `.pre-commit-config.yaml` opcional.
+- Log de auditoria do filtro (`AuditoriaEmLog`) e 4 testes novos (314 no total).
+- Documentação em `docs/cyber/taint-analysis.md`.
+
+**Meu trabalho de validação:**
+
+- Rodei `dotnet build` e `dotnet test`: 314 testes aprovados.
+- Conferi no GitHub Actions o pipeline verde no `main` e vermelho no ramo de demonstração com o vazamento.
 
 ---
 

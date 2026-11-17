@@ -1,0 +1,32 @@
+# Segredos que nunca podem entrar no repositório.
+# Complementa o TruffleHog: estas regras conhecem os formatos que o Me Conta usa.
+
+rules:
+  - id: meconta-chave-gemini-no-codigo
+    languages: [generic]
+    severity: ERROR
+    message: >-
+      Chave da API do Gemini no código. Guarde em user-secrets
+      (dotnet user-secrets set "Gemini:ChaveApi" ...) ou em variável de ambiente
+      (Gemini__ChaveApi), apague esta chave no Google AI Studio e crie outra.
+    metadata:
+      categoria: segredo-exposto
+      cwe: "CWE-798: Use of Hard-coded Credentials"
+    pattern-either:
+      - pattern-regex: \bAIza[0-9A-Za-z_\-]{35}\b
+      - pattern-regex: \bAQ\.[0-9A-Za-z_\-]{30,}
+
+  - id: meconta-chave-no-appsettings
+    languages: [generic]
+    severity: ERROR
+    message: >-
+      Chave ou senha preenchida no appsettings. Esse arquivo vai para o GitHub:
+      use user-secrets ou variável de ambiente.
+    metadata:
+      categoria: segredo-exposto
+      cwe: "CWE-798: Use of Hard-coded Credentials"
+    paths:
+      include:
+        - "**/appsettings*.json"
+        - "**/me-conta-segredos.txt"
+    pattern-regex: '"(ChaveApi|ApiKey|Password|Senha)"\s*:\s*"[^"]+"'

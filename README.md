@@ -18,7 +18,7 @@ Backend do **Me Conta**, desenvolvido para a Global Solution FIAP 2026 (CitizenT
 | -------------------------- | ----------------------------------------------------------------- |
 | 🎬 **Pitch**               | [**Assistir no YouTube**](https://youtu.be/INSERIR-LINK-DO-PITCH) |
 | 📄 **Documentação da API** | `/swagger` e `/scalar` (com a API rodando)                        |
-| 🧪 **Testes**              | `dotnet test` (310 testes)                                        |
+| 🧪 **Testes**              | `dotnet test` (314 testes)                                        |
 | 🗂️ **Matérias**            | [O que cada matéria faz e onde cada entrega está](docs/MATERIAS.md) |
 | 🖼️ **Porta-retrato (IoT)** | [Circuito no Wokwi, ponte Node-RED e evidências](iot/README.md)     |
 
@@ -138,7 +138,7 @@ Cada matéria cuida de uma parte do Me Conta. O mapa completo, com cada critéri
 | **C# Software Development** | A Web API inteira, com domínio orientado a objetos, EF Core, LINQ e async/await | `src/` (4 projetos) e `tests/` · [detalhes](docs/MATERIAS.md#c-software-development) |
 | **SOA e Web Services** | Os serviços REST que o app e o porta-retrato consomem, com banco, migrações, documentação automática e testes | `src/`, `Migrations/`, `/swagger`, `/scalar`, `tests/` · [detalhes](docs/MATERIAS.md#soa-e-web-services) |
 | **Physical Computing (IoT)** | Porta-retrato com ESP32 que acende com pergunta nova e tem o botão "quero contar" | Pasta [`iot/`](iot/README.md) (circuito, firmware, ponte Node-RED e painel); rotas `/porta-retrato/*` e `/avisos`, migração `PortaRetrato` · [detalhes](docs/MATERIAS.md#physical-computing-iot) |
-| **Cybersecurity** | Filtro de dados pessoais, taint analysis e painel "Risco Cidadão" antes de publicar no mapa do bairro | Proteções em [Privacidade e segurança](#privacidade-e-segurança); motor de PII `MeConta.Privacidade` ([como funciona](docs/cyber/motor-pii.md)), integração em andamento · [detalhes](docs/MATERIAS.md#cybersecurity) |
+| **Cybersecurity** | Filtro de dados pessoais, taint analysis e painel "Risco Cidadão" antes de publicar no mapa do bairro | Proteções em [Privacidade e segurança](#privacidade-e-segurança); motor de PII `MeConta.Privacidade` ([como funciona](docs/cyber/motor-pii.md)), [taint analysis](docs/cyber/taint-analysis.md) com Semgrep e TruffleHog no GitHub Actions · [detalhes](docs/MATERIAS.md#cybersecurity) |
 | **Operating Systems** | Servidor Linux que roda esta API, com monitoramento e logs | `/health`, perfil `rede-local`, banco por variável de ambiente · [detalhes](docs/MATERIAS.md#operating-systems) |
 | **Testing, Compliance & QA** | Backlog e casos de teste no Azure DevOps | Coluna "User story" dos [Endpoints](#endpoints) e [roteiro de testes](docs/ROTEIRO_DE_TESTES.md) · [detalhes](docs/MATERIAS.md#testing-compliance--qa) |
 | **Mobile** | App Expo da neta: perguntar, enviar e montar o caderno | Consome esta API; idempotência para o modo offline · [detalhes](docs/MATERIAS.md#mobile) |
@@ -188,6 +188,8 @@ flowchart LR
 
 ```
 GS_CitizenTech_API_MeConta/
+├── .github/workflows/
+│   └── seguranca.yml            ← pipeline de segurança: Semgrep (taint), TruffleHog e testes
 ├── README.md
 ├── prompts.md
 ├── MeConta.slnx
@@ -195,9 +197,12 @@ GS_CitizenTech_API_MeConta/
 ├── docs/
 │   ├── MATERIAS.md              ← o que cada matéria faz e onde cada entrega está
 │   ├── ROTEIRO_DE_TESTES.md     ← 88 chamadas com o resultado esperado
-│   ├── cyber/                   ← motor de PII: regras, índice e avaliação
+│   ├── cyber/                   ← motor de PII (regras, índice, avaliação) e taint analysis
 │   └── evidencias/              ← prints usados neste README
 ├── iot/                         ← porta-retrato: circuito no Wokwi, firmware, ponte Node-RED e prints
+├── seguranca/
+│   ├── semgrep/                 ← regras de taint analysis e de segredos, com casos de teste
+│   └── relatorios/              ← auditoria do protótipo: antes e depois das correções
 ├── src/
 │   ├── MeConta.Domain/          Comum · Entidades · Enums · Excecoes · Regras · ValueObjects
 │   ├── MeConta.Application/     Abstracoes · Adapters · Dtos · Excecoes · Servicos
@@ -488,7 +493,7 @@ dotnet ef migrations add NomeDaMudanca -p src/MeConta.Infrastructure -s src/MeCo
 dotnet test
 ```
 
-**310 testes unitários** em xUnit (`tests/MeConta.UnitTests`), sem banco e sem rede, com dublês escritos à mão (`PerguntaFake`, `FiltroFake` e, para os serviços, repositórios em memória, `RelogioFake` e `ControleDeAcessoFake`). Os nomes seguem o padrão `Metodo_Cenario_ResultadoEsperado`.
+**314 testes unitários** em xUnit (`tests/MeConta.UnitTests`), sem banco e sem rede, com dublês escritos à mão (`PerguntaFake`, `FiltroFake` e, para os serviços, repositórios em memória, `RelogioFake` e `ControleDeAcessoFake`). Os nomes seguem o padrão `Metodo_Cenario_ResultadoEsperado`.
 
 | Arquivo                            | O que testa                                                                                                                                                                   |
 | ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -502,7 +507,7 @@ dotnet test
 | `SugestaoSemanalTests`             | Mesma semana dá a mesma pergunta, semana seguinte muda, nunca repete enviada                                                                                                  |
 | `PortaRetratoTests`                | Código e chave válidos, só o hash guardado, chave antiga recusada depois de parear de novo, conectado só com sinal de vida recente, aviso de outro idoso, aviso visto uma vez |
 | `FilaDoPortaRetratoTests`          | Perguntas que esperam o idoso (sem respondidas nem com aviso), da mais recente para a mais antiga; só o primeiro nome vai para o aparelho                                     |
-| `AparelhoPortaRetratoServiceTests` | Chave ausente ou errada (401), moldura acesa e apagada, "quero contar" sem duplicar, pergunta de outro idoso, botão apertado várias vezes                                     |
+| `AparelhoPortaRetratoServiceTests` | Chave ausente ou errada (401), moldura acesa e apagada, "quero contar" sem duplicar, pergunta de outro idoso, botão apertado várias vezes; pergunta com telefone, saúde ou CPF chega mascarada |
 | `PortaRetratoServiceTests`         | Pareamento, novo pareamento invalida a chave antiga, código repetido, idoso de outra família, conectado e desconectado                                                        |
 | `MotorPiiTests`                    | CPF com e sem pontuação, falado ou escondido com caractere invisível; dados de risco alto e médio; frases que não podem gerar alerta ("panela de pressão", "me conta 1950"); falha fechada |
 | `NormalizadorDeTextoTests`         | Acentos, caracteres invisíveis, números falados em dígitos e posição certa no texto original                                                                                  |
@@ -513,7 +518,7 @@ dotnet test
 | `CorpusDeMemoriasTests`            | Precisão e recall do motor em 94 memórias simuladas com gabarito                                                                                                               |
 | `CamposVerificadosTests`           | Título e transcrição verificados juntos: CPF num campo bloqueia o outro, combinação entre campos, análise incompleta bloqueia                                                 |
 | `MemoriaDoBairroTests`             | Autorização da pessoa idosa obrigatória, bairro vazio ou longo, tirar do mapa, limite da transcrição                                                                           |
-| `PrivacidadeServiceTests`          | Análise e publicação: liberada, bloqueada (422), pedir confirmação, bairro com endereço, memória já no mapa, tirar do mapa, histórico sem dado em claro                        |
+| `PrivacidadeServiceTests`          | Análise e publicação: liberada, bloqueada (422), pedir confirmação, bairro com endereço, memória já no mapa, tirar do mapa; histórico e log de auditoria sem dado em claro |
 | `RiscoCidadaoServiceTests`         | Painel: totais, vazamentos evitados, por tipo, por bairro, dia de Brasília, período fora do limite                                                                            |
 
 ## Evidências
@@ -582,7 +587,7 @@ As rotas do aparelho pelo Swagger:
 
 ![Migrações aplicadas](docs/evidencias/11-migracoes.png)
 
-![310 testes automatizados aprovados](docs/evidencias/12-testes.png)
+![314 testes automatizados aprovados](docs/evidencias/12-testes.png)
 
 ## Privacidade e segurança
 
@@ -593,7 +598,9 @@ As rotas do aparelho pelo Swagger:
 - **Erros sem vazamento:** erros inesperados devolvem uma mensagem genérica; o detalhe fica só no log.
 - **Porta-retrato com chave própria:** o aparelho não usa o login da família. A chave é sorteada com gerador criptográfico, aparece uma vez só e o banco guarda apenas o hash (SHA-256). Ela só dá acesso ao estado do próprio idoso e ao botão "quero contar". O que vai para o aparelho é o mínimo: apelido, primeiro nome de quem perguntou e o texto da pergunta, nada de telefone, nome completo ou áudio.
 - **Filtro de dados pessoais antes do mapa do bairro (US18):** título, transcrição e bairro passam pelo motor `MeConta.Privacidade` antes de qualquer publicação. Dado de risco alto bloqueia; dado de risco médio exige a confirmação da família; a autorização da pessoa idosa fica registrada (LGPD, art. 7º, I). O histórico do filtro guarda só o tipo do dado e o trecho mascarado. Detalhes em [`docs/cyber/motor-pii.md`](docs/cyber/motor-pii.md).
-- **Texto do usuário rastreado:** o título e a transcrição entram no motor como `TextoDoUsuario` e só saem para o mapa como texto verificado (`CamposVerificados`). Se alguém escrever um `TextoDoUsuario` num log por engano, sai só um aviso, nunca o conteúdo.
+- **Texto do usuário rastreado (taint analysis):** o título e a transcrição entram no motor como `TextoDoUsuario` e só saem para o mapa como texto verificado (`CamposVerificados`). Se alguém escrever um `TextoDoUsuario` num log por engano, sai só um aviso, nunca o conteúdo. Regras Semgrep em `seguranca/semgrep/` rastreiam o texto da família até logs, porta-retrato, IA e mapa do bairro, e o [pipeline de segurança](.github/workflows/seguranca.yml) barra o push que vazar. Detalhes e auditoria em [`docs/cyber/taint-analysis.md`](docs/cyber/taint-analysis.md).
+- **Porta-retrato sem dado pessoal no broker:** a pergunta e o apelido passam pelo motor antes de ir para a ponte MQTT; um telefone ou dado de saúde escrito na pergunta chega à telinha como "[telefone removido]".
+- **Logs sem dado pessoal:** o log de erro registra o modelo da rota, não o caminho pedido; o log de auditoria do filtro leva só ids, resultado e trechos mascarados.
 - **Somente dados fictícios:** os dados de demonstração usam o domínio reservado `example.com` e um telefone inventado.
 
 ## Tecnologias

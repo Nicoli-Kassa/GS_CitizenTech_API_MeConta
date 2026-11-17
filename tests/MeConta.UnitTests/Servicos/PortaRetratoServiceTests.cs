@@ -2,6 +2,7 @@ using MeConta.Application.Dtos;
 using MeConta.Application.Excecoes;
 using MeConta.Application.Servicos;
 using MeConta.Domain.Entidades;
+using MeConta.Privacidade.Motor;
 using static MeConta.UnitTests.TestSupport;
 
 namespace MeConta.UnitTests.Servicos;
@@ -134,5 +135,6 @@ public sealed class PortaRetratoServiceTests
             new AvisoRepositoryFake(_banco),
             new MembroRepositoryFake(_banco),
             new UnidadeDeTrabalhoFake(_banco),
+            MotorPii.CriarPadrao(),
             _relogio);
 }

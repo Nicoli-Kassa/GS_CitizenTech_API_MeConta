@@ -4,6 +4,7 @@ using MeConta.Application.Servicos;
 using MeConta.Domain.Entidades;
 using MeConta.Domain.Excecoes;
 using MeConta.Domain.ValueObjects;
+using MeConta.Privacidade.Motor;
 using static MeConta.UnitTests.TestSupport;
 
 namespace MeConta.UnitTests.Servicos;
@@ -40,6 +41,7 @@ public sealed class AparelhoPortaRetratoServiceTests
             new AvisoRepositoryFake(_banco),
             new MembroRepositoryFake(_banco),
             new UnidadeDeTrabalhoFake(_banco),
+            MotorPii.CriarPadrao(),
             _relogio);
     }
 
@@ -204,9 +206,34 @@ public sealed class AparelhoPortaRetratoServiceTests
         Assert.Equal(1, _banco.Salvamentos);
     }
 
-    private EnvioPergunta Enviar(Idoso idoso, int perguntaId, DateTime enviadoEm)
+    [Fact]
+    public async Task ObterEstado_PerguntaComTelefoneEDadoDeSaude_AparelhoRecebeSoAVersaoSegura()
     {
-        EnvioPergunta envio = new(idoso, new PerguntaFake(perguntaId), BiaId, enviadoEm);
+        // A pergunta foi escrita pela família e segue para um broker MQTT público.
+        Enviar(_lourdes, perguntaId: 7, Agora, "Vó, a senhora ainda toma remédio para pressão? Me liga no (11) 98765-4321");
+
+        EstadoPortaRetratoResponse estado = await _servico.ObterEstadoAsync(Chave);
+
+        Assert.Equal(
+            "Vó, a senhora ainda toma [dado de saúde removido]? Me liga no [telefone removido]",
+            estado.Pergunta!.Texto);
+        Assert.DoesNotContain("98765", estado.Pergunta.Texto);
+    }
+
+    [Fact]
+    public async Task QueroContar_PerguntaComCpf_AvisoDevolvidoAPonteSemOCpf()
+    {
+        EnvioPergunta envio = Enviar(_lourdes, perguntaId: 7, Agora, "Vó, qual é o seu CPF? 123.456.789-09?");
+
+        ResultadoQueroContar resultado = await _servico.QueroContarAsync(Chave, new QueroContarRequest(envio.Id));
+
+        Assert.DoesNotContain("456.789", resultado.Aviso.Pergunta);
+        Assert.Contains("[CPF removido]", resultado.Aviso.Pergunta);
+    }
+
+    private EnvioPergunta Enviar(Idoso idoso, int perguntaId, DateTime enviadoEm, string? texto = null)
+    {
+        EnvioPergunta envio = new(idoso, new PerguntaFake(perguntaId, texto: texto), BiaId, enviadoEm);
         _banco.Envios.Add(envio);
         _banco.Salvar();
         return envio;

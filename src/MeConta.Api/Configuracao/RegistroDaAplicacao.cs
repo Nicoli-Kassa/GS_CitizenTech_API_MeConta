@@ -1,3 +1,5 @@
+using MeConta.Api.Adapters;
+using MeConta.Application.Adapters;
 using MeConta.Application.Servicos;
 using MeConta.Domain.Regras;
 using MeConta.Privacidade.Motor;
@@ -30,6 +32,7 @@ public static class RegistroDaAplicacao
             ? CatalogoDeRegras.CarregarPadrao()
             : CatalogoDeRegras.CarregarDeArquivo(arquivoDeRegrasPii);
         services.AddSingleton<IMotorPii>(new MotorPii(catalogo));
+        services.AddSingleton<IRegistroDeAuditoria, AuditoriaEmLog>();
 
         // Serviços: uma instância por pedido HTTP, junto com o DbContext.
         services.AddScoped<IControleDeAcesso, ControleDeAcesso>();

@@ -1,0 +1,9 @@
+# Pastas que o Semgrep não analisa no repositório.
+# Os casos de teste das regras têm vazamentos e chaves falsas de propósito:
+# eles são conferidos à parte, com "semgrep --test seguranca/semgrep".
+seguranca/semgrep/
+# Os testes usam CPFs e telefones fictícios como dado de entrada.
+tests/
+bin/
+obj/
+.vs/

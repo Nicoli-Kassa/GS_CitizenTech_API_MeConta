@@ -5,6 +5,8 @@ using MeConta.Domain.Entidades;
 using MeConta.Domain.Enums;
 using MeConta.Domain.Excecoes;
 using MeConta.Domain.Regras;
+using MeConta.Privacidade.Motor;
+using MeConta.Privacidade.Taint;
 
 namespace MeConta.Application.Servicos;
 
@@ -12,6 +14,11 @@ namespace MeConta.Application.Servicos;
 /// Pedidos feitos em nome do porta-retrato pela ponte (Node-RED), autenticados pela chave do aparelho (US15).
 /// A chave só dá acesso ao estado do próprio idoso e ao botão "quero contar":
 /// nada de caderno, áudios, telefone ou dados de outras pessoas.
+///
+/// Tudo o que este serviço devolve segue pela ponte para um broker MQTT público. Por isso o texto
+/// escrito pela família (a pergunta e o apelido) passa pelo motor de dados pessoais antes de sair:
+/// se a pergunta tiver um telefone, um CPF ou um dado de saúde, o aparelho recebe a versão segura
+/// ("[telefone removido]"). Do nome de quem perguntou vai só o primeiro nome.
 /// </summary>
 public sealed class AparelhoPortaRetratoService(
     IPortaRetratoRepository portaRetratos,
@@ -20,6 +27,7 @@ public sealed class AparelhoPortaRetratoService(
     IAvisoRepository avisos,
     IMembroRepository membros,
     IUnidadeDeTrabalho unidadeDeTrabalho,
+    IMotorPii motor,
     TimeProvider relogio) : IAparelhoPortaRetratoService
 {
     public const string MensagemChaveInvalida = "Chave do porta-retrato ausente ou inválida.";
@@ -54,13 +62,13 @@ public sealed class AparelhoPortaRetratoService(
             naTela = new PerguntaNoPortaRetrato(
                 envio.Id,
                 FilaDoPortaRetrato.PrimeiroNome(quemEnviou?.Nome ?? string.Empty),
-                envio.TextoPergunta,
+                motor.Verificar(new TextoDoUsuario(envio.TextoPergunta)).ParaRegistro,
                 envio.EnviadoEm);
         }
 
         return new EstadoPortaRetratoResponse(
             portaRetrato.Codigo,
-            idoso.Apelido,
+            motor.Verificar(new TextoDoUsuario(idoso.Apelido)).ParaRegistro,
             naTela is not null,
             esperando.Count,
             naTela);
@@ -98,17 +106,21 @@ public sealed class AparelhoPortaRetratoService(
                 cancellationToken);
         }
 
+        // A resposta também vai para a ponte: só a versão segura da pergunta e do apelido.
+        string apelido = motor.Verificar(new TextoDoUsuario(idoso.Apelido)).ParaRegistro;
+        string? pergunta = envio is null ? null : motor.Verificar(new TextoDoUsuario(envio.TextoPergunta)).ParaRegistro;
+
         // Botão apertado de novo para a mesma pergunta: devolve o aviso que já existe.
         if (existente is not null)
         {
-            return new ResultadoQueroContar(AvisoResponse.De(existente, idoso.Apelido, envio?.TextoPergunta), Criado: false);
+            return new ResultadoQueroContar(AvisoResponse.De(existente, apelido, pergunta), Criado: false);
         }
 
         AvisoQueroContar aviso = new(portaRetrato, envio, Agora);
         await avisos.AdicionarAsync(aviso, cancellationToken);
         await unidadeDeTrabalho.SalvarAlteracoesAsync(cancellationToken);
 
-        return new ResultadoQueroContar(AvisoResponse.De(aviso, idoso.Apelido, envio?.TextoPergunta), Criado: true);
+        return new ResultadoQueroContar(AvisoResponse.De(aviso, apelido, pergunta), Criado: true);
     }
 
     public async Task RegistrarConexaoAsync(

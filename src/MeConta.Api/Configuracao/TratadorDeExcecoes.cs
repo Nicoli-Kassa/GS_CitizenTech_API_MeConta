@@ -3,6 +3,7 @@ using MeConta.Domain.Excecoes;
 using MeConta.Privacidade.Taint;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 
 namespace MeConta.Api.Configuracao;
 
@@ -33,7 +34,10 @@ public sealed class TratadorDeExcecoes(ILogger<TratadorDeExcecoes> logger) : IEx
 
         if (status == StatusCodes.Status500InternalServerError)
         {
-            logger.LogError(exception, "Erro inesperado em {Metodo} {Caminho}", httpContext.Request.Method, httpContext.Request.Path);
+            // O log leva o modelo da rota ("api/v1/bairros/{bairro}/memorias"), e não o caminho pedido:
+            // o caminho pode ter texto digitado pela família, como o nome do bairro.
+            string rota = (httpContext.GetEndpoint() as RouteEndpoint)?.RoutePattern.RawText ?? "rota desconhecida";
+            logger.LogError(exception, "Erro inesperado em {Metodo} {Rota}", httpContext.Request.Method, rota);
         }
 
         ProblemDetails problema = new()

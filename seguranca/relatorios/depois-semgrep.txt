@@ -1,0 +1,29 @@
+Rule seguranca.semgrep.meconta-texto-bruto-fora-do-motor contains an exclude pattern 'src/MeConta.Privacidade/**' that will soon be interpreted as '/src/MeConta.Privacidade/**' to comply with the Semgrepignore v2 and Gitignore specifications. To make this pattern permanently unanchored, edit rule seguranca.semgrep.meconta-texto-bruto-fora-do-motor and change it to '**/src/MeConta.Privacidade/**'. To confirm the anchored behavior and avoid this warning, change it to '/src/MeConta.Privacidade/**'.
+               
+               
+┌─────────────┐
+│ Scan Status │
+└─────────────┘
+  Scanning 163 files tracked by git with 7 Code rules:
+                                                                                                                        
+  Language      Rules   Files          Origin   Rules                                                                   
+ ─────────────────────────────        ────────────────                                                                  
+  <multilang>       2     163          Custom       7                                                                   
+  csharp            5     129                                                                                           
+                                                                                                                        
+Rule seguranca.semgrep.meconta-texto-bruto-fora-do-motor contains an exclude pattern 'src/MeConta.Privacidade/**' that will soon be interpreted as '/src/MeConta.Privacidade/**' to comply with the Semgrepignore v2 and Gitignore specifications. To make this pattern permanently unanchored, edit rule seguranca.semgrep.meconta-texto-bruto-fora-do-motor and change it to '**/src/MeConta.Privacidade/**'. To confirm the anchored behavior and avoid this warning, change it to '/src/MeConta.Privacidade/**'.
+                
+                
+┌──────────────┐
+│ Scan Summary │
+└──────────────┘
+✅ Scan completed successfully.
+ • Findings: 0 (0 blocking)
+ • Rules run: 7
+ • Targets scanned: 163
+ • Parsed lines: ~99.6%
+ • Scan skipped: 
+   ◦ Files matching .semgrepignore patterns: 33
+ • Scan was limited to files tracked by git
+ • For a detailed list of skipped files and lines, run semgrep with the --verbose flag
+Ran 7 rules on 163 files: 0 findings.

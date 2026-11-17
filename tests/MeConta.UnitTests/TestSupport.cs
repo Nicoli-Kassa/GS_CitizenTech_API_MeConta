@@ -35,11 +35,11 @@ internal static class TestSupport
 /// Pergunta falsa para testar regras que recebem <see cref="IPergunta"/>
 /// sem depender do Id gerado pelo banco.
 /// </summary>
-internal sealed class PerguntaFake(int id, TipoPergunta tipo = TipoPergunta.Catalogo) : IPergunta
+internal sealed class PerguntaFake(int id, TipoPergunta tipo = TipoPergunta.Catalogo, string? texto = null) : IPergunta
 {
     public int Id { get; } = id;
 
-    public string Texto { get; } = $"Pergunta de teste número {id}";
+    public string Texto { get; } = texto ?? $"Pergunta de teste número {id}";
 
     public int CategoriaId { get; } = 1;
 

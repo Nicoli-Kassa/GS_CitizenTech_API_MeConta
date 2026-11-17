@@ -1,0 +1,180 @@
+# Regras de taint analysis do Me Conta (Semgrep, modo taint).
+#
+# Ideia: todo texto escrito pela família (título, transcrição, pergunta, bairro, nome, telefone)
+# é "contaminado". Ele só pode chegar a uma saída insegura depois de passar pelo motor de dados
+# pessoais (MeConta.Privacidade), que mascara ou bloqueia CPF, saúde, senhas, endereço etc.
+#
+#   FONTE (texto do usuário) ──► [motor de PII = higienizador] ──► SAÍDA (log, porta-retrato, IA, mapa)
+#
+# Rodar:   semgrep scan --config seguranca/semgrep --error
+# Testar:  semgrep --test seguranca/semgrep
+#
+# Limite conhecido: no Semgrep Community Edition o rastreamento é dentro de cada método.
+# Entre métodos, quem garante é a camada de tipos (TextoDoUsuario → TextoVerificado).
+
+rules:
+  # ---------------------------------------------------------------------------
+  - id: meconta-pii-para-log
+    mode: taint
+    languages: [csharp]
+    severity: ERROR
+    message: >-
+      Texto do usuário chega a um log sem passar pelo motor de dados pessoais.
+      Logs ficam no servidor e são lidos por quem cuida dele: um CPF, telefone ou dado de saúde
+      escrito pela família não pode aparecer ali. Registre só ids, ou use a versão segura
+      (TextoVerificado.ParaRegistro / ResultadoAnalisePii.TextoSeguro).
+    metadata:
+      categoria: vazamento-de-dados-pessoais
+      cwe: "CWE-532: Insertion of Sensitive Information into Log File"
+      lgpd: "art. 6º, VII (segurança) e art. 46"
+      risco-cidadao: medio
+    pattern-sources: &fontes
+      - patterns:
+          - pattern-either:
+              - pattern: $X.Titulo
+              - pattern: $X.Transcricao
+              - pattern: $X.Texto
+              - pattern: $X.TextoPergunta
+              - pattern: $X.Mensagem
+              - pattern: $X.Bairro
+              - pattern: $X.Apelido
+              - pattern: $X.Nome
+              - pattern: $X.Email
+              - pattern: $X.Telefone
+              - pattern: $X.ValorBruto
+              - pattern: $C.Request.Path
+              - pattern: $C.Request.QueryString
+              - pattern: $C.Request.Query
+              - pattern: $C.Request.Form
+              - pattern: $C.Request.Body
+    pattern-sanitizers: &higienizadores
+      - pattern: $M.Analisar(...)
+      - pattern: $M.Verificar(...)
+      - pattern: $M.VerificarCampos(...)
+      - pattern: $V.ParaRegistro
+      - pattern: $V.ParaRegistro(...)
+      - pattern: $V.ConteudoParaPublicar(...)
+      - pattern: $R.TextoSeguro
+      - pattern: Mascarador.Mascarar(...)
+      - pattern: $X.Length
+      - pattern: $X.Count
+    pattern-sinks:
+      - pattern-either:
+          - pattern: $L.LogTrace(...)
+          - pattern: $L.LogDebug(...)
+          - pattern: $L.LogInformation(...)
+          - pattern: $L.LogWarning(...)
+          - pattern: $L.LogError(...)
+          - pattern: $L.LogCritical(...)
+          - pattern: $L.Log(...)
+          - pattern: Console.Write(...)
+          - pattern: Console.WriteLine(...)
+          - pattern: Debug.WriteLine(...)
+          - pattern: Trace.WriteLine(...)
+          - pattern: File.WriteAllText(...)
+          - pattern: File.AppendAllText(...)
+          - pattern: File.WriteAllLines(...)
+          - pattern: File.AppendAllLines(...)
+
+  # ---------------------------------------------------------------------------
+  - id: meconta-pii-para-porta-retrato
+    mode: taint
+    languages: [csharp]
+    severity: ERROR
+    message: >-
+      Texto do usuário vai para o porta-retrato sem passar pelo motor de dados pessoais.
+      Tudo o que o serviço do aparelho devolve segue pela ponte Node-RED para um broker MQTT
+      público, onde qualquer pessoa que conheça o tópico pode ler. Uma pergunta escrita pela
+      família pode conter telefone, endereço ou dado de saúde: mande a versão segura
+      (motor.Verificar(new TextoDoUsuario(...)).ParaRegistro).
+    metadata:
+      categoria: vazamento-de-dados-pessoais
+      cwe: "CWE-319: Cleartext Transmission of Sensitive Information"
+      lgpd: "art. 6º, III (necessidade) e VII (segurança)"
+      risco-cidadao: alto
+    # No serviço do aparelho, todo objeto montado é resposta para a ponte (e daí para o MQTT).
+    paths:
+      include:
+        - "**/AparelhoPortaRetrato*.cs"
+        - "**/me-conta-taint.cs"
+    pattern-sources: *fontes
+    pattern-sanitizers:
+      - pattern: $M.Analisar(...)
+      - pattern: $M.Verificar(...)
+      - pattern: $V.ParaRegistro
+      - pattern: $R.TextoSeguro
+      # Minimização decidida no projeto: do nome de quem perguntou, o aparelho recebe só o primeiro nome.
+      - pattern: FilaDoPortaRetrato.PrimeiroNome(...)
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: new PerguntaNoPortaRetrato(...)
+              - pattern: new EstadoPortaRetratoResponse(...)
+              - pattern: AvisoResponse.De(...)
+              - pattern: $MQTT.PublishAsync(...)
+              - pattern: $MQTT.Publish(...)
+
+  # ---------------------------------------------------------------------------
+  - id: meconta-pii-para-ia
+    mode: taint
+    languages: [csharp]
+    severity: ERROR
+    message: >-
+      Texto do usuário vai para um serviço externo (IA ou outra API) sem passar pelo motor de
+      dados pessoais. No plano gratuito do Gemini, o que é enviado pode ser usado pelo Google:
+      mande só achados e textos já mascarados.
+    metadata:
+      categoria: vazamento-de-dados-pessoais
+      cwe: "CWE-201: Insertion of Sensitive Information Into Sent Data"
+      lgpd: "art. 33 (transferência internacional) e art. 46"
+      risco-cidadao: alto
+    pattern-sources: *fontes
+    pattern-sanitizers: *higienizadores
+    pattern-sinks:
+      - pattern-either:
+          - pattern: $H.PostAsync(...)
+          - pattern: $H.PostAsJsonAsync(...)
+          - pattern: $H.PutAsJsonAsync(...)
+          - pattern: $H.SendAsync(...)
+          - pattern: new StringContent(...)
+          - pattern: JsonContent.Create(...)
+          - pattern: $E.ExplicarAsync(...)
+
+  # ---------------------------------------------------------------------------
+  - id: meconta-pii-para-mapa-do-bairro
+    mode: taint
+    languages: [csharp]
+    severity: ERROR
+    message: >-
+      Texto do usuário vai para o mapa do bairro, que é público, sem passar pelo motor de dados
+      pessoais. Use CamposVerificados.ConteudoParaPublicar, que só libera o texto se o filtro
+      permitir.
+    metadata:
+      categoria: vazamento-de-dados-pessoais
+      cwe: "CWE-359: Exposure of Private Personal Information to an Unauthorized Actor"
+      lgpd: "art. 7º, I (consentimento) e art. 11 (dados sensíveis)"
+      risco-cidadao: alto
+    pattern-sources: *fontes
+    pattern-sanitizers: *higienizadores
+    pattern-sinks:
+      - patterns:
+          # O 1º argumento é a página inteira (não é texto); bairro, título e transcrição são o 2º, 4º e 5º.
+          - pattern-either:
+              - pattern: new MemoriaDoBairro($PAGINA, $SAIDA, ...)
+              - pattern: new MemoriaDoBairro($PAGINA, $B, $A, $SAIDA, ...)
+              - pattern: new MemoriaDoBairro($PAGINA, $B, $A, $T, $SAIDA, ...)
+          - focus-metavariable: $SAIDA
+
+  # ---------------------------------------------------------------------------
+  - id: meconta-texto-bruto-fora-do-motor
+    languages: [csharp]
+    severity: ERROR
+    message: >-
+      O valor bruto de um TextoDoUsuario só pode ser lido pelo motor de dados pessoais
+      (MeConta.Privacidade). Fora dele, use o resultado verificado.
+    metadata:
+      categoria: desvio-do-higienizador
+    paths:
+      exclude:
+        - "src/MeConta.Privacidade/**"
+    pattern: $T.ValorBruto

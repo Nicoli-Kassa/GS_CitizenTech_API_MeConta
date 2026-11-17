@@ -1,0 +1,16 @@
+               
+               
+┌─────────────┐
+│ Scan Status │
+└─────────────┘
+  Scanning 1 file with 2 Code rules:
+  Scanning 1 file with 2 <multilang> rules.
+               
+               
+┌─────────────┐
+│ Scan Status │
+└─────────────┘
+  Scanning 1 file with 5 Code rules:
+  Scanning 1 file with 5 csharp rules.
+7/7: ✓ All tests passed
+No tests for fixes found.

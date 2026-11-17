@@ -1,0 +1,17 @@
+# Casos de teste das regras de segredos (semgrep --test seguranca/semgrep).
+# As chaves abaixo são inventadas: têm só o formato de uma chave do Gemini.
+
+# ruleid: meconta-chave-gemini-no-codigo
+var chave = "AIzaSyExemplo-Falso-Nao-Use-00000000000";
+
+# ruleid: meconta-chave-gemini-no-codigo
+GEMINI_KEY=AQ.Ab8RN6-exemplo-falso-nao-e-chave-de-verdade
+
+# ok: meconta-chave-gemini-no-codigo
+chave = configuracao["Gemini:ChaveApi"]
+
+# ruleid: meconta-chave-no-appsettings
+  "Gemini": { "ChaveApi": "qualquer-valor-aqui" },
+
+# ok: meconta-chave-no-appsettings
+  "Gemini": { "ChaveApi": "" },

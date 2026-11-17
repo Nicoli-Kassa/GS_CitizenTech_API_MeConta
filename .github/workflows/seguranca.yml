@@ -1,0 +1,75 @@
+# Pipeline de segurança do Me Conta (DevSecOps).
+# Roda a cada push e pull request. Se a taint analysis achar texto do usuário chegando a uma saída
+# insegura, ou se aparecer um segredo no histórico, o pipeline fica vermelho e a mudança não entra.
+#
+#   1. Taint analysis (Semgrep): regras do Me Conta em seguranca/semgrep  → bloqueia
+#      + regras públicas de C# (p/csharp)                                   → só relatório
+#   2. Segredos (TruffleHog): todo o histórico do git                      → bloqueia
+#   3. Build e testes da API (dotnet test)                                  → bloqueia
+
+name: Segurança
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  taint:
+    name: Taint analysis (Semgrep)
+    runs-on: ubuntu-latest
+    container: semgrep/semgrep
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Conferir as regras com os casos de teste
+        run: semgrep --test seguranca/semgrep
+
+      - name: Regras do Me Conta (bloqueia o pipeline)
+        run: >-
+          semgrep scan --config seguranca/semgrep --error --metrics=off
+          --sarif-output=semgrep-meconta.sarif
+
+      - name: Regras públicas de C# (só relatório)
+        if: always()
+        continue-on-error: true
+        run: >-
+          semgrep scan --config p/csharp --metrics=off
+          --sarif-output=semgrep-csharp.sarif
+
+      - name: Guardar os relatórios
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: relatorios-semgrep
+          path: semgrep-*.sarif
+          if-no-files-found: ignore
+
+  segredos:
+    name: Segredos no histórico (TruffleHog)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Procurar chaves e senhas em todos os commits
+        run: >-
+          docker run --rm -v "$PWD:/repo" -w /repo trufflesecurity/trufflehog:latest
+          git file:///repo --results=verified,unknown --fail --no-update
+
+  testes:
+    name: Build e testes da API
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Testes (domínio, serviços e motor de dados pessoais)
+        run: dotnet test tests/MeConta.UnitTests --configuration Release

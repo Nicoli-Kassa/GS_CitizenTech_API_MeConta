@@ -1,0 +1,44 @@
+                   
+                   
+┌─────────────────┐
+│ 5 Code Findings │
+└─────────────────┘
+                                                      
+    src/MeConta.Api/Configuracao/TratadorDeExcecoes.cs
+   ❯❯❱ seguranca.semgrep.meconta-pii-para-log
+          ❰❰ Blocking ❱❱
+          Texto do usuário chega a um log sem passar pelo motor de dados pessoais. Logs ficam no servidor e
+          são lidos por quem cuida dele: um CPF, telefone ou dado de saúde escrito pela família não pode   
+          aparecer ali. Registre só ids, ou use a versão segura (TextoVerificado.ParaRegistro /            
+          ResultadoAnalisePii.TextoSeguro).                                                                
+                                                                                                           
+           36┆ logger.LogError(exception, "Erro inesperado em {Metodo} {Caminho}",
+               httpContext.Request.Method, httpContext.Request.Path);             
+                                                                   
+    src/MeConta.Application/Servicos/AparelhoPortaRetratoService.cs
+   ❯❯❱ seguranca.semgrep.meconta-pii-para-porta-retrato
+          ❰❰ Blocking ❱❱
+          Texto do usuário vai para o porta-retrato sem passar pelo motor de dados pessoais. Tudo o que o 
+          serviço do aparelho devolve segue pela ponte Node-RED para um broker MQTT público, onde qualquer
+          pessoa que conheça o tópico pode ler. Uma pergunta escrita pela família pode conter telefone,   
+          endereço ou dado de saúde: mande a versão segura (motor.Verificar(new                           
+          TextoDoUsuario(...)).ParaRegistro).                                                             
+                                                                                                          
+           54┆ naTela = new PerguntaNoPortaRetrato(
+           55┆     envio.Id,
+           56┆     FilaDoPortaRetrato.PrimeiroNome(quemEnviou?.Nome ?? string.Empty),
+           57┆     envio.TextoPergunta,
+           58┆     envio.EnviadoEm);
+            ⋮┆----------------------------------------
+           61┆ return new EstadoPortaRetratoResponse(
+           62┆     portaRetrato.Codigo,
+           63┆     idoso.Apelido,
+           64┆     naTela is not null,
+           65┆     esperando.Count,
+           66┆     naTela);
+            ⋮┆----------------------------------------
+          104┆ return new ResultadoQueroContar(AvisoResponse.De(existente, idoso.Apelido,
+               envio?.TextoPergunta), Criado: false);                                    
+            ⋮┆----------------------------------------
+          111┆ return new ResultadoQueroContar(AvisoResponse.De(aviso, idoso.Apelido,
+               envio?.TextoPergunta), Criado: true);                                 

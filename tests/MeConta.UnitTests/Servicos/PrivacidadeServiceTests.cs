@@ -1,3 +1,4 @@
+using MeConta.Application.Adapters;
 using MeConta.Application.Dtos;
 using MeConta.Application.Excecoes;
 using MeConta.Application.Servicos;
@@ -17,6 +18,7 @@ public sealed class PrivacidadeServiceTests
 {
     private readonly BancoFake _banco = new();
     private readonly RelogioFake _relogio = new(Agora);
+    private readonly AuditoriaFake _auditoria = new();
     private readonly ArmazenamentoFake _armazenamento = new();
     private readonly Idoso _lourdes;
     private readonly PrivacidadeService _servico;
@@ -37,6 +39,7 @@ public sealed class PrivacidadeServiceTests
             _armazenamento,
             MotorPii.CriarPadrao(),
             new UnidadeDeTrabalhoFake(_banco),
+            _auditoria,
             _relogio);
     }
 
@@ -263,6 +266,39 @@ public sealed class PrivacidadeServiceTests
         Assert.Empty(await _servico.ListarDoBairroAsync("Pirituba"));
         await Assert.ThrowsAsync<RecursoNaoEncontradoException>(() => _servico.AbrirAudioDaMemoriaAsync(publicacao.Memoria.Id));
         await Assert.ThrowsAsync<RecursoNaoEncontradoException>(() => _servico.TirarDoMapaAsync(pagina.Id));
+    }
+
+    [Fact]
+    public async Task Auditoria_PublicacaoBloqueada_LogComIdsResultadoETrechoMascarado()
+    {
+        PaginaCaderno pagina = CriarPagina("O primeiro emprego", "meu CPF é 123.456.789-09");
+
+        await Assert.ThrowsAsync<PublicacaoRecusadaException>(() => _servico.PublicarAsync(pagina.Id, Pedido()));
+
+        EventoDePrivacidade evento = Assert.Single(_auditoria.Eventos);
+        Assert.Equal("Publicacao", evento.Acao);
+        Assert.Equal(pagina.Id, evento.PaginaId);
+        Assert.Equal(BiaId, evento.MembroId);
+        Assert.Equal("Bloqueada", evento.Resultado);
+        Assert.Equal("CPF ***.***.***-09", Assert.Single(evento.Dados));
+    }
+
+    [Fact]
+    public async Task Auditoria_NenhumEvento_TrazTituloTranscricaoOuDadoEmClaro()
+    {
+        PaginaCaderno pagina = CriarPagina(
+            "Anotações da vó",
+            "CPF 123.456.789-09, telefone (11) 98765-4321 e tomo remédio para pressão.");
+
+        await _servico.AnalisarPaginaAsync(pagina.Id);
+        await Assert.ThrowsAsync<PublicacaoRecusadaException>(() => _servico.PublicarAsync(pagina.Id, Pedido(confirmo: true)));
+
+        Assert.Equal(2, _auditoria.Eventos.Count);
+        string tudo = string.Join(" | ", _auditoria.Eventos.SelectMany(evento => evento.Dados.Append(evento.Acao)));
+        foreach (string proibido in new[] { "Anotações", "456.789", "98765", "remédio para pressão" })
+        {
+            Assert.DoesNotContain(proibido, tudo);
+        }
     }
 
     [Fact]
