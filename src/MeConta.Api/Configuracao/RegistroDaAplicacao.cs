@@ -34,6 +34,10 @@ public static class RegistroDaAplicacao
         services.AddSingleton<IMotorPii>(new MotorPii(catalogo));
         services.AddSingleton<IRegistroDeAuditoria, AuditoriaEmLog>();
 
+        // Tradução de falhas em alertas (IA + conferência do motor). Uma instância só, para o cache
+        // e os números da IA valerem para a API inteira.
+        services.AddSingleton<ITradutorDeRisco, TradutorDeRisco>();
+
         // Serviços: uma instância por pedido HTTP, junto com o DbContext.
         services.AddScoped<IControleDeAcesso, ControleDeAcesso>();
         services.AddScoped<IMembroService, MembroService>();
@@ -48,6 +52,7 @@ public static class RegistroDaAplicacao
         services.AddScoped<IAvisoService, AvisoService>();
         services.AddScoped<IPrivacidadeService, PrivacidadeService>();
         services.AddScoped<IRiscoCidadaoService, RiscoCidadaoService>();
+        services.AddScoped<IRemediacaoService, RemediacaoService>();
 
         return services;
     }

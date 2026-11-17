@@ -1,3 +1,4 @@
+using MeConta.Application.Adapters;
 using MeConta.Application.Dtos;
 using MeConta.Domain.Entidades;
 using MeConta.Domain.Enums;
@@ -197,4 +198,31 @@ public interface IIndicadorService
     Task<IndicadorConversasResponse> ObterConversasDeVerdadeAsync(
         DateOnly? dataNaSemana,
         CancellationToken cancellationToken = default);
+}
+
+/// <summary>
+/// Traduz falhas técnicas em alertas de risco real (IA com conferência do motor e reserva local).
+/// </summary>
+public interface ITradutorDeRisco
+{
+    /// <summary>Um alerta por falha, na mesma ordem do pedido.</summary>
+    Task<ResultadoDaTraducao> TraduzirAsync(PedidoDeTraducao pedido, CancellationToken cancellationToken = default);
+
+    /// <summary>Números da IA desde que a API subiu.</summary>
+    EstatisticasDaIaResponse Estatisticas();
+}
+
+/// <summary>
+/// IA na remediação: alertas para a família, para o painel e para a auditoria do código.
+/// </summary>
+public interface IRemediacaoService
+{
+    /// <summary>Explica, em linguagem simples, os dados pessoais de uma página e sugere uma versão sem eles.</summary>
+    Task<ExplicacaoDeRiscoResponse> ExplicarPaginaAsync(int paginaId, CancellationToken cancellationToken = default);
+
+    /// <summary>Um alerta para cada tipo de dado encontrado no período (painel executivo).</summary>
+    Task<AlertasDoPainelResponse> AlertasDoPainelAsync(int dias = RiscoCidadaoService.PeriodoPadraoDias, CancellationToken cancellationToken = default);
+
+    /// <summary>Falhas do código encontradas pelo Semgrep, antes e depois das correções, traduzidas.</summary>
+    Task<AuditoriaDeCodigoResponse> AuditoriaAsync(CancellationToken cancellationToken = default);
 }

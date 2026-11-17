@@ -1,7 +1,9 @@
+using MeConta.Api.Configuracao;
 using MeConta.Application.Dtos;
 using MeConta.Application.Servicos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace MeConta.Api.Controllers;
 
@@ -16,7 +18,7 @@ namespace MeConta.Api.Controllers;
 [Route("api/v1")]
 [Produces("application/json")]
 [Tags("Mapa do bairro")]
-public sealed class MapaDoBairroController(IPrivacidadeService privacidade) : ControllerBase
+public sealed class MapaDoBairroController(IPrivacidadeService privacidade, IRemediacaoService remediacao) : ControllerBase
 {
     /// <summary>
     /// Passa título e transcrição da página pelo filtro de dados pessoais, sem publicar.
@@ -31,6 +33,25 @@ public sealed class MapaDoBairroController(IPrivacidadeService privacidade) : Co
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<AnalisePrivacidadeResponse>> AnalisarAsync(int paginaId, CancellationToken cancellationToken) =>
         Ok(await privacidade.AnalisarPaginaAsync(paginaId, cancellationToken));
+
+    /// <summary>
+    /// Explica para a família, em linguagem simples, por que a página não pode ir (ou precisa de confirmação)
+    /// para o mapa do bairro: um alerta por tipo de dado, o risco real e o que fazer, e uma versão
+    /// da memória sem os dados pessoais. A IA (Gemini) só recebe o que o motor já mascarou,
+    /// e a resposta dela passa de novo pelo motor antes de chegar aqui.
+    /// </summary>
+    /// <response code="200">Explicação. "fonte" diz quem escreveu: Gemini, Local (texto da equipe) ou Motor (nada a explicar).</response>
+    /// <response code="403">Quem não é da família não vê nenhum dado.</response>
+    /// <response code="404">Página não encontrada.</response>
+    /// <response code="429">Muitos pedidos no mesmo minuto.</response>
+    [HttpGet("paginas/{paginaId:int}/explicacao-de-risco")]
+    [EnableRateLimiting(LimitesDeUso.Ia)]
+    [ProducesResponseType<ExplicacaoDeRiscoResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status429TooManyRequests)]
+    public async Task<ActionResult<ExplicacaoDeRiscoResponse>> ExplicarAsync(int paginaId, CancellationToken cancellationToken) =>
+        Ok(await remediacao.ExplicarPaginaAsync(paginaId, cancellationToken));
 
     /// <summary>
     /// Leva a página ao mapa do bairro (US16), com a autorização da pessoa idosa e se o filtro liberar (US18).

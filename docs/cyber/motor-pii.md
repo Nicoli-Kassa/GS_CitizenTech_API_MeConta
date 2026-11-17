@@ -121,3 +121,10 @@ dotnet run --project tools/MeConta.Privacidade.Avaliacao
 - Datas e anos falados por extenso ("mil novecentos e cinquenta") não são convertidos em dígitos.
 - O dicionário de saúde cobre as doenças e os remédios mais comuns entre idosos, não todos.
 - "Senha é ..." pega a palavra seguinte, mesmo quando não é uma senha de verdade ("a senha da festa era cantar"). Para o mapa do bairro, preferimos errar para o lado do alerta.
+
+## Versões das regras
+
+| Versão | O que mudou |
+| --- | --- |
+| 1.0.0 | 17 regras e 3 combinações. |
+| 1.0.1 | Regra `PII-SENHA-001`: fronteira de palavra antes de "e", "era", "fica" e "foi". Antes, "senha no te**xto**" virava "senha **e** xto" e "as senhas **fica**m" virava senha. Achado pelos testes da [IA na remediação](remediacao-ia.md); os dois conjuntos de memórias simuladas deram o mesmo resultado. |

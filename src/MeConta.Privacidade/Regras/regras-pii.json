@@ -1,5 +1,5 @@
 {
-  "versao": "1.0.0",
+  "versao": "1.0.1",
   "regras": [
     {
       "id": "PII-CPF-001",
@@ -121,7 +121,7 @@
       "tipo": "Senha",
       "rotulo": "Senha",
       "nivel": "Alto",
-      "padrao": "\\bsenhas?\\b(?:\\s+(?:do|da|de|dos|das|no|na)\\s+[a-z]+){0,2}\\s*(?:e|eh|era|:|=|fica|foi)\\s*(?:a\\s+|o\\s+)?(?<valor>[^\\s,;!?]{3,})|\\bsenhas?\\b[^0-9\\n]{0,50}?(?<valor>\\d{4,8})(?!\\d)",
+      "padrao": "\\bsenhas?\\b(?:\\s+(?:do|da|de|dos|das|no|na)\\s+[a-z]+\\b){0,2}\\s*(?:\\b(?:e|eh|era|fica|foi)\\b|:|=)\\s*(?:a\\s+|o\\s+)?(?<valor>[^\\s,;!?]{3,})|\\bsenhas?\\b[^0-9\\n]{0,50}?(?<valor>\\d{4,8})(?!\\d)",
       "contexto": [
         "senha",
         "banco",

@@ -18,7 +18,7 @@ Backend do **Me Conta**, desenvolvido para a Global Solution FIAP 2026 (CitizenT
 | -------------------------- | ----------------------------------------------------------------- |
 | 🎬 **Pitch**               | [**Assistir no YouTube**](https://youtu.be/INSERIR-LINK-DO-PITCH) |
 | 📄 **Documentação da API** | `/swagger` e `/scalar` (com a API rodando)                        |
-| 🧪 **Testes**              | `dotnet test` (314 testes)                                        |
+| 🧪 **Testes**              | `dotnet test` (352 testes)                                        |
 | 🗂️ **Matérias**            | [O que cada matéria faz e onde cada entrega está](docs/MATERIAS.md) |
 | 🖼️ **Porta-retrato (IoT)** | [Circuito no Wokwi, ponte Node-RED e evidências](iot/README.md)     |
 
@@ -138,7 +138,7 @@ Cada matéria cuida de uma parte do Me Conta. O mapa completo, com cada critéri
 | **C# Software Development** | A Web API inteira, com domínio orientado a objetos, EF Core, LINQ e async/await | `src/` (4 projetos) e `tests/` · [detalhes](docs/MATERIAS.md#c-software-development) |
 | **SOA e Web Services** | Os serviços REST que o app e o porta-retrato consomem, com banco, migrações, documentação automática e testes | `src/`, `Migrations/`, `/swagger`, `/scalar`, `tests/` · [detalhes](docs/MATERIAS.md#soa-e-web-services) |
 | **Physical Computing (IoT)** | Porta-retrato com ESP32 que acende com pergunta nova e tem o botão "quero contar" | Pasta [`iot/`](iot/README.md) (circuito, firmware, ponte Node-RED e painel); rotas `/porta-retrato/*` e `/avisos`, migração `PortaRetrato` · [detalhes](docs/MATERIAS.md#physical-computing-iot) |
-| **Cybersecurity** | Filtro de dados pessoais, taint analysis e painel "Risco Cidadão" antes de publicar no mapa do bairro | Proteções em [Privacidade e segurança](#privacidade-e-segurança); motor de PII `MeConta.Privacidade` ([como funciona](docs/cyber/motor-pii.md)), [taint analysis](docs/cyber/taint-analysis.md) com Semgrep e TruffleHog no GitHub Actions · [detalhes](docs/MATERIAS.md#cybersecurity) |
+| **Cybersecurity** | Filtro de dados pessoais, taint analysis, tradução dos riscos com IA e painel "Risco Cidadão" antes de publicar no mapa do bairro | Proteções em [Privacidade e segurança](#privacidade-e-segurança); motor de PII `MeConta.Privacidade` ([como funciona](docs/cyber/motor-pii.md)), [taint analysis](docs/cyber/taint-analysis.md) com Semgrep e TruffleHog no GitHub Actions, [IA na remediação e painel](docs/cyber/remediacao-ia.md) em `/risco-cidadao/` · [detalhes](docs/MATERIAS.md#cybersecurity) |
 | **Operating Systems** | Servidor Linux que roda esta API, com monitoramento e logs | `/health`, perfil `rede-local`, banco por variável de ambiente · [detalhes](docs/MATERIAS.md#operating-systems) |
 | **Testing, Compliance & QA** | Backlog e casos de teste no Azure DevOps | Coluna "User story" dos [Endpoints](#endpoints) e [roteiro de testes](docs/ROTEIRO_DE_TESTES.md) · [detalhes](docs/MATERIAS.md#testing-compliance--qa) |
 | **Mobile** | App Expo da neta: perguntar, enviar e montar o caderno | Consome esta API; idempotência para o modo offline · [detalhes](docs/MATERIAS.md#mobile) |
@@ -196,23 +196,24 @@ GS_CitizenTech_API_MeConta/
 ├── Directory.Build.props        ← net10.0, nullable, implicit usings
 ├── docs/
 │   ├── MATERIAS.md              ← o que cada matéria faz e onde cada entrega está
-│   ├── ROTEIRO_DE_TESTES.md     ← 88 chamadas com o resultado esperado
-│   ├── cyber/                   ← motor de PII (regras, índice, avaliação) e taint analysis
+│   ├── ROTEIRO_DE_TESTES.md     ← 117 passos com o resultado esperado
+│   ├── cyber/                   ← motor de PII, taint analysis, IA na remediação e painel
 │   └── evidencias/              ← prints usados neste README
 ├── iot/                         ← porta-retrato: circuito no Wokwi, firmware, ponte Node-RED e prints
 ├── seguranca/
 │   ├── semgrep/                 ← regras de taint analysis e de segredos, com casos de teste
-│   └── relatorios/              ← auditoria do protótipo: antes e depois das correções
+│   ├── relatorios/              ← auditoria do protótipo: antes e depois das correções
+│   └── demo/                    ← simular-atividade.ps1: movimento no painel para o vídeo
 ├── src/
 │   ├── MeConta.Domain/          Comum · Entidades · Enums · Excecoes · Regras · ValueObjects
-│   ├── MeConta.Application/     Abstracoes · Adapters · Dtos · Excecoes · Servicos
-│   ├── MeConta.Infrastructure/  Adapters · Persistencia (Configuracoes, Migrations) · Repositorios
-│   ├── MeConta.Api/             Adapters · Configuracao · Controllers · Program.cs · MeConta.Api.http
+│   ├── MeConta.Application/     Abstracoes · Adapters · Auditoria · Dtos · Excecoes · Servicos
+│   ├── MeConta.Infrastructure/  Adapters · Ia (Gemini) · Persistencia (Configuracoes, Migrations) · Repositorios
+│   ├── MeConta.Api/             Adapters · Configuracao · Controllers · wwwroot (painel) · Program.cs · MeConta.Api.http
 │   └── MeConta.Privacidade/     Motor · Normalizacao · Regras (regras-pii.json) · Resultados · Taint · Validadores
 ├── tools/
 │   └── MeConta.Privacidade.Avaliacao/  ← tabela de precisão e recall do motor de PII
 └── tests/
-    └── MeConta.UnitTests/       Domain · Privacidade · Regras · Servicos
+    └── MeConta.UnitTests/       Domain · Privacidade · Regras · Remediacao · Servicos
 ```
 
 ## Modelo de domínio e POO
@@ -403,7 +404,10 @@ Todas as rotas ficam em `/api/v1` e, exceto login, cadastro, categorias e as rot
 | POST · DELETE       | `/paginas/{paginaId}/publicacao`                                     | US16 · US18   | 201 · 204 · 400 · 409 · 422 |
 | GET                 | `/bairros/{bairro}/memorias` (sem login)                             | US17          | 200                         |
 | GET                 | `/memorias/{memoriaId}/audio` (sem login)                            | US17          | 200 · 404                   |
-| GET                 | `/risco-cidadao?dias=` (sem login, só números e trechos mascarados)  | US18          | 200 · 400                   |
+| GET                 | `/risco-cidadao?dias=` (sem login, só números e trechos mascarados)  | US18          | 200 · 400 · 429             |
+| GET                 | `/paginas/{paginaId}/explicacao-de-risco` (IA, só dados mascarados)  | US18          | 200 · 403 · 404 · 429       |
+| GET                 | `/risco-cidadao/alertas?dias=` (sem login, alertas traduzidos)       | US18          | 200 · 400 · 429             |
+| GET                 | `/risco-cidadao/auditoria` (sem login, Semgrep traduzido)            | US18          | 200 · 404 · 429             |
 | GET                 | `/health`                                                            | Monitoramento | 200 · 503                   |
 
 ## Regras de negócio
@@ -459,8 +463,22 @@ Com a API no ar:
 | http://localhost:5080/scalar          | Scalar                  |
 | http://localhost:5080/openapi/v1.json | Documento OpenAPI       |
 | http://localhost:5080/health          | Saúde da API e do banco |
+| http://localhost:5080/risco-cidadao/  | Painel Risco Cidadão    |
 
 Para usar outro SQL Server, troque `ConnectionStrings:DefaultConnection` em `src/MeConta.Api/appsettings.json` ou use a variável de ambiente `ConnectionStrings__DefaultConnection`. Para o app no celular acessar a API pela rede local, use `--launch-profile rede-local` (escuta em `0.0.0.0:5080`).
+
+### Chave do Gemini (opcional)
+
+A tradução dos riscos usa o Gemini no plano gratuito. Sem chave, a API funciona igual e usa as explicações escritas pela equipe ([como funciona](docs/cyber/remediacao-ia.md)).
+
+1. Entre em [aistudio.google.com](https://aistudio.google.com) com uma conta Google e clique em **Get API key** → **Create API key**.
+2. Guarde a chave no user-secrets, fora do repositório (nunca no `appsettings.json`):
+
+```powershell
+dotnet user-secrets set "Gemini:ChaveApi" "<sua chave>" --project src\MeConta.Api
+```
+
+3. Suba a API de novo. Em `GET /api/v1/risco-cidadao/alertas`, o campo `fonte` passa a mostrar `Gemini (...)`.
 
 ### Dados de demonstração
 
@@ -479,7 +497,7 @@ No ambiente de desenvolvimento, a API cria dados **fictícios** baseados nas per
 2. Copie o `accessToken`, clique em **Authorize** e cole o token.
 3. Chame os endpoints.
 
-O **[roteiro de testes](docs/ROTEIRO_DE_TESTES.md)** traz 88 passos, cobrindo todas as requisições, inclusive as do porta-retrato, com o resultado esperado de cada uma (casos de sucesso e de erro). As mesmas chamadas estão prontas para rodar no Visual Studio em [`src/MeConta.Api/MeConta.Api.http`](src/MeConta.Api/MeConta.Api.http); o envio de áudio é feito pelo Swagger.
+O **[roteiro de testes](docs/ROTEIRO_DE_TESTES.md)** traz 117 passos, cobrindo todas as requisições, inclusive as do porta-retrato e as do filtro de dados pessoais, com o resultado esperado de cada uma (casos de sucesso e de erro). As mesmas chamadas estão prontas para rodar no Visual Studio em [`src/MeConta.Api/MeConta.Api.http`](src/MeConta.Api/MeConta.Api.http); o envio de áudio é feito pelo Swagger.
 
 ### Recriar a migração (se mudar o modelo)
 
@@ -493,7 +511,7 @@ dotnet ef migrations add NomeDaMudanca -p src/MeConta.Infrastructure -s src/MeCo
 dotnet test
 ```
 
-**314 testes unitários** em xUnit (`tests/MeConta.UnitTests`), sem banco e sem rede, com dublês escritos à mão (`PerguntaFake`, `FiltroFake` e, para os serviços, repositórios em memória, `RelogioFake` e `ControleDeAcessoFake`). Os nomes seguem o padrão `Metodo_Cenario_ResultadoEsperado`.
+**352 testes unitários** em xUnit (`tests/MeConta.UnitTests`), sem banco e sem rede, com dublês escritos à mão (`PerguntaFake`, `FiltroFake` e, para os serviços, repositórios em memória, `RelogioFake` e `ControleDeAcessoFake`). Os nomes seguem o padrão `Metodo_Cenario_ResultadoEsperado`.
 
 | Arquivo                            | O que testa                                                                                                                                                                   |
 | ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -520,6 +538,10 @@ dotnet test
 | `MemoriaDoBairroTests`             | Autorização da pessoa idosa obrigatória, bairro vazio ou longo, tirar do mapa, limite da transcrição                                                                           |
 | `PrivacidadeServiceTests`          | Análise e publicação: liberada, bloqueada (422), pedir confirmação, bairro com endereço, memória já no mapa, tirar do mapa; histórico e log de auditoria sem dado em claro |
 | `RiscoCidadaoServiceTests`         | Painel: totais, vazamentos evitados, por tipo, por bairro, dia de Brasília, período fora do limite                                                                            |
+| `TradutorDeRiscoTests`             | IA entre duas conferências do motor: pedido com dado pessoal não sai, frase da IA com CPF ou telefone é trocada pelo texto local, pausa depois de falha, respostas reaproveitadas |
+| `RemediacaoServiceTests`           | Explicação para a família sem nenhum dado em claro na saída para a IA, combinação perigosa, painel por tipo, auditoria lida dos relatórios reais do Semgrep                   |
+| `ExplicacoesLocaisTests`           | Texto local para todo tipo de dado e toda regra do Semgrep, sem dado pessoal; leitura do SARIF                                                                               |
+| `ExplicadorGeminiTests`            | Chave no cabeçalho (nunca na URL), dados separados das instruções, modelo de reserva, chave recusada, resposta bloqueada ou fora do formato                                   |
 
 ## Evidências
 
@@ -587,7 +609,7 @@ As rotas do aparelho pelo Swagger:
 
 ![Migrações aplicadas](docs/evidencias/11-migracoes.png)
 
-![314 testes automatizados aprovados](docs/evidencias/12-testes.png)
+![352 testes automatizados aprovados](docs/evidencias/12-testes.png)
 
 ## Privacidade e segurança
 
@@ -600,6 +622,8 @@ As rotas do aparelho pelo Swagger:
 - **Filtro de dados pessoais antes do mapa do bairro (US18):** título, transcrição e bairro passam pelo motor `MeConta.Privacidade` antes de qualquer publicação. Dado de risco alto bloqueia; dado de risco médio exige a confirmação da família; a autorização da pessoa idosa fica registrada (LGPD, art. 7º, I). O histórico do filtro guarda só o tipo do dado e o trecho mascarado. Detalhes em [`docs/cyber/motor-pii.md`](docs/cyber/motor-pii.md).
 - **Texto do usuário rastreado (taint analysis):** o título e a transcrição entram no motor como `TextoDoUsuario` e só saem para o mapa como texto verificado (`CamposVerificados`). Se alguém escrever um `TextoDoUsuario` num log por engano, sai só um aviso, nunca o conteúdo. Regras Semgrep em `seguranca/semgrep/` rastreiam o texto da família até logs, porta-retrato, IA e mapa do bairro, e o [pipeline de segurança](.github/workflows/seguranca.yml) barra o push que vazar. Detalhes e auditoria em [`docs/cyber/taint-analysis.md`](docs/cyber/taint-analysis.md).
 - **Porta-retrato sem dado pessoal no broker:** a pergunta e o apelido passam pelo motor antes de ir para a ponte MQTT; um telefone ou dado de saúde escrito na pergunta chega à telinha como "[telefone removido]".
+- **IA só com dado mascarado:** a tradução dos riscos (Gemini) recebe só o tipo do dado, o trecho mascarado e o texto com "[CPF removido]". O pedido passa pelo motor antes de sair e cada frase da resposta passa de novo antes de aparecer; frase com dado pessoal é trocada pelo texto da equipe. Instruções e dados vão separados, contra injeção de instruções. A chave fica no user-secrets. Detalhes em [`docs/cyber/remediacao-ia.md`](docs/cyber/remediacao-ia.md).
+- **Painel aberto sem dado pessoal:** `/risco-cidadao/` mostra só números agregados e trechos mascarados, com `Content-Security-Policy`, `X-Frame-Options: DENY`, texto inserido sempre como texto e limite de pedidos por IP (429) nas rotas abertas e nas que chamam a IA.
 - **Logs sem dado pessoal:** o log de erro registra o modelo da rota, não o caminho pedido; o log de auditoria do filtro leva só ids, resultado e trechos mascarados.
 - **Somente dados fictícios:** os dados de demonstração usam o domínio reservado `example.com` e um telefone inventado.
 
@@ -615,6 +639,9 @@ As rotas do aparelho pelo Swagger:
 | Testes                 | xUnit                                                              |
 | Monitoramento          | Health checks (`/health`)                                          |
 | Porta-retrato (IoT)    | ESP32 no Wokwi (Arduino), MQTT (PubSubClient, test.mosquitto.org), Node-RED com node-red-dashboard |
+| Segurança              | Semgrep (taint analysis), TruffleHog, GitHub Actions, pre-commit, rate limiting do ASP.NET Core |
+| IA                     | Gemini (plano gratuito) pela API REST, com explicações locais de reserva |
+| Painel                 | HTML, CSS e JavaScript sem biblioteca, servidos pela própria API (gráficos em SVG) |
 
 ## Próximos passos
 

@@ -2,7 +2,8 @@
 # No Visual Studio 2022 (17.12 ou mais novo), clique em "Send Request" acima de cada chamada, na ordem.
 # O token, o código do convite, o envio e o aviso passam sozinhos de uma chamada para a outra
 # ({{nome.response.body.$.campo}}). Os passos 49 a 53 (envio de áudio) são feitos pelo Swagger.
-# O bloco L (passos 89 a 108) precisa da API rodando com --Banco:PaginasDoFiltroDePrivacidade=true.
+# Os blocos L e M (passos 89 a 117) precisam da API rodando com --Banco:PaginasDoFiltroDePrivacidade=true.
+# O bloco M usa o Gemini se a chave estiver no user-secrets (Gemini:ChaveApi); sem chave, a "fonte" é Local.
 # Todos os dados são fictícios.
 
 @api = http://localhost:5080
@@ -716,3 +717,43 @@ GET {{api}}/api/v1/risco-cidadao?dias=0
 DELETE {{api}}/api/v1/paginas/{{cadernoFiltro.response.body.$.itens[3].id}}
 Authorization: Bearer {{loginBia.response.body.$.accessToken}}
 
+###############################################################################
+# Bloco M · IA na remediação e painel Risco Cidadão (Cybersecurity)
+###############################################################################
+
+### 109. Transcrição da casa com endereço e rotina (200)
+PUT {{api}}/api/v1/paginas/{{cadernoFiltro.response.body.$.itens[0].id}}/transcricao
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
+Content-Type: application/json
+
+{
+  "texto": "A casa da Rua das Flores, 123 tinha um portão azul. Hoje moro sozinha e de tarde fico sozinha em casa."
+}
+
+### 110. Explicação da IA para a família: casa (200, alertas de endereço, rotina e combinação)
+GET {{api}}/api/v1/paginas/{{cadernoFiltro.response.body.$.itens[0].id}}/explicacao-de-risco
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
+
+### 111. Explicação da IA: fábrica (200, Bloqueada, alerta de CPF mascarado)
+GET {{api}}/api/v1/paginas/{{cadernoFiltro.response.body.$.itens[2].id}}/explicacao-de-risco
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
+
+### 112. Explicação da IA: chás (200, PrecisaConfirmar, alerta de saúde)
+GET {{api}}/api/v1/paginas/{{cadernoFiltro.response.body.$.itens[1].id}}/explicacao-de-risco
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}
+
+### 113. Alertas do painel, sem token (200, um alerta por tipo de dado)
+GET {{api}}/api/v1/risco-cidadao/alertas
+
+### 114. Auditoria do código traduzida, sem token (200: 5 achados antes, 0 depois, 2 corrigidas)
+GET {{api}}/api/v1/risco-cidadao/auditoria
+
+### 115. Painel executivo: abra no navegador
+# http://localhost:5080/risco-cidadao/
+
+### 116. Atividade simulada para o vídeo (em outro terminal, na pasta do projeto)
+# powershell -ExecutionPolicy Bypass -File seguranca\demo\simular-atividade.ps1
+
+### 117. Sem a IA: suba a API com --Gemini:ChaveApi= e repita (fonte "Local")
+GET {{api}}/api/v1/paginas/{{cadernoFiltro.response.body.$.itens[1].id}}/explicacao-de-risco
+Authorization: Bearer {{loginBia.response.body.$.accessToken}}

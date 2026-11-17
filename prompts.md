@@ -20,7 +20,7 @@ Defini o escopo, a arquitetura, as tecnologias e as regras de negócio a partir 
 | 5. Problemas             | 14/11         | Investiguei os erros e apliquei as correções                                 | Explicação das causas                                                    |
 | 6. Porta-retrato (IoT)   | 15/11         | Defini o papel do aparelho, gerei a migração, testei as rotas e tirei os prints | Primeira versão das entidades, serviços, rotas, testes e roteiro         |
 | 7. Dependência vulnerável | 15/11        | Atualizei o pacote e confirmei o build sem avisos                            | Explicação do aviso e da versão corrigida                                |
-| 8. Motor de PII, filtro na API e taint analysis (Cybersecurity) | 15 e 16/11 | Defini o que conta como dado de risco, o que bloqueia, as regras de consentimento e as saídas inseguras; gerei a migração, rodei os testes, o roteiro e o pipeline | Primeira versão do módulo, das regras (PII e Semgrep), das rotas do mapa do bairro, dos testes, do pipeline e dos conjuntos de memórias simuladas |
+| 8. Motor de PII, filtro na API, taint analysis, IA na remediação e painel (Cybersecurity) | 15 a 17/11 | Defini o que conta como dado de risco, o que bloqueia, as regras de consentimento, as saídas inseguras e o que a IA pode receber; gerei a migração e a chave do Gemini, rodei os testes, o roteiro e o pipeline | Primeira versão do módulo, das regras (PII e Semgrep), das rotas do mapa do bairro, da integração com o Gemini, do painel, dos testes, do pipeline e dos conjuntos de memórias simuladas |
 | 9. Circuito no Wokwi     | 16/11         | Escolhi os componentes e o visual da caixinha, montei no Wokwi e testei cada situação | Primeira versão do firmware e do `diagram.json`                    |
 | 10. Ponte Node-RED e painel | 16/11      | Instalei e configurei o Node-RED, rodei o ciclo completo com a API e ajustei o visual do painel | Primeira versão do fluxo e do painel                       |
 | 11. Documentação do IoT  | 16/11         | Revisei os textos e tirei os prints                                          | Estrutura do README da pasta `iot/`                                      |
@@ -223,6 +223,33 @@ Defini o escopo, a arquitetura, as tecnologias e as regras de negócio a partir 
 
 - Rodei `dotnet build` e `dotnet test`: 314 testes aprovados.
 - Conferi no GitHub Actions o pipeline verde no `main` e vermelho no ramo de demonstração com o vazamento.
+
+### Parte 4 · IA na remediação e painel Risco Cidadão · 17/11/2026
+
+**O que eu precisava:** transformar o que o motor e o Semgrep encontram ("PII-CPF-001", "CWE-532") em alertas que a família e quem cuida do app entendem, e um painel executivo que mostre o indicador Risco Cidadão mudando ao vivo.
+
+**Como usei a IA:** pedi apoio para escrever a integração com o Gemini, as conferências antes e depois da IA, as explicações locais de reserva, as rotas novas, o painel em HTML e JavaScript, o script de atividade simulada e os testes.
+
+**Minhas decisões:**
+
+- Usar o Gemini no plano gratuito e guardar a chave só no user-secrets do meu computador.
+- A IA é uma saída insegura: recebe só o tipo do dado, o trecho mascarado e o texto com "[CPF removido]", nunca o dado.
+- Toda frase da IA passa pelo motor de novo; frase com dado pessoal é trocada pelo texto escrito pela equipe, e o painel mostra quem escreveu cada alerta.
+- Sem chave, sem cota ou com a IA fora do ar, a família continua recebendo o alerta (textos locais).
+- O painel fica aberto, mas só com números agregados e trechos mascarados, com limite de pedidos por IP.
+
+**Resultado:**
+
+- Rotas `GET /paginas/{id}/explicacao-de-risco`, `GET /risco-cidadao/alertas` e `GET /risco-cidadao/auditoria` (auditoria do Semgrep traduzida: 5 achados antes, 0 depois).
+- Painel executivo em `/risco-cidadao/`, servido pela própria API, com gráficos, tabelas, alertas da IA e auditoria; script `seguranca/demo/simular-atividade.ps1` para o vídeo.
+- 38 testes novos (352 no total). Os testes acharam um erro na regra de senha ("senha no texto" virava senha), corrigido na versão 1.0.1 das regras.
+- Documentação em `docs/cyber/remediacao-ia.md` e bloco M do roteiro (passos 109 a 117).
+
+**Meu trabalho de validação:**
+
+- Rodei `dotnet build` e `dotnet test`: 352 testes aprovados.
+- Segui o bloco M do roteiro com e sem a chave do Gemini e conferi que nenhum CPF, telefone ou endereço aparece nas respostas.
+- Rodei o script de atividade com o painel aberto e gravei o vídeo.
 
 ---
 

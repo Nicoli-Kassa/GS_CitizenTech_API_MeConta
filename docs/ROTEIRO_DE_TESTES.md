@@ -12,7 +12,7 @@ Todos os dados usados aqui são **fictícios**.
 
 | Ferramenta | Para quê |
 |---|---|
-| **Visual Studio 2022 (17.12 ou mais novo)** | Rodar o arquivo [`src/MeConta.Api/MeConta.Api.http`](../src/MeConta.Api/MeConta.Api.http): 108 chamadas numeradas, na mesma ordem deste roteiro (menos as de envio de áudio, 49 a 53). O token, o convite, o envio e o aviso passam sozinhos de uma chamada para a outra. |
+| **Visual Studio 2022 (17.12 ou mais novo)** | Rodar o arquivo [`src/MeConta.Api/MeConta.Api.http`](../src/MeConta.Api/MeConta.Api.http): 117 passos numerados, na mesma ordem deste roteiro (menos as de envio de áudio, 49 a 53). O token, o convite, o envio e o aviso passam sozinhos de uma chamada para a outra. |
 | **Swagger UI** (`http://localhost:5080/swagger`) | Envio de áudio (multipart, passos 49 a 53) e as fotos. |
 | **Terminal** | Subir a API e rodar os testes automatizados. |
 
@@ -280,6 +280,25 @@ Faça login de novo como **Bia** (passo 6) e use o token dela no Authorize.
 
 Os números do passo 106 valem para este bloco feito uma vez, na ordem. Cada análise e cada tentativa de publicação entram no histórico (passos 90 a 94, 97, 99, 100 e 105); os passos 95, 96 e 98 são recusados antes do filtro e não entram.
 
+### Bloco M · IA na remediação e painel Risco Cidadão, Cybersecurity (US18)
+
+A IA (Gemini) traduz o que o filtro e a auditoria do código encontraram em alertas simples: o problema, o risco real para a pessoa idosa e o que fazer. Ela só recebe o tipo do dado e o trecho mascarado, e cada frase dela volta pelo filtro antes de aparecer. Como funciona: [`docs/cyber/remediacao-ia.md`](cyber/remediacao-ia.md).
+
+**Preparação:** a mesma API do bloco L (com `--Banco:PaginasDoFiltroDePrivacidade=true`) e, se quiser a IA, a chave do Gemini no user-secrets ([passo a passo no README](../README.md#chave-do-gemini-opcional)). Sem chave, tudo funciona e o campo `fonte` mostra `Local` (texto escrito pela equipe). Continue com o token da Bia.
+
+| Nº | Requisição | O que enviar | Esperado | ✓ |
+|---|---|---|---|---|
+| 109 | `PUT /api/v1/paginas/{id da casa}/transcricao` | `{ "texto": "A casa da Rua das Flores, 123 tinha um portão azul. Hoje moro sozinha e de tarde fico sozinha em casa." }` | **200** com a `transcricao` nova | ☐ |
+| 110 📸 `25-explicacao-ia.png` | `GET /api/v1/paginas/{id da casa}/explicacao-de-risco` | — | **200** com `resultado` = `PrecisaConfirmar`, `faixa` = `Alto`, um `resumo`, alertas de "Endereço", "Rotina da casa" e "Combinação perigosa" (cada um com `alerta`, `riscoReal`, `oQueFazer` e só trechos mascarados), `versaoSugerida` sem a rua e o número, e `fonte` = `Gemini (...)` (ou `Local`, sem chave) | ☐ |
+| 111 | `GET /api/v1/paginas/{id da fábrica}/explicacao-de-risco` | — | **200** com `resultado` = `Bloqueada` e um alerta "CPF" com `trechos` = `["***.***.***-09"]`. O número nunca aparece, nem na `versaoSugerida` | ☐ |
+| 112 | `GET /api/v1/paginas/{id dos chás}/explicacao-de-risco` | — | **200** com `resultado` = `PrecisaConfirmar` e um alerta "Dado de saúde" | ☐ |
+| 113 | `GET /api/v1/risco-cidadao/alertas` | **sem token** | **200** com um alerta por tipo de dado do período (mesma ordem de `porTipo` do passo 106), com `quantidade`, `fonte` e o bloco `ia` (`chamadas`, `respostasAproveitadas`, `frasesDescartadas`, `enviosBarrados` = 0) | ☐ |
+| 114 | `GET /api/v1/risco-cidadao/auditoria` | sem token | **200** com `ferramenta` = "Semgrep OSS 1.185.0", `achadosAntes` = 5, `achadosDepois` = 0, `corrigidas` = 2, `abertas` = 0 e as falhas `meconta-pii-para-log` (linha 36) e `meconta-pii-para-porta-retrato` (linhas 54, 61, 104 e 111), cada uma traduzida | ☐ |
+| 115 📸 `26-painel-risco-cidadao.png` | Abra `http://localhost:5080/risco-cidadao/` no navegador | — | Painel com o índice Risco Cidadão, os totais, os gráficos por dia, por tipo e por bairro, os alertas traduzidos e a auditoria do código. "Ao vivo" com a hora atualizando | ☐ |
+| 116 🎬 📸 `27-painel-com-atividade.png` | Em outro terminal, na pasta do projeto: `powershell -ExecutionPolicy Bypass -File seguranca\demo\simular-atividade.ps1` | — | O script mostra cada memória fictícia, o resultado do filtro e, a cada três rodadas, a explicação da IA. O painel muda sozinho a cada 5 segundos (verificações, barradas, tipos, bairros). No fim, as transcrições originais voltam | ☐ |
+| 117 | Pare a API e suba com `-- --Banco:PaginasDoFiltroDePrivacidade=true --Gemini:ChaveApi=`; repita o passo 112 | — | **200** com `fonte` = `Local`: sem a IA, a família continua recebendo o alerta | ☐ |
+
+
 ---
 
 ## 4. Banco de dados e migrações
@@ -297,7 +316,7 @@ Confira também que existem as tabelas `Familias`, `Participacoes`, `Convites`, 
 
 | Foto | O que fazer | Esperado | ✓ |
 |---|---|---|---|
-| 📸 `12-testes.png` | Pare a API (`Ctrl+C`) e rode `dotnet test` na pasta do projeto | `total: 314; falhou: 0` e nenhum aviso amarelo no build | ☐ |
+| 📸 `12-testes.png` | Pare a API (`Ctrl+C`) e rode `dotnet test` na pasta do projeto | `total: 352; falhou: 0` e nenhum aviso amarelo no build | ☐ |
 
 ---
 
@@ -321,6 +340,6 @@ Confira também que existem as tabelas `Familias`, `Participacoes`, `Convites`, 
 | US15 · Porta-retrato (aviso de pergunta nova e botão "quero contar") | 67 a 88 |
 | US16 · Publicar uma memória no mapa (com autorização) | 94 a 100, 103, 108 |
 | US17 · Ouvir as memórias do bairro | 101, 102 |
-| US18 · Bloquear dados sensíveis antes de publicar (painel "Risco Cidadão") | 89 a 94, 99, 104 a 107 |
+| US18 · Bloquear dados sensíveis antes de publicar (painel "Risco Cidadão") | 89 a 94, 99, 104 a 107, 109 a 117 |
 | Login, perfil e acesso | 3 a 8, 16 a 21, 70, 71 |
 | Monitoramento | 1 |

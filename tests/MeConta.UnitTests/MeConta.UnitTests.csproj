@@ -20,11 +20,15 @@
     <ProjectReference Include="..\..\src\MeConta.Domain\MeConta.Domain.csproj" />
     <ProjectReference Include="..\..\src\MeConta.Application\MeConta.Application.csproj" />
     <ProjectReference Include="..\..\src\MeConta.Privacidade\MeConta.Privacidade.csproj" />
+    <ProjectReference Include="..\..\src\MeConta.Infrastructure\MeConta.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <!-- Corpus de memórias simuladas usado para medir o motor de PII. -->
     <None Update="Privacidade\*.json" CopyToOutputDirectory="PreserveNewest" />
+    <!-- Relatórios SARIF e regras do Semgrep: os testes da IA na remediação conferem os dois. -->
+    <None Include="..\..\seguranca\relatorios\*.sarif" LinkBase="Seguranca\relatorios" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\seguranca\semgrep\*.yml" LinkBase="Seguranca\semgrep" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

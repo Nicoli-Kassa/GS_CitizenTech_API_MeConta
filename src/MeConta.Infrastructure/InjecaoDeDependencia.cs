@@ -1,10 +1,13 @@
 using MeConta.Application.Abstracoes;
 using MeConta.Application.Adapters;
 using MeConta.Infrastructure.Adapters;
+using MeConta.Infrastructure.Ia;
 using MeConta.Infrastructure.Persistencia;
 using MeConta.Infrastructure.Repositorios;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace MeConta.Infrastructure;
 
@@ -64,6 +67,31 @@ public static class InjecaoDeDependencia
         services.AddSingleton<IArmazenamentoDeArquivos>(new ArmazenamentoEmDiscoAdapter(pastaDeArquivos));
         services.AddSingleton<IGeradorDeCodigoConvite, GeradorDeCodigoConvite>();
         services.AddSingleton<IGeradorDeCredenciais, GeradorDeCredenciais>();
+
+        return services;
+    }
+
+    /// <summary>
+    /// Registra a IA da remediação (Gemini) e a leitura dos relatórios da auditoria do código.
+    /// Sem "Gemini:ChaveApi" configurada, o Gemini fica indisponível e valem as explicações locais.
+    /// </summary>
+    /// <param name="services">Contêiner de injeção de dependência.</param>
+    /// <param name="configuracao">Configuração da API (seção "Gemini").</param>
+    /// <param name="pastaDosRelatorios">Pasta com antes-semgrep.sarif e depois-semgrep.sarif.</param>
+    public static IServiceCollection AdicionarRemediacao(
+        this IServiceCollection services,
+        IConfiguration configuracao,
+        string pastaDosRelatorios)
+    {
+        services.AddOptions<OpcoesDoGemini>().Bind(configuracao.GetSection(OpcoesDoGemini.Secao));
+        services.AddHttpClient(ExplicadorGemini.NomeDoCliente, (provider, http) =>
+        {
+            OpcoesDoGemini opcoes = provider.GetRequiredService<IOptions<OpcoesDoGemini>>().Value;
+            http.BaseAddress = new Uri(opcoes.Endereco);
+            http.Timeout = TimeSpan.FromSeconds(30);
+        });
+        services.AddSingleton<IExplicadorDeRisco, ExplicadorGemini>();
+        services.AddSingleton<IRelatoriosDeAuditoria>(new RelatoriosDeAuditoriaEmDisco(pastaDosRelatorios));
 
         return services;
     }

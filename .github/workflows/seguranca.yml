@@ -20,10 +20,10 @@ permissions:
 jobs:
   taint:
     name: Taint analysis (Semgrep)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     container: semgrep/semgrep
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Conferir as regras com os casos de teste
         run: semgrep --test seguranca/semgrep
@@ -42,7 +42,7 @@ jobs:
 
       - name: Guardar os relatórios
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: relatorios-semgrep
           path: semgrep-*.sarif
@@ -50,9 +50,9 @@ jobs:
 
   segredos:
     name: Segredos no histórico (TruffleHog)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -63,11 +63,11 @@ jobs:
 
   testes:
     name: Build e testes da API
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@v6
         with:
           global-json-file: global.json
 

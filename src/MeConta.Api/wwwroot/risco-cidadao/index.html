@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <title>Risco Cidadão · Me Conta</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="painel.css">
+  <script src="painel.js" defer></script>
+</head>
+<body>
+  <main class="viz-root" aria-busy="true">
+    <header class="topo">
+      <div>
+        <p class="sobretitulo">Me Conta · painel executivo</p>
+        <h1>Risco Cidadão</h1>
+        <p class="subtitulo">Quanto o filtro de dados pessoais está protegendo as pessoas idosas antes de cada memória ir para o mapa do bairro.</p>
+      </div>
+      <div class="ao-vivo" role="status" aria-live="polite">
+        <span class="ponto" aria-hidden="true"></span>
+        <span id="situacao">Conectando…</span>
+      </div>
+    </header>
+
+    <div class="filtros" role="group" aria-label="Período">
+      <span class="filtros-rotulo">Período</span>
+      <button type="button" class="periodo" data-dias="1">Hoje</button>
+      <button type="button" class="periodo" data-dias="7">7 dias</button>
+      <button type="button" class="periodo" data-dias="14" aria-pressed="true">14 dias</button>
+      <button type="button" class="periodo" data-dias="30">30 dias</button>
+      <button type="button" class="periodo" data-dias="90">90 dias</button>
+      <span class="filtros-info">Regras <span id="versao">–</span> · atualiza a cada 5 segundos</span>
+    </div>
+
+    <section class="linha-principal" aria-label="Indicador">
+      <article class="cartao heroi">
+        <h2 class="cartao-titulo">Índice Risco Cidadão</h2>
+        <p class="cartao-ajuda">Média das memórias verificadas no período, de 0 (nenhum dado pessoal) a 100.</p>
+        <div class="heroi-numero"><span id="indice">–</span><span class="heroi-de">de 100</span></div>
+        <p id="faixa" class="status" data-faixa="">–</p>
+        <div class="medidor" role="img" id="medidor" aria-label="Índice">
+          <div class="medidor-trilho"><div class="medidor-valor" id="medidor-valor"></div></div>
+          <div class="medidor-marcas" aria-hidden="true"><span>0</span><span class="m30">30 médio</span><span class="m70">70 alto</span><span>100</span></div>
+        </div>
+      </article>
+
+      <div class="tiles">
+        <article class="cartao tile"><h2 class="tile-rotulo">Memórias verificadas</h2><p class="tile-valor" id="t-verificacoes">–</p><p class="tile-nota">análises e tentativas de publicação</p></article>
+        <article class="cartao tile"><h2 class="tile-rotulo">Vazamentos evitados</h2><p class="tile-valor" id="t-evitados">–</p><p class="tile-nota">dados de risco alto que não foram para o mapa</p></article>
+        <article class="cartao tile"><h2 class="tile-rotulo">Tentativas barradas</h2><p class="tile-valor" id="t-bloqueadas">–</p><p class="tile-nota">CPF, senha, cartão, conta, PIX ou código</p></article>
+        <article class="cartao tile"><h2 class="tile-rotulo">Publicadas no mapa</h2><p class="tile-valor" id="t-publicadas">–</p><p class="tile-nota">com autorização e sem dado de risco alto</p></article>
+        <article class="cartao tile"><h2 class="tile-rotulo">Dados pessoais encontrados</h2><p class="tile-valor" id="t-dados">–</p><p class="tile-nota">sempre guardados mascarados</p></article>
+        <article class="cartao tile"><h2 class="tile-rotulo">Sem nenhum dado pessoal</h2><p class="tile-valor" id="t-semrisco">–</p><p class="tile-nota">verificações liberadas de primeira</p></article>
+      </div>
+    </section>
+
+    <section class="grade" aria-label="Gráficos">
+      <figure class="cartao grafico" id="g-dias">
+        <figcaption>
+          <h2 class="cartao-titulo">Verificações por dia</h2>
+          <button type="button" class="ver-tabela" aria-pressed="false">Ver tabela</button>
+        </figcaption>
+        <ul class="legenda" aria-label="Legenda"></ul>
+        <div class="area"></div>
+        <div class="tabela" hidden></div>
+      </figure>
+
+      <figure class="cartao grafico" id="g-indice">
+        <figcaption>
+          <h2 class="cartao-titulo">Índice médio por dia</h2>
+          <button type="button" class="ver-tabela" aria-pressed="false">Ver tabela</button>
+        </figcaption>
+        <p class="cartao-ajuda">Dias sem verificação ficam em branco.</p>
+        <div class="area"></div>
+        <div class="tabela" hidden></div>
+      </figure>
+
+      <figure class="cartao grafico" id="g-tipos">
+        <figcaption>
+          <h2 class="cartao-titulo">Dados pessoais encontrados, por tipo</h2>
+          <button type="button" class="ver-tabela" aria-pressed="false">Ver tabela</button>
+        </figcaption>
+        <ul class="legenda" aria-label="Legenda"></ul>
+        <div class="area"></div>
+        <div class="tabela" hidden></div>
+      </figure>
+
+      <figure class="cartao grafico" id="g-bairros">
+        <figcaption>
+          <h2 class="cartao-titulo">Tentativas de publicação por bairro</h2>
+          <button type="button" class="ver-tabela" aria-pressed="false">Ver tabela</button>
+        </figcaption>
+        <ul class="legenda" aria-label="Legenda"></ul>
+        <div class="area"></div>
+        <div class="tabela" hidden></div>
+      </figure>
+    </section>
+
+    <section class="cartao bloco" aria-labelledby="titulo-ia">
+      <div class="bloco-topo">
+        <div>
+          <h2 class="cartao-titulo" id="titulo-ia">O que cada risco significa para a pessoa idosa</h2>
+          <p class="cartao-ajuda">A IA traduz o que o filtro encontrou em alertas simples. Ela só recebe o tipo do dado, nunca o dado; cada frase volta pelo filtro antes de aparecer aqui.</p>
+        </div>
+        <p class="fonte" id="fonte-alertas">–</p>
+      </div>
+      <p class="observacao" id="obs-alertas" hidden></p>
+      <div class="alertas" id="alertas"></div>
+      <dl class="ia-numeros" id="ia-numeros"></dl>
+    </section>
+
+    <section class="cartao bloco" aria-labelledby="titulo-auditoria">
+      <div class="bloco-topo">
+        <div>
+          <h2 class="cartao-titulo" id="titulo-auditoria">Auditoria do código (taint analysis)</h2>
+          <p class="cartao-ajuda">Caminhos por onde um dado da família podia vazar, encontrados pelo Semgrep, e o que foi feito.</p>
+        </div>
+        <p class="fonte" id="fonte-auditoria">–</p>
+      </div>
+      <div class="auditoria-resumo" id="auditoria-resumo"></div>
+      <div class="falhas" id="falhas"></div>
+    </section>
+
+    <section class="cartao bloco" aria-labelledby="titulo-ultimos">
+      <h2 class="cartao-titulo" id="titulo-ultimos">Últimos dados encontrados</h2>
+      <p class="cartao-ajuda">Só o tipo e o trecho mascarado: o painel nunca mostra o dado, o título da memória nem a família.</p>
+      <div class="tabela-rolagem">
+        <table class="tabela-dados" id="ultimos">
+          <thead><tr><th scope="col">Quando</th><th scope="col">Dado</th><th scope="col">Nível</th><th scope="col">Trecho</th><th scope="col">Campo</th><th scope="col">Resultado</th><th scope="col">Bairro</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <footer class="rodape">Dados fictícios de demonstração · Me Conta · Global Solution 2026.2</footer>
+    <div class="dica" id="dica" role="tooltip" hidden></div>
+  </main>
+</body>
+</html>

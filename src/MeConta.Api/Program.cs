@@ -26,6 +26,11 @@ public partial class Program
             ?? Path.Combine(builder.Environment.ContentRootPath, "storage");
         builder.Services.AdicionarInfraestrutura(provedor, connectionString, pastaDeArquivos);
 
+        // IA da remediação (Gemini, chave em user-secrets) e relatórios da auditoria do código (Semgrep).
+        string pastaDosRelatorios = builder.Configuration["Seguranca:PastaDosRelatorios"]
+            ?? Path.GetFullPath(Path.Combine(builder.Environment.ContentRootPath, "..", "..", "seguranca", "relatorios"));
+        builder.Services.AdicionarRemediacao(builder.Configuration, pastaDosRelatorios);
+
         // Casos de uso (camada Application) e regras do domínio.
         builder.Services.AdicionarAplicacao(builder.Configuration["Privacidade:ArquivoDeRegras"]);
         builder.Services.AddHttpContextAccessor();
@@ -53,6 +58,15 @@ public partial class Program
         // Documentação automática: um documento OpenAPI, exibido no Swagger UI e no Scalar.
         builder.Services.AddOpenApi(options => options.AddDocumentTransformer<DocumentacaoOpenApi>());
 
+        // Limite de pedidos por endereço nas rotas abertas do painel e nas que chamam a IA:
+        // protege a cota do plano gratuito do Gemini e o banco de quem tentar derrubar o painel.
+        builder.Services.AddRateLimiter(options =>
+        {
+            options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+            options.AddPolicy(LimitesDeUso.Painel, contexto => LimitesDeUso.PorEndereco(contexto, LimitesDeUso.PedidosDoPainelPorMinuto));
+            options.AddPolicy(LimitesDeUso.Ia, contexto => LimitesDeUso.PorEndereco(contexto, LimitesDeUso.PedidosDaIaPorMinuto));
+        });
+
         builder.Services.AddHealthChecks().AddDbContextCheck<AppDbContext>("banco");
 
         // Libera chamadas do app rodando no navegador (Expo Web) durante o desenvolvimento.
@@ -63,9 +77,15 @@ public partial class Program
         WebApplication app = builder.Build();
 
         app.UseExceptionHandler();
+
+        // Painel executivo Risco Cidadão: página estática em /risco-cidadao/ (wwwroot), com cabeçalhos de segurança.
+        app.UseDefaultFiles();
+        app.UseStaticFiles(new StaticFileOptions { OnPrepareResponse = CabecalhosDoPainel.Aplicar });
+
         app.UseCors("app");
         app.UseAuthentication();
         app.UseAuthorization();
+        app.UseRateLimiter();
 
         app.MapOpenApi();
         app.UseSwaggerUI(options =>
