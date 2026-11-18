@@ -20,7 +20,7 @@ Defini o escopo, a arquitetura, as tecnologias e as regras de negócio a partir 
 | 5. Problemas             | 14/11         | Investiguei os erros e apliquei as correções                                 | Explicação das causas                                                    |
 | 6. Porta-retrato (IoT)   | 15/11         | Defini o papel do aparelho, gerei a migração, testei as rotas e tirei os prints | Primeira versão das entidades, serviços, rotas, testes e roteiro         |
 | 7. Dependência vulnerável | 15/11        | Atualizei o pacote e confirmei o build sem avisos                            | Explicação do aviso e da versão corrigida                                |
-| 8. Motor de PII, filtro na API, taint analysis, IA na remediação e painel (Cybersecurity) | 15 a 17/11 | Defini o que conta como dado de risco, o que bloqueia, as regras de consentimento, as saídas inseguras e o que a IA pode receber; gerei a migração e a chave do Gemini, rodei os testes, o roteiro e o pipeline | Primeira versão do módulo, das regras (PII e Semgrep), das rotas do mapa do bairro, da integração com o Gemini, do painel, dos testes, do pipeline e dos conjuntos de memórias simuladas |
+| 8. Motor de PII, filtro na API, taint analysis, IA na remediação e painel (Cybersecurity) | 15 a 18/11 | Defini o que conta como dado de risco, o que bloqueia, as regras de consentimento, as saídas inseguras e o que a IA pode receber; gerei a migração e a chave do Gemini, rodei os testes, o roteiro e o pipeline | Primeira versão do módulo, das regras (PII e Semgrep), das rotas do mapa do bairro, da integração com o Gemini, do painel, dos testes, do pipeline e dos conjuntos de memórias simuladas |
 | 9. Circuito no Wokwi     | 16/11         | Escolhi os componentes e o visual da caixinha, montei no Wokwi e testei cada situação | Primeira versão do firmware e do `diagram.json`                    |
 | 10. Ponte Node-RED e painel | 16/11      | Instalei e configurei o Node-RED, rodei o ciclo completo com a API e ajustei o visual do painel | Primeira versão do fluxo e do painel                       |
 | 11. Documentação do IoT  | 16/11         | Revisei os textos e tirei os prints                                          | Estrutura do README da pasta `iot/`                                      |
@@ -250,6 +250,28 @@ Defini o escopo, a arquitetura, as tecnologias e as regras de negócio a partir 
 - Rodei `dotnet build` e `dotnet test`: 352 testes aprovados.
 - Segui o bloco M do roteiro com e sem a chave do Gemini e conferi que nenhum CPF, telefone ou endereço aparece nas respostas.
 - Rodei o script de atividade com o painel aberto e gravei o vídeo.
+
+### Parte 5 · Ajustes, evidências e entrega · 17 e 18/11/2026
+
+**O que eu precisava:** deixar a IA estável no plano gratuito, fechar as evidências e organizar a entrega de Cybersecurity num lugar só.
+
+**Como usei a IA:** pedi apoio para investigar os erros 503 do Gemini, para cobrir o token de login nos prints do Swagger e para escrever o README da pasta `docs/cyber/` e o roteiro do vídeo.
+
+**Minhas decisões:**
+
+- Usar um modelo Flash-Lite como padrão, porque foi o que respondeu no plano gratuito, e repetir uma vez quando o modelo estiver sobrecarregado.
+- Cobrir o token de login nos prints, mesmo sendo de uma conta fictícia e só local, porque uma entrega de segurança não deve mostrar credencial.
+
+**Resultado:**
+
+- Modelo padrão `gemini-3.1-flash-lite`, com uma segunda tentativa em caso de 503 e 2 testes novos (354 no total).
+- Prints do Swagger com "[token oculto]"; prints do pipeline, da IA e do painel no README.
+- `docs/cyber/README.md` com a Ficha, o que foi pedido e onde está, como executar e as evidências.
+
+**Meu trabalho de validação:**
+
+- Investiguei os 503 no terminal da API e testei o Gemini direto pelo PowerShell.
+- Rodei `dotnet test` (354 aprovados) e gravei o vídeo do painel com o script de atividade.
 
 ---
 

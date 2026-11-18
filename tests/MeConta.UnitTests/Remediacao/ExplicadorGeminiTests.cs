@@ -36,6 +36,7 @@ public sealed class ExplicadorGeminiTests
                 ChaveApi = chave,
                 Modelo = "modelo-a",
                 ModelosDeReserva = reserva ?? ["modelo-b"],
+                EsperaAntesDeRepetirEmMilissegundos = 0,
             }),
             NullLogger<ExplicadorGemini>.Instance);
 
@@ -101,6 +102,31 @@ public sealed class ExplicadorGeminiTests
         Assert.Contains("thinkingConfig", servidor.Requisicoes[0].Corpo);
         Assert.DoesNotContain("thinkingConfig", servidor.Requisicoes[1].Corpo);
         Assert.All(servidor.Requisicoes, requisicao => Assert.EndsWith("modelo-a:generateContent", requisicao.Endereco));
+    }
+
+    [Fact]
+    public async Task ModeloSobrecarregado_RepeteUmaVezNoMesmoModelo()
+    {
+        ServidorFalso servidor = new((HttpStatusCode.ServiceUnavailable, "{}"), (HttpStatusCode.OK, RespostaValida()));
+
+        TraducaoDaIa traducao = await Criar(servidor).ExplicarAsync(Pedido, CancellationToken.None);
+
+        Assert.Equal("modelo-a", traducao.Modelo);
+        Assert.Equal(2, servidor.Requisicoes.Count);
+    }
+
+    [Fact]
+    public async Task ModeloSobrecarregadoDuasVezes_PassaParaOModeloDeReserva()
+    {
+        ServidorFalso servidor = new(
+            (HttpStatusCode.ServiceUnavailable, "{}"),
+            (HttpStatusCode.ServiceUnavailable, "{}"),
+            (HttpStatusCode.OK, RespostaValida()));
+
+        TraducaoDaIa traducao = await Criar(servidor).ExplicarAsync(Pedido, CancellationToken.None);
+
+        Assert.Equal("modelo-b", traducao.Modelo);
+        Assert.EndsWith("modelo-b:generateContent", servidor.Requisicoes[2].Endereco);
     }
 
     [Fact]

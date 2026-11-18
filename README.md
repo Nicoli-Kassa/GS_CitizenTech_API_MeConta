@@ -18,9 +18,10 @@ Backend do **Me Conta**, desenvolvido para a Global Solution FIAP 2026 (CitizenT
 | -------------------------- | ----------------------------------------------------------------- |
 | 🎬 **Pitch**               | [**Assistir no YouTube**](https://youtu.be/INSERIR-LINK-DO-PITCH) |
 | 📄 **Documentação da API** | `/swagger` e `/scalar` (com a API rodando)                        |
-| 🧪 **Testes**              | `dotnet test` (352 testes)                                        |
+| 🧪 **Testes**              | `dotnet test` (354 testes)                                        |
 | 🗂️ **Matérias**            | [O que cada matéria faz e onde cada entrega está](docs/MATERIAS.md) |
 | 🖼️ **Porta-retrato (IoT)** | [Circuito no Wokwi, ponte Node-RED e evidências](iot/README.md)     |
+| 🛡️ **Privacidade (Cyber)** | [Motor de PII, taint analysis, IA e painel Risco Cidadão](docs/cyber/README.md) |
 
 ---
 
@@ -511,7 +512,7 @@ dotnet ef migrations add NomeDaMudanca -p src/MeConta.Infrastructure -s src/MeCo
 dotnet test
 ```
 
-**352 testes unitários** em xUnit (`tests/MeConta.UnitTests`), sem banco e sem rede, com dublês escritos à mão (`PerguntaFake`, `FiltroFake` e, para os serviços, repositórios em memória, `RelogioFake` e `ControleDeAcessoFake`). Os nomes seguem o padrão `Metodo_Cenario_ResultadoEsperado`.
+**354 testes unitários** em xUnit (`tests/MeConta.UnitTests`), sem banco e sem rede, com dublês escritos à mão (`PerguntaFake`, `FiltroFake` e, para os serviços, repositórios em memória, `RelogioFake` e `ControleDeAcessoFake`). Os nomes seguem o padrão `Metodo_Cenario_ResultadoEsperado`.
 
 | Arquivo                            | O que testa                                                                                                                                                                   |
 | ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -541,7 +542,7 @@ dotnet test
 | `TradutorDeRiscoTests`             | IA entre duas conferências do motor: pedido com dado pessoal não sai, frase da IA com CPF ou telefone é trocada pelo texto local, pausa depois de falha, respostas reaproveitadas |
 | `RemediacaoServiceTests`           | Explicação para a família sem nenhum dado em claro na saída para a IA, combinação perigosa, painel por tipo, auditoria lida dos relatórios reais do Semgrep                   |
 | `ExplicacoesLocaisTests`           | Texto local para todo tipo de dado e toda regra do Semgrep, sem dado pessoal; leitura do SARIF                                                                               |
-| `ExplicadorGeminiTests`            | Chave no cabeçalho (nunca na URL), dados separados das instruções, modelo de reserva, chave recusada, resposta bloqueada ou fora do formato                                   |
+| `ExplicadorGeminiTests`            | Chave no cabeçalho (nunca na URL), dados separados das instruções, segunda tentativa com modelo sobrecarregado, modelo de reserva, chave recusada, resposta bloqueada ou fora do formato                                   |
 
 ## Evidências
 
@@ -603,13 +604,27 @@ As rotas do aparelho pelo Swagger:
 
 ![Indicador Risco Cidadão com as verificações do roteiro](docs/evidencias/21-risco-cidadao.png)
 
+![Pipeline de segurança verde: taint analysis com Semgrep, segredos com TruffleHog e testes](docs/evidencias/22-pipeline-verde.png)
+
+![Regras de taint analysis conferidas com os casos de teste e nenhum vazamento no código](docs/evidencias/23-taint-sem-achados.png)
+
+![Explicação da IA para a família, só com trechos mascarados](docs/evidencias/25-explicacao-ia.png)
+
+![Painel executivo Risco Cidadão: índice, vazamentos evitados e gráficos](docs/evidencias/26-painel-risco-cidadao-1.png)
+
+![Painel executivo Risco Cidadão: alertas traduzidos pela IA e auditoria do código](docs/evidencias/26-painel-risco-cidadao-2.png)
+
+![Painel mudando ao vivo com a atividade simulada](docs/evidencias/27-painel-com-atividade.png)
+
+Mais detalhes e o que cada print mostra em [`docs/cyber/README.md`](docs/cyber/README.md). Nos prints do Swagger, o token de login aparece como "[token oculto]".
+
 ### Banco de dados, migrações e testes
 
 ![Tabelas criadas no SQL Server](docs/evidencias/10-banco.png)
 
 ![Migrações aplicadas](docs/evidencias/11-migracoes.png)
 
-![352 testes automatizados aprovados](docs/evidencias/12-testes.png)
+![354 testes automatizados aprovados](docs/evidencias/12-testes.png)
 
 ## Privacidade e segurança
 

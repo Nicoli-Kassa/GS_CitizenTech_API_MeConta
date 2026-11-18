@@ -20,11 +20,17 @@ public sealed class OpcoesDoGemini
     /// <summary>Chave da API (Google AI Studio). Vazia: a tradução usa só as explicações locais.</summary>
     public string? ChaveApi { get; set; }
 
-    /// <summary>Modelo do plano gratuito usado primeiro.</summary>
-    public string Modelo { get; set; } = "gemini-3.5-flash";
+    /// <summary>
+    /// Modelo do plano gratuito usado primeiro. Os Flash-Lite têm a maior cota diária no plano gratuito
+    /// e respondem rápido, o que basta para frases curtas.
+    /// </summary>
+    public string Modelo { get; set; } = "gemini-3.1-flash-lite";
 
     /// <summary>Modelos tentados, na ordem, quando o anterior não existe, está sem cota ou fora do ar.</summary>
-    public string[] ModelosDeReserva { get; set; } = ["gemini-flash-latest", "gemini-3.5-flash-lite"];
+    public string[] ModelosDeReserva { get; set; } = ["gemini-3.5-flash-lite", "gemini-flash-latest"];
+
+    /// <summary>Espera antes de repetir, uma vez, o pedido a um modelo sobrecarregado (HTTP 503).</summary>
+    public int EsperaAntesDeRepetirEmMilissegundos { get; set; } = 1500;
 
     /// <summary>Endereço da API nativa do Gemini.</summary>
     public string Endereco { get; set; } = "https://generativelanguage.googleapis.com/v1beta/";
@@ -116,7 +122,10 @@ public sealed class ExplicadorGemini(
         foreach (string modelo in Modelos())
         {
             // Primeiro com pouco "raciocínio" (mais rápido); se o modelo não aceitar a opção, de novo sem ela.
-            foreach (bool pensarPouco in new[] { true, false })
+            // Modelo sobrecarregado (503) ganha uma segunda chance, depois de uma pequena espera.
+            bool pensarPouco = true;
+            bool jaRepetiu = false;
+            while (true)
             {
                 using HttpRequestMessage requisicao = new(HttpMethod.Post, $"models/{Uri.EscapeDataString(modelo)}:generateContent")
                 {
@@ -142,10 +151,20 @@ public sealed class ExplicadorGemini(
                     throw ultimoErro;
                 }
 
-                if (resposta.StatusCode != HttpStatusCode.BadRequest)
+                if (resposta.StatusCode == HttpStatusCode.BadRequest && pensarPouco)
                 {
-                    break; // 404 (modelo não existe), 429 (cota), 5xx: tenta o próximo modelo.
+                    pensarPouco = false;
+                    continue;
                 }
+
+                if (resposta.StatusCode == HttpStatusCode.ServiceUnavailable && !jaRepetiu)
+                {
+                    jaRepetiu = true;
+                    await Task.Delay(Math.Max(0, _opcoes.EsperaAntesDeRepetirEmMilissegundos), cancellationToken);
+                    continue;
+                }
+
+                break; // 404 (modelo não existe), 429 (cota), 5xx de novo: tenta o próximo modelo.
             }
         }
 

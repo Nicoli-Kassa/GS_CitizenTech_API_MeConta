@@ -316,7 +316,7 @@ Confira também que existem as tabelas `Familias`, `Participacoes`, `Convites`, 
 
 | Foto | O que fazer | Esperado | ✓ |
 |---|---|---|---|
-| 📸 `12-testes.png` | Pare a API (`Ctrl+C`) e rode `dotnet test` na pasta do projeto | `total: 352; falhou: 0` e nenhum aviso amarelo no build | ☐ |
+| 📸 `12-testes.png` | Pare a API (`Ctrl+C`) e rode `dotnet test` na pasta do projeto | `total: 354; falhou: 0` e nenhum aviso amarelo no build | ☐ |
 
 ---
 

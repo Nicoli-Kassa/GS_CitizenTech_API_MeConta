@@ -88,6 +88,10 @@ Os testes [`PrivacidadeServiceTests`](../../tests/MeConta.UnitTests/Servicos/Pri
 | Segredos no histórico | TruffleHog (`--fail`) | pipeline vermelho |
 | Build e testes | `dotnet test` | pipeline vermelho |
 
+![Pipeline de segurança verde: taint analysis, segredos e testes](../evidencias/22-pipeline-verde.png)
+
+![Regras conferidas com os casos de teste (7/7) e nenhum vazamento no código](../evidencias/23-taint-sem-achados.png)
+
 Para quem desenvolve no Linux, no macOS ou no WSL, o [`.pre-commit-config.yaml`](../../.pre-commit-config.yaml) roda o Semgrep e o TruffleHog antes de cada commit (`pip install pre-commit` e depois `pre-commit install`).
 
 ### Ver o pipeline barrando um vazamento
