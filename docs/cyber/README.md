@@ -16,7 +16,7 @@ O **Me Conta** troca o 👍 da família por uma pergunta que só os avós sabem 
 
 |                                   |                                                                                         |
 | --------------------------------- | --------------------------------------------------------------------------------------- |
-| 🎬 **Vídeo do painel com atividade** | [**Assistir no YouTube**](https://youtu.be/INSERIR-LINK-DO-VIDEO-CYBER)              |
+| 🎬 **Vídeo do painel com atividade** | [**Assistir no YouTube**](https://youtu.be/7wQlb6otvuU?si=8xcJbXF87NsftOyU)              |
 | 📊 **Painel Risco Cidadão**       | `http://localhost:5080/risco-cidadao/` (com a API rodando)                              |
 | 🧩 **Módulo de PII**              | [`src/MeConta.Privacidade`](../../src/MeConta.Privacidade) · [como funciona](motor-pii.md) |
 | 🔎 **Taint analysis e auditoria** | [`seguranca/`](../../seguranca) · [como funciona](taint-analysis.md)                    |
