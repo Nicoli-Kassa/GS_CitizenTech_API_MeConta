@@ -5,7 +5,7 @@ Este arquivo registra como usei inteligência artificial como ferramenta de apoi
 Defini o escopo, a arquitetura, as tecnologias e as regras de negócio a partir do backlog do projeto. Usei a IA como apoio para tirar dúvidas, acelerar a escrita de código e documentação e resolver problemas. Todo o conteúdo gerado com apoio da IA foi revisado, ajustado, compilado e testado por mim.
 
 **Ferramenta:** Claude (Anthropic)
-**Período:** 10 a 16/11/2026
+**Período:** 10 a 19/11/2026
 
 ---
 
@@ -24,6 +24,7 @@ Defini o escopo, a arquitetura, as tecnologias e as regras de negócio a partir 
 | 9. Circuito no Wokwi     | 16/11         | Escolhi os componentes e o visual da caixinha, montei no Wokwi e testei cada situação | Primeira versão do firmware e do `diagram.json`                    |
 | 10. Ponte Node-RED e painel | 16/11      | Instalei e configurei o Node-RED, rodei o ciclo completo com a API e ajustei o visual do painel | Primeira versão do fluxo e do painel                       |
 | 11. Documentação do IoT  | 16/11         | Revisei os textos e tirei os prints                                          | Estrutura do README da pasta `iot/`                                      |
+| 12. Servidor Linux (Operating Systems) | 16 a 19/11 | Criei a VM no Azure, escolhi o banco e as regras de rede, rodei o provisionamento e o teste de falha e tirei os prints | Primeira versão dos scripts Bash, das units systemd, do monitor, das regras de auditoria e do README da pasta `linux/` |
 
 ---
 
@@ -328,6 +329,18 @@ Defini o escopo, a arquitetura, as tecnologias e as regras de negócio a partir 
 **Como usei a IA:** pedi apoio para estruturar o README da pasta `iot/` e para ligar cada entregável ao arquivo que o atende em `docs/MATERIAS.md`.
 
 **Meu trabalho:** revisei os textos, escolhi e tirei os prints e conferi os links.
+
+---
+
+## 12. Servidor Linux (Operating Systems) · 16 a 19/11/2026
+
+**Como usei a IA:** pedi apoio para escrever o provisionamento em Bash dividido em etapas (sistema, rede, segurança, aplicação, monitoramento e auditoria), as units do systemd da API e do monitor, o site do nginx, as regras do auditd, o script de teste de falha e o README da pasta `linux/`. Também pedi explicações sobre como o Azure entrega IP e DNS à VM e sobre como guardar segredos fora de variáveis de ambiente.
+
+**Meu trabalho:**
+- Criei a VM no Azure for Students, fixei o IP privado na NIC e defini o nome público.
+- Escolhi SQLite no servidor por causa da memória da VM e defini os limites de alerta.
+- Rodei o provisionamento e o teste de falha na VM, conferi cada recuperação e tirei os prints.
+- Revisei os scripts e o README.
 
 ---
 

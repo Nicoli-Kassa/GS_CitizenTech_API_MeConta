@@ -16,12 +16,13 @@ Backend do **Me Conta**, desenvolvido para a Global Solution FIAP 2026 (CitizenT
 
 |                            |                                                                   |
 | -------------------------- | ----------------------------------------------------------------- |
-| 🎬 **Pitch**               | [**Assistir no YouTube**](https://youtu.be/INSERIR-LINK-DO-PITCH) |
+| 🎬 **Pitch**               | [**Assistir no YouTube**](https://youtu.be/7wQlb6otvuU?si=8xcJbXF87NsftOyU) |
 | 📄 **Documentação da API** | `/swagger` e `/scalar` (com a API rodando)                        |
 | 🧪 **Testes**              | `dotnet test` (354 testes)                                        |
 | 🗂️ **Matérias**            | [O que cada matéria faz e onde cada entrega está](docs/MATERIAS.md) |
 | 🖼️ **Porta-retrato (IoT)** | [Circuito no Wokwi, ponte Node-RED e evidências](iot/README.md)     |
 | 🛡️ **Privacidade (Cyber)** | [Motor de PII, taint analysis, IA e painel Risco Cidadão](docs/cyber/README.md) |
+| 🐧 **Servidor Linux (OS)** | [Provisionamento, monitoramento e auditoria](linux/README.md) |
 
 ---
 
@@ -140,7 +141,7 @@ Cada matéria cuida de uma parte do Me Conta. O mapa completo, com cada critéri
 | **SOA e Web Services** | Os serviços REST que o app e o porta-retrato consomem, com banco, migrações, documentação automática e testes | `src/`, `Migrations/`, `/swagger`, `/scalar`, `tests/` · [detalhes](docs/MATERIAS.md#soa-e-web-services) |
 | **Physical Computing (IoT)** | Porta-retrato com ESP32 que acende com pergunta nova e tem o botão "quero contar" | Pasta [`iot/`](iot/README.md) (circuito, firmware, ponte Node-RED e painel); rotas `/porta-retrato/*` e `/avisos`, migração `PortaRetrato` · [detalhes](docs/MATERIAS.md#physical-computing-iot) |
 | **Cybersecurity** | Filtro de dados pessoais, taint analysis, tradução dos riscos com IA e painel "Risco Cidadão" antes de publicar no mapa do bairro | Proteções em [Privacidade e segurança](#privacidade-e-segurança); motor de PII `MeConta.Privacidade` ([como funciona](docs/cyber/motor-pii.md)), [taint analysis](docs/cyber/taint-analysis.md) com Semgrep e TruffleHog no GitHub Actions, [IA na remediação e painel](docs/cyber/remediacao-ia.md) em `/risco-cidadao/` · [detalhes](docs/MATERIAS.md#cybersecurity) |
-| **Operating Systems** | Servidor Linux que roda esta API, com monitoramento e logs | `/health`, perfil `rede-local`, banco por variável de ambiente · [detalhes](docs/MATERIAS.md#operating-systems) |
+| **Operating Systems** | Servidor Linux que roda esta API, com monitoramento e logs | Pasta [`linux/`](linux/README.md) (provisionamento em Bash, systemd, monitor, auditoria, teste de falha) · [detalhes](docs/MATERIAS.md#operating-systems) |
 | **Testing, Compliance & QA** | Backlog e casos de teste no Azure DevOps | Coluna "User story" dos [Endpoints](#endpoints) e [roteiro de testes](docs/ROTEIRO_DE_TESTES.md) · [detalhes](docs/MATERIAS.md#testing-compliance--qa) |
 | **Mobile** | App Expo da neta: perguntar, enviar e montar o caderno | Consome esta API; idempotência para o modo offline · [detalhes](docs/MATERIAS.md#mobile) |
 | **IA & ML** | Modelo com dados reais da PNAD TIC sobre idosos desconectados | Fora desta API: [repositório próprio](https://github.com/Nicoli-Kassa/GS_CitizenTech_IA-ML_MeConta) |

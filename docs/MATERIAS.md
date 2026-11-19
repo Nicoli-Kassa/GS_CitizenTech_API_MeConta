@@ -12,7 +12,7 @@ O Me Conta é uma solução só, dividida em partes. Esta API é o centro: o app
 | [SOA e Web Services](#soa-e-web-services) | Serviços REST que o app e o porta-retrato consomem, com banco, migrações e documentação automática | Este repositório (`src/`, `tests/`, `docs/`) | ✅ Pronta |
 | [Physical Computing (IoT)](#physical-computing-iot) | Porta-retrato com ESP32: acende quando chega pergunta e tem o botão "quero contar" | Pasta [`iot/`](../iot/README.md) (circuito, firmware, ponte Node-RED, evidências) e rotas do aparelho nesta API | ✅ Pronta (falta o link do vídeo) |
 | [Cybersecurity](#cybersecurity) | Filtro de dados pessoais antes de publicar no mapa do bairro, taint analysis e painel "Risco Cidadão" | Módulo `MeConta.Privacidade` dentro desta API | 🟡 Motor de PII, mapa do bairro e taint analysis prontos; IA e painel em andamento |
-| [Operating Systems](#operating-systems) | VM Linux que roda esta API, com monitoramento e logs de auditoria | Scripts Bash (pasta própria); esta API fornece o `/health` e a configuração por variável de ambiente | 🔜 A fazer |
+| [Operating Systems](#operating-systems) | VM Linux que roda esta API, com monitoramento e logs de auditoria | Pasta [`linux/`](../linux/README.md) (provisionamento em Bash, serviços systemd, monitor, auditoria, teste de falha) | ✅ Pronto |
 | [Testing, Compliance & QA](#testing-compliance--qa) | Backlog com critérios de aceite e casos de teste no Azure DevOps | Azure DevOps; nesta API, os casos que rodam pelo Swagger | ✅ Pronta |
 | [Mobile](#mobile) | App Expo que a neta usa: perguntar, enviar pelo WhatsApp e montar o caderno | Repositório do app; consome esta API | 🟡 Em andamento |
 | [IA & ML](#ia--ml) | Modelo com dados reais da PNAD TIC que aponta quais idosos têm mais chance de estar desconectados | [Repositório próprio](https://github.com/Nicoli-Kassa/GS_CitizenTech_IA-ML_MeConta) | ✅ Pronta (fora desta API) |
@@ -83,14 +83,17 @@ App ──HTTP──> Me Conta API <──HTTP── Node-RED <──MQTT──>
 
 ## Operating Systems
 
-**A parte dela no Me Conta:** o servidor Linux onde a API roda, provisionado por script Bash, com monitoramento de CPU, disco e memória e logs de auditoria.
+**A parte dela no Me Conta:** o servidor Linux onde a API roda, montado do zero por script Bash numa VM do Azure, que se recupera sozinho de falhas, avisa antes de CPU, memória ou disco acabarem e registra quem mexeu em quê. Documentação completa em **[linux/README.md](../linux/README.md)**.
 
-| O que é pedido | O que esta API oferece |
+| O que é pedido | Onde é atendido |
 | --- | --- |
-| **Provisionamento da aplicação web** | A API sobe com um comando (`dotnet run` ou `dotnet publish`), escuta em qualquer interface pelo perfil `rede-local` ([`launchSettings.json`](../src/MeConta.Api/Properties/launchSettings.json)) e lê o banco da variável `ConnectionStrings__DefaultConnection`, sem editar arquivo. As migrações são aplicadas sozinhas na primeira subida. |
-| **Monitoramento e teste de falha** | `GET /health` responde 200 com a API e o banco no ar e 503 quando o banco cai ([`Program.cs`](../src/MeConta.Api/Program.cs)), o que o serviço de monitoramento pode consultar. |
-| **Logs de auditoria** | Erros inesperados são registrados com o método e o modelo da rota, sem o caminho pedido, para não guardar dado pessoal no log ([`TratadorDeExcecoes`](../src/MeConta.Api/Configuracao/TratadorDeExcecoes.cs)). |
-| **VM, rede, DNS, monitoramento como serviço** | A fazer: scripts Bash em pasta própria. |
+| **Infraestrutura: rede, DNS, IP, hostname** | [`linux/etapas/rede.sh`](../linux/etapas/rede.sh): hostname, `/etc/hosts` com domínio interno, IP privado fixo no netplan com rollback automático, DNS no systemd-resolved; [`sistema.sh`](../linux/etapas/sistema.sh) e [`seguranca.sh`](../linux/etapas/seguranca.sh): fuso, swap, SSH só com chave, firewall `ufw`. |
+| **Provisionamento da aplicação web** | [`linux/etapas/aplicacao.sh`](../linux/etapas/aplicacao.sh): build da API a partir deste repositório, uma pasta por versão com volta automática se o `/health` falhar, serviço systemd isolado ([`meconta-api.service`](../linux/arquivos/meconta-api.service)), SQLite e nginx na porta 80 ([`nginx-meconta.conf`](../linux/arquivos/nginx-meconta.conf)). |
+| **Monitoramento de CPU, disco e memória com alertas** | [`linux/monitor/meconta-monitor.sh`](../linux/monitor/meconta-monitor.sh): alerta acima de 80% (log, journal, terminal e webhook opcional) e painel web em `/servidor/`. |
+| **Monitoramento como serviço tolerante a falhas** | [`meconta-monitor.service`](../linux/arquivos/meconta-monitor.service): `Restart=always`, watchdog de 60 s, protegido do OOM; o monitor também reinicia a API quando o `/health` desta API falha 3 vezes. |
+| **Logs de auditoria** | [`linux/etapas/auditoria.sh`](../linux/etapas/auditoria.sh) e [`auditd-meconta.rules`](../linux/arquivos/auditd-meconta.rules): auditd, log do provisionamento, log de acesso do nginx, journal persistente; relatório em [`ferramentas/auditoria.sh`](../linux/ferramentas/auditoria.sh). Na API, erros inesperados são registrados sem o caminho pedido ([`TratadorDeExcecoes`](../src/MeConta.Api/Configuracao/TratadorDeExcecoes.cs)). |
+| **Teste de falha** | [`linux/ferramentas/teste-de-falha.sh`](../linux/ferramentas/teste-de-falha.sh): derruba e congela a API e o monitor, estressa CPU, memória e disco e confere a recuperação. |
+| **O que esta API oferece ao servidor** | `GET /health` (API e banco), configuração toda por variável de ambiente (`Banco__Provedor=Sqlite` no servidor), IP real do cliente atrás do nginx (`X-Forwarded-For`, para o limite de requisições) e leitura de segredos cifrados pelo systemd (`$CREDENTIALS_DIRECTORY`), em [`Program.cs`](../src/MeConta.Api/Program.cs). |
 
 ## Testing, Compliance & QA
 

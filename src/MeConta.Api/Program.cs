@@ -4,6 +4,7 @@ using MeConta.Api.Configuracao;
 using MeConta.Application.Adapters;
 using MeConta.Infrastructure;
 using MeConta.Infrastructure.Persistencia;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Scalar.AspNetCore;
 
@@ -18,6 +19,15 @@ public partial class Program
     public static async Task Main(string[] args)
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+        // No servidor Linux, os segredos (ex.: Gemini:ChaveApi) chegam cifrados pelo systemd e são entregues
+        // decifrados só para este processo, um arquivo por chave, na pasta $CREDENTIALS_DIRECTORY.
+        // Fora do servidor a variável não existe e nada muda (no desenvolvimento valem os user-secrets).
+        string? pastaDeSegredos = Environment.GetEnvironmentVariable("CREDENTIALS_DIRECTORY");
+        if (!string.IsNullOrEmpty(pastaDeSegredos))
+        {
+            builder.Configuration.AddKeyPerFile(pastaDeSegredos, optional: true);
+        }
 
         // Banco, repositórios e adapters (camada Infrastructure).
         ProvedorDeBanco provedor = builder.Configuration.GetValue("Banco:Provedor", ProvedorDeBanco.SqlServer);
@@ -75,6 +85,14 @@ public partial class Program
             policy => policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
 
         WebApplication app = builder.Build();
+
+        // Atrás do nginx (servidor Linux), o IP real do cliente chega no X-Forwarded-For. Só é aceito quando
+        // a conexão vem do próprio servidor (127.0.0.1/::1), então ninguém de fora consegue forjar o endereço.
+        // Sem isso, o limite de requisições por IP trataria todos os usuários como um só (127.0.0.1).
+        app.UseForwardedHeaders(new ForwardedHeadersOptions
+        {
+            ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+        });
 
         app.UseExceptionHandler();
 
