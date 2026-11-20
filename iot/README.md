@@ -17,7 +17,7 @@ O porta-retrato é a parte física do **Me Conta**, o app que troca o 👍 da fa
 |                                 |                                                                                                   |
 | ------------------------------- | ------------------------------------------------------------------------------------------------- |
 | 🔌 **Projeto no Wokwi**         | [wokwi.com/projects/480807903168932865](https://wokwi.com/projects/480807903168932865)            |
-| 🎬 **Vídeo da integração**      | [**Assistir no YouTube**](https://youtu.be/INSERIR-LINK-DO-VIDEO-IOT)                             |
+| 🎬 **Vídeo da integração**      | [**Assistir no YouTube**](https://youtu.be/LvbHSQewTVY?si=-WY5fz8XIhgVaF01)                             |
 | 👥 **Integrantes**              | [`integrantes.txt`](integrantes.txt)                                                              |
 | 🧠 **API do Me Conta**          | [README da API](../README.md) · rotas do aparelho em [Endpoints](../README.md#endpoints)          |
 | 🗂️ **Onde cada entrega está**   | [docs/MATERIAS.md › Physical Computing (IoT)](../docs/MATERIAS.md#physical-computing-iot)         |
