@@ -56,7 +56,7 @@ App ──HTTP──> Me Conta API <──HTTP── Node-RED <──MQTT──>
 | Entregável | Onde está |
 | --- | --- |
 | **Link do projeto no Wokwi** | [wokwi.com/projects/480807903168932865](https://wokwi.com/projects/480807903168932865) |
-| **Link do vídeo (até 4 min)** | [Assistir no YouTube](https://youtu.be/INSERIR-LINK-DO-VIDEO-IOT) |
+| **Link do vídeo (até 4 min)** | [Assistir no YouTube](https://youtu.be/LvbHSQewTVY?si=-WY5fz8XIhgVaF01) |
 | **Arquivo com os integrantes** | [`iot/integrantes.txt`](../iot/integrantes.txt) |
 
 | O que é pedido | Onde é atendido |
