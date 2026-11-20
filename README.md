@@ -16,7 +16,7 @@ Backend do **Me Conta**, desenvolvido para a Global Solution FIAP 2026 (CitizenT
 
 |                            |                                                                   |
 | -------------------------- | ----------------------------------------------------------------- |
-| 🎬 **Pitch**               | [**Assistir no YouTube**](https://youtu.be/7wQlb6otvuU?si=8xcJbXF87NsftOyU) |
+| 🎬 **Pitch**               | [**Assistir no YouTube**](https://youtu.be/F_s7jXz_GzU?si=K7teIwoZMQO2WN2D) |
 | 📄 **Documentação da API** | `/swagger` e `/scalar` (com a API rodando)                        |
 | 🧪 **Testes**              | `dotnet test` (354 testes)                                        |
 | 🗂️ **Matérias**            | [O que cada matéria faz e onde cada entrega está](docs/MATERIAS.md) |
