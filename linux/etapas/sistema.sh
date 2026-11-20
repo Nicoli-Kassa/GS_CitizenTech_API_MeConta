@@ -19,7 +19,7 @@ etapa_sistema() {
     instalar_pacotes curl jq git sqlite3 nginx ufw auditd stress-ng ca-certificates
     ok "pacotes base instalados"
 
-    # Swap: a Standard_B1s tem só 1 GB de RAM; o swap evita que o build do .NET seja morto por falta de memória.
+    # Swap: VMs pequenas da série B têm só 1 GB de RAM; o swap evita que o build do .NET seja morto por falta de memória.
     if ! swapon --show=NAME --noheadings | grep -q '^/swapfile$'; then
         passo "criando /swapfile de ${TAMANHO_SWAP_GB} GB"
         fallocate -l "${TAMANHO_SWAP_GB}G" /swapfile

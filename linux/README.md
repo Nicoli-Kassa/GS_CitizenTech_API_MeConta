@@ -8,10 +8,10 @@
 
 |                         |                                                                       |
 | ----------------------- | --------------------------------------------------------------------- |
-| 🎬 **Vídeo (até 7 min)** | [**Assistir no YouTube**](https://youtu.be/INSERIR-LINK-DO-VIDEO-OS)   |
-| 🌐 **Servidor no ar**    | `http://meconta-nicoli.brazilsouth.cloudapp.azure.com/swagger/`       |
-| 📊 **Painel do servidor** | `http://meconta-nicoli.brazilsouth.cloudapp.azure.com/servidor/`     |
-| 🛡️ **Painel Risco Cidadão** | `http://meconta-nicoli.brazilsouth.cloudapp.azure.com/risco-cidadao/` |
+| 🎬 **Vídeo (até 7 min)** | [**Assistir no YouTube**](https://youtu.be/RwSepaGcXhI)   |
+| 🌐 **Servidor no ar**    | `http://meconta-nicoli.canadacentral.cloudapp.azure.com/swagger/`       |
+| 📊 **Painel do servidor** | `http://meconta-nicoli.canadacentral.cloudapp.azure.com/servidor/`     |
+| 🛡️ **Painel Risco Cidadão** | `http://meconta-nicoli.canadacentral.cloudapp.azure.com/risco-cidadao/` |
 | ⬅️ **Repositório**       | [README principal da API](../README.md)                               |
 
 ---
@@ -40,7 +40,7 @@ O caderno da família guarda a voz dos avós. Se o servidor cai, a neta não con
            Internet (porta 80)
                   │
    ┌──────────────▼────────────────────────────────────────────────┐
-   │ VM Ubuntu Server 24.04 · Azure Standard_B1s · meconta-srv     │
+   │ VM Ubuntu Server 24.04 · Azure Canada Central · meconta-srv   │
    │                                                               │
    │  ufw (só 22 com limite e 80)                                  │
    │    │                                                          │
@@ -61,7 +61,7 @@ O caderno da família guarda a voz dos avós. Se o servidor cai, a neta não con
 
 | Item | Onde está | Como funciona |
 | --- | --- | --- |
-| **Infraestrutura: VM, rede, DNS, IP e hostname** | [`etapas/rede.sh`](etapas/rede.sh), [`etapas/sistema.sh`](etapas/sistema.sh), [`etapas/seguranca.sh`](etapas/seguranca.sh) | VM Linux só com linha de comando no Azure. O script define o **hostname** (`meconta-srv`, protegido contra o cloud-init), o **/etc/hosts** com o domínio interno `meconta.interno`, o **IP privado fixo** no netplan (igual ao fixado na NIC do Azure, com **rollback automático** em 120 s se a rede não responder) e o **DNS** no systemd-resolved (Cloudflare, Quad9 e o DNS do Azure). Confere o gateway, a resolução de nomes, o IP público (serviço de metadados do Azure) e o nome público `meconta-nicoli.brazilsouth.cloudapp.azure.com`. Também: fuso de Brasília com NTP, swap de 2 GB, SSH só com chave e firewall `ufw`. |
+| **Infraestrutura: VM, rede, DNS, IP e hostname** | [`etapas/rede.sh`](etapas/rede.sh), [`etapas/sistema.sh`](etapas/sistema.sh), [`etapas/seguranca.sh`](etapas/seguranca.sh) | VM Linux só com linha de comando no Azure. O script define o **hostname** (`meconta-srv`, protegido contra o cloud-init), o **/etc/hosts** com o domínio interno `meconta.interno`, o **IP privado** (`172.16.0.4`, lido da placa e conferido; o script também sabe gravá-lo fixo no netplan, com **rollback automático** em 120 s se a rede não responder) e o **DNS** no systemd-resolved (Cloudflare, Quad9 e o DNS do Azure). Confere o gateway, a resolução de nomes, o IP público (serviço de metadados do Azure) e o nome público `meconta-nicoli.canadacentral.cloudapp.azure.com`. Também: fuso de Brasília com NTP, swap de 2 GB, SSH só com chave e firewall `ufw`. |
 | **Provisionamento da aplicação web** | [`etapas/aplicacao.sh`](etapas/aplicacao.sh), [`arquivos/meconta-api.service`](arquivos/meconta-api.service), [`arquivos/nginx-meconta.conf`](arquivos/nginx-meconta.conf) | Instala o .NET 10, baixa o código do GitHub, publica a API numa pasta por versão (`/opt/meconta/versoes/<data>-<commit>`) e troca o link `/opt/meconta/app` de uma vez. Se a versão nova não responder no `/health` em 90 s, **volta para a anterior**. A API roda como serviço systemd com usuário próprio sem login, sistema de arquivos somente leitura e limite de memória; o banco é SQLite. O nginx publica tudo na porta 80, com limite de tentativas de login. |
 | **Monitoramento de CPU, disco e memória com alertas** | [`monitor/meconta-monitor.sh`](monitor/meconta-monitor.sh), [`painel/index.html`](painel/index.html) | A cada 10 s lê `/proc/stat`, `/proc/meminfo` e `df`. Acima de 80% por 3 leituras seguidas: **ALERTA** no `alertas.log`, no journal, na tela de quem estiver conectado por SSH (`wall`) e, se configurado, no celular (webhook). Quando volta: **NORMAL**. O alerta de CPU e de memória já diz qual processo mais consome. Painel web em `/servidor/`. |
 | **Monitoramento como serviço tolerante a falhas** | [`arquivos/meconta-monitor.service`](arquivos/meconta-monitor.service) | Serviço systemd `Type=notify` com **watchdog** de 60 s (se o monitor travar, o systemd mata e reinicia), `Restart=always`, nunca desiste de reiniciar e é o último processo que o kernel mata se faltar memória. Além disso, **cuida da API**: se o `/health` falhar 3 vezes seguidas (processo vivo mas travado, que o systemd não percebe), reinicia a API. |
@@ -98,9 +98,9 @@ linux/
 
 ### 1. Criar a VM (portal do Azure)
 
-1. **Máquinas virtuais > Criar**: Ubuntu Server 24.04 LTS (x64), tamanho **Standard_B1s**, autenticação por **chave SSH**, portas de entrada **22** e **80**.
+1. **Máquinas virtuais > Criar**: Ubuntu Server 24.04 LTS (x64), série B, região **Canada Central** (a permitida na assinatura de estudante), autenticação por **chave SSH**, portas de entrada **22** e **80**.
 2. No **IP público > Configuração**, preencher o **rótulo do nome DNS** (`meconta-nicoli`).
-3. Em **Rede > interface de rede > Configurações de IP**, deixar o IP privado como **Estático** e anotar (ex.: `10.0.0.4`).
+3. O IP privado fica como o Azure entregou (`172.16.0.4`). Para fixá-lo também dentro da VM, deixe-o **Estático** na NIC, preencha `IP_ESTATICO="sim"` e `IP_PRIVADO_FIXADO_NO_AZURE` no `meconta.conf` e rode `sudo bash provisionar.sh rede`.
 
 ### 2. Provisionar
 
@@ -110,8 +110,8 @@ ssh -i meconta-vm_key.pem nicoli@<IP_PUBLICO>
 git clone https://github.com/Nicoli-Kassa/GS_CitizenTech_API_MeConta.git
 cd GS_CitizenTech_API_MeConta/linux
 
-nano meconta.conf                  # IP_PRIVADO_FIXADO_NO_AZURE="10.0.0.4" e, se mudou, NOME_PUBLICO
-sudo bash provisionar.sh           # todas as etapas (~10 min na B1s, quase tudo no build da API)
+nano meconta.conf                  # confira NOME_PUBLICO (rótulo DNS + região)
+sudo bash provisionar.sh 2>&1 | tee ~/provisionamento.txt   # todas as etapas (144 s no servidor do Me Conta)
 sudo bash ferramentas/status.sh    # resumo do servidor
 ```
 
@@ -150,23 +150,65 @@ O resultado aparece na tela e fica em `/var/log/meconta/teste-de-falha.log`.
 
 ## Evidências
 
-| # | Print | Arquivo |
-| --- | --- | --- |
-| 1 | Provisionamento completo (fim da saída do `provisionar.sh`) | `evidencias/01-provisionamento.png` |
-| 2 | Rede: `hostnamectl`, `ip -br a`, `ip route`, `resolvectl dns`, `cat /etc/hosts` | `evidencias/02-rede.png` |
-| 3 | Firewall e SSH: `sudo ufw status verbose` | `evidencias/03-firewall.png` |
-| 4 | Serviços: `systemctl status meconta-api meconta-monitor` | `evidencias/04-servicos.png` |
-| 5 | Swagger aberto pelo nome público | `evidencias/05-swagger.png` |
-| 6 | Painel `/servidor/` com um alerta ativo | `evidencias/06-painel.png` |
-| 7 | Alerta no terminal (`wall`) durante o teste de CPU | `evidencias/07-alerta-terminal.png` |
-| 8 | Resumo do teste de falha | `evidencias/08-teste-de-falha.png` |
-| 9 | `teste-de-falha.sh verificar` depois do reboot | `evidencias/09-depois-do-reboot.png` |
-| 10 | Relatório de auditoria | `evidencias/10-auditoria.png` |
+Resultados no servidor (19/11/2026): provisionamento completo em **144 s**; teste de falha com **6 de 6 testes aprovados**.
+
+| Teste | Resultado no servidor |
+| --- | --- |
+| `api` (kill -9) | systemd reiniciou a API; `/health` de volta em **6 s** |
+| `api-travada` (SIGSTOP) | o monitor viu o `/health` falhar 3 vezes e reiniciou a API; de volta em **34 s** |
+| `monitor` (kill -9) | systemd reiniciou o monitor em **6 s** |
+| `cpu` | ALERTA com CPU em **96%** (maior consumo: `stress-ng-cpu`, 97,9%) e NORMAL quando a carga acabou |
+| `disco` | ALERTA com disco em **86%** e NORMAL (22%) depois de apagar o arquivo de teste |
+| `verificar` (depois do reboot) | API, monitor, nginx e auditd ativos e habilitados; `/health` responde |
+
+**01. Provisionamento completo** (fim da saída do `provisionar.sh`)
+
+![Provisionamento](evidencias/01-provisionamento.png)
+
+**02. Rede:** hostname, IP, rotas, DNS e `/etc/hosts` com o domínio interno
+
+![Rede](evidencias/02-rede.png)
+
+**03. Firewall:** entrada bloqueada, exceto SSH com limite e HTTP
+
+![Firewall](evidencias/03-firewall.png)
+
+**04. Serviços** `meconta-api` (com limites de memória) e `meconta-monitor` (com a última medição no Status)
+
+![Serviços](evidencias/04-servicos.png)
+
+**05. Swagger da API** aberto pelo nome público
+
+![Swagger](evidencias/05-swagger.png)
+
+**06. Painel do servidor** (`/servidor/`)
+
+![Painel](evidencias/06-painel.png)
+
+**07. Alertas no terminal e no painel** durante o teste: o monitor reinicia a API travada e o card de CPU fica vermelho
+
+![Alerta](evidencias/07-alerta-terminal.png)
+
+**08. Resumo do teste de falha**
+
+![Teste de falha](evidencias/08-teste-de-falha.png)
+
+**09. Depois do reboot:** tudo voltou sozinho
+
+![Depois do reboot](evidencias/09-depois-do-reboot.png)
+
+**10. Relatório de auditoria** (provisionamento, acessos à API) e o painel com o histórico de ALERTA/NORMAL
+
+![Auditoria](evidencias/10-auditoria.png)
+
+**11. Rede, DNS, hostname e firewall** num comando só
+
+![Resumo da rede](evidencias/11-rede-resumo.png)
 
 ## Decisões e limites
 
-- **Por que nuvem:** o computador de desenvolvimento não aguenta uma VM local junto com a API. A Standard_B1s entra nas horas gratuitas do Azure for Students.
-- **Por que SQLite no servidor:** o SQL Server pede pelo menos 2 GB de RAM e a B1s tem 1 GB. A API já aceita os dois bancos pela configuração (`Banco__Provedor`); o código é o mesmo.
-- **IP e DNS no Azure:** quem entrega o IP é a plataforma. Por isso o IP é fixado nos dois lados (NIC e netplan) e o script só aplica a troca se os dois forem iguais.
+- **Por que nuvem:** o computador de desenvolvimento não aguenta uma VM local junto com a API. A VM usa o crédito do Azure for Students, na única região que a assinatura de estudante liberou com capacidade (Canada Central).
+- **Por que SQLite no servidor:** o SQL Server pede pelo menos 2 GB de RAM só para ele, e a VM roda tudo junto (API, nginx, monitor). A API já aceita os dois bancos pela configuração (`Banco__Provedor`); o código é o mesmo.
+- **IP e DNS no Azure:** quem entrega o IP é a plataforma. Na primeira VM, a troca do IP para estático na NIC falhou e deixou a máquina sem rede; ela foi recriada e o IP ficou como o Azure entrega (reservado enquanto a VM existir). Por isso o script lê e confere o IP, e só grava o IP fixo no netplan quando os dois lados (NIC e configuração) batem, com rollback automático.
 - **HTTP sem TLS:** o protótipo usa a porta 80. O próximo passo é um certificado Let's Encrypt (certbot) para o nome público.
 - **Dados:** só dados fictícios de demonstração. Nenhum dado pessoal real no servidor.

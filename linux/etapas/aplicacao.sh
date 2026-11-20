@@ -55,7 +55,7 @@ publicar_api() {
 
     MESMA_VERSAO=1
     NOVA_VERSAO="${PASTA_DAS_VERSOES}/$(date +%Y%m%d-%H%M%S)-${COMMIT}"
-    passo "compilando e publicando a API em ${NOVA_VERSAO} (leva alguns minutos na B1s)"
+    passo "compilando e publicando a API em ${NOVA_VERSAO} (leva alguns minutos)"
     export DOTNET_CLI_TELEMETRY_OPTOUT=1 DOTNET_NOLOGO=1 DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1
     dotnet publish "${PASTA_DO_CODIGO}/src/MeConta.Api/MeConta.Api.csproj" \
         -c Release -o "$NOVA_VERSAO" --nologo -v quiet -p:UseAppHost=true
@@ -164,7 +164,13 @@ configurar_nginx() {
     if ((mudou == 0)); then systemctl reload nginx; fi
     ok "nginx publicando a API na porta 80 (http://${NOME_PUBLICO}/swagger/)"
 
-    if curl -fsS -m 5 http://127.0.0.1/health > /dev/null; then
+    # O reload do nginx é assíncrono: tenta algumas vezes antes de reclamar.
+    local nginx_ok=1
+    for _ in $(seq 1 5); do
+        sleep 1
+        if curl -fsS -m 5 http://127.0.0.1/health > /dev/null 2>&1; then nginx_ok=0; break; fi
+    done
+    if ((nginx_ok == 0)); then
         ok "pelo nginx: http://127.0.0.1/health responde"
     else
         aviso "o nginx não conseguiu falar com a API (veja /var/log/nginx/meconta-erros.log)"
